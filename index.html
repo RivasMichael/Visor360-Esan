@@ -35,20 +35,20 @@
     <script>
       const nombresDestinos = {
         'entrada': 'Entrada Principal',
-        'jardin': 'Jardín',
+        'jardin': 'Jardin',
         'fuente': 'Fuente',
         'capilla': 'Capilla',
         'fablab': 'FabLab',
-        'voley': 'Cancha de Vóley',
-        'basquet': 'Cancha de Básquet',
-        'explanada': 'Explanada Convention',
+        'voley': 'Cancha de\nVoley',
+        'basquet': 'Cancha de\nBasquet',
+        'explanada': 'Explanada\nConvention',
         'eventos': 'Eventos',
         'butacas': 'Butacas',
         'biblioteca': 'Biblioteca',
         'danza': 'Danza',
         'edificioD': 'Edificio D',
         'edificioA': 'Edificio A',
-        'cafeteria': 'Cafetería'
+        'cafeteria': 'Cafeteria'
       };
 
       // =============================================================
@@ -209,13 +209,21 @@
               iniciarTransicion(target, 0);
             }
           });
+
+	  // Efecto Hover: Fondo blanco, Letras rojas
           el.addEventListener('mouseenter', function () {
-            el.setAttribute('color', '#00BFFF');
+            el.setAttribute('color', '#FFFFFF');
             el.setAttribute('scale', '1.05 1.05 1.05');
+            var textoAsociado = el.querySelector('a-text');
+            if(textoAsociado) textoAsociado.setAttribute('color', '#E3173E');
           });
+          
+          // Estado Base: Fondo rojo, Letras blancas
           el.addEventListener('mouseleave', function () {
-            el.setAttribute('color', '#111111');
+            el.setAttribute('color', '#E3173E');
             el.setAttribute('scale', '1 1 1');
+            var textoAsociado = el.querySelector('a-text');
+            if(textoAsociado) textoAsociado.setAttribute('color', '#FFFFFF');
           });
         }
       });
@@ -338,10 +346,11 @@
         var menu = document.querySelector('#menu-3d');
         var keys = Object.keys(nombresDestinos);
         
+	// --- TÍTULO ROJO ---
         var titulo = document.createElement('a-text');
         titulo.setAttribute('value', 'MAPA VIRTUAL ESAN');
         titulo.setAttribute('align', 'center');
-        titulo.setAttribute('color', '#00BFFF');
+        titulo.setAttribute('color', '#E3173E'); // Nuevo color institucional
         titulo.setAttribute('position', '0 1.2 0');
         titulo.setAttribute('width', '4');
         menu.appendChild(titulo);
@@ -359,21 +368,25 @@
           let posX = startX + (col * gapX);
           let posY = startY - (row * gapY);
 
+	  // --- BOTÓN BASE ROJO ---
           var btn = document.createElement('a-plane');
           btn.setAttribute('width', '0.7');
           btn.setAttribute('height', '0.3');
-          btn.setAttribute('color', '#111111');
-          btn.setAttribute('opacity', '0.85');
+          btn.setAttribute('color', '#E3173E'); // Fondo rojo por defecto
+          btn.setAttribute('opacity', '0.95'); // Más sólido para evitar que el texto se vea opaco
           btn.setAttribute('position', `${posX} ${posY} 0`);
           btn.setAttribute('class', 'menu-btn');
           btn.setAttribute('data-target', key);
           btn.setAttribute('menu-interactivo', '');
           
+          // --- TEXTO NÍTIDO Y AJUSTADO ---
           var txt = document.createElement('a-text');
           txt.setAttribute('value', nombresDestinos[key]);
           txt.setAttribute('align', 'center');
-          txt.setAttribute('width', '2.5');
-          txt.setAttribute('position', '0 0 0.01');
+          txt.setAttribute('color', '#FFFFFF'); // Texto blanco por defecto
+          txt.setAttribute('width', '0.65'); // Ligeramente menor al botón (0.7) para que no se desborde
+          txt.setAttribute('wrap-count', '14'); // Fuerza el ajuste dinámico si la palabra es larga
+          txt.setAttribute('position', '0 0 0.02'); // Un poco más adelante para evitar efecto borroso (Z-fighting)
           btn.appendChild(txt);
 
           menu.appendChild(btn);
@@ -487,8 +500,8 @@
 
       <a-entity id="rig" position="0 1.6 0" rotation="0 0 0">
         
-        <a-entity rotate-with-camera position="0 -1.60 0">
-            <a-circle src="#img-logo" radius="1.0" position="0 0 0" rotation="-90 0 0" material="transparent: true; opacity: 1" shader="flat"></a-circle>
+        <a-entity rotate-with-camera position="0 -2 0">
+            <a-circle src="#img-logo" radius="1.5" position="0 0 0" rotation="-90 0 0" material="transparent: true; opacity: 1" shader="flat"></a-circle>
         </a-entity>
 
         <a-camera id="camara-principal" fov="80" wasd-controls-enabled="false" look-controls="reverseMouseDrag: true">
@@ -502,5 +515,3 @@
     </a-scene>
   </body>
 </html>
-
-
