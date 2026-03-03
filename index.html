@@ -34,43 +34,130 @@
     
     <script>
       const nombresDestinos = {
-        'entrada': 'Entrada Principal', 'entrada2': 'Pórtico Entrada',
-        'selector1': 'Patio Central', 'pasajeServicioAcademico': 'Servicio Académico',
-        'comedor2doPiso': 'Comedor (2do Piso)', 'edificioD': 'Edificio D',
-        'edificioA': 'Edificio A', 'cafeteria': 'Cafetería',
-        'explanadaConvention': 'Explanada Convention', 'pabellonA': 'Pabellón A',
-        'entradaGTH': 'Entrada GTH', 'accesoGTH': 'Acceso GTH',
-        'aulasAyB': 'Aulas A y B', 'salidaAreasVerdes': 'Áreas Verdes',
-        'entradaCapilla': 'Capilla', 'fabLab': 'FabLab'
+        'entrada': 'Entrada Principal',
+        'jardin': 'Jardín',
+        'fuente': 'Fuente',
+        'capilla': 'Capilla',
+        'fablab': 'FabLab',
+        'voley': 'Cancha de Vóley',
+        'basquet': 'Cancha de Básquet',
+        'explanada': 'Explanada Convention',
+        'eventos': 'Eventos',
+        'butacas': 'Butacas',
+        'biblioteca': 'Biblioteca',
+        'danza': 'Danza',
+        'edificioD': 'Edificio D',
+        'edificioA': 'Edificio A',
+        'cafeteria': 'Cafetería'
       };
 
       // =============================================================
-      // BASE DE DATOS DE ESCENAS (Se mantiene igual)
+      // BASE DE DATOS DE ESCENAS (Rutas actualizadas)
       // =============================================================
       const escenas = {
-        'entrada': { imagen: '#img-entrada', rotacionSky: '0 -90 0', flechas: [ { target: 'entrada2', position: '19.82 -1 2.64', rotation: '0 100 0' } ] },
-        'entrada2': { imagen: '#img-entrada2', rotacionSky: '0 -90 0', flechas: [ { target: 'selector1', position: '-15.31 -1 12.86', rotation: '0 -30 0' }, { target: 'entrada', position: '17.26 -1 -10.10', rotation: '0 150 0' } ] },
-        'selector1': { imagen: '#img-selector1', rotacionSky: '0 -90 0', flechas: [ { target: 'pasajeServicioAcademico', position: '19.99 -1 -0.67', rotation: '0 100 0' }, { target: 'entradaGTH', position: '-10.52 -1 -17.01', rotation: '0 -140 0' }, { target: 'entrada2', position: '-13.28 -1 14.96', rotation: '0 -20 0' } ] },
-        'pasajeServicioAcademico': { imagen: '#img-pasajeServicioAcademico', rotacionSky: '0 -90 0', flechas: [ { target: 'comedor2doPiso', position: '14.88 -1 13.36', rotation: '0 85 0' }, { target: 'selector1', position: '6.66 -1 -18.86', rotation: '0 180 0' } ] },
-        'comedor2doPiso': { imagen: '#img-comedor2doPiso', rotacionSky: '0 -90 0', flechas: [ { target: 'edificioD', position: '-19.95 -1 1.47', rotation: '0 -40 0' }, { target: 'pasajeServicioAcademico', position: '19.34 -1 -5.08', rotation: '0 130 0' } ] },
-        'edificioD': { imagen: '#img-edificioD', rotacionSky: '0 -90 0', flechas: [ { target: 'edificioA', position: '-19.21 -1 5.57', rotation: '0 -50 0' }, { target: 'comedor2doPiso', position: '19.94 -1 -1.60', rotation: '0 130 0' } ] },
-        'edificioA': { imagen: '#img-edificioA', rotacionSky: '0 -90 0', flechas: [ { target: 'cafeteria', position: '18.65 -1 7.21', rotation: '0 130 0' }, { target: 'pabellonA', position: '-18.50 -1 7.61', rotation: '0 -45 0' }, { target: 'edificioD', position: '-7.46 -1 -18.56', rotation: '0 220 0' } ] },
-        'cafeteria': { imagen: '#img-cafeteria', rotacionSky: '0 -90 0', flechas: [ { target: 'explanadaConvention', position: '-8.38 -1 -18.16', rotation: '0 -125 0' }, { target: 'edificioA', position: '6.47 -1 18.93', rotation: '0 55 0' } ] },
-        'explanadaConvention': { imagen: '#img-explanadaConvention', rotacionSky: '0 -90 0', flechas: [ { target: 'cafeteria', position: '10.52 -1 -17.01', rotation: '0 180 0' } ] },
-        'pabellonA': { imagen: '#img-pabellonA', rotacionSky: '0 -90 0', flechas: [ { target: 'edificioA', position: '-12.48 -1 15.63', rotation: '0 0 0' } ] },
-        'entradaGTH': { imagen: '#img-entradaGTH', rotacionSky: '0 -90 0', flechas: [ { target: 'accesoGTH', position: '-20.00 -1 0.05', rotation: '0 -65 0' }, { target: 'selector1', position: '-0.05 -1 20.00', rotation: '0 25 0' } ] },
-        'accesoGTH': { imagen: '#img-accesoGTH', rotacionSky: '0 -90 0', flechas: [ { target: 'aulasAyB', position: '3.28 -1 -19.73', rotation: '0 -150 0' }, { target: 'entradaGTH', position: '-1.37 -1 19.95', rotation: '0 35 0' } ] },
-        'aulasAyB': { imagen: '#img-aulasAyB', rotacionSky: '0 -90 0', flechas: [ { target: 'salidaAreasVerdes', position: '-17.38 -1 9.90', rotation: '0 -30 0' }, { target: 'accesoGTH', position: '17.33 -1 -9.97', rotation: '0 140 0' } ] },
-        'salidaAreasVerdes': { imagen: '#img-salidaAreasVerdes', rotacionSky: '0 -90 0', flechas: [ { target: 'entradaCapilla', position: '15.97 -1 -12.04', rotation: '0 150 0' }, { target: 'aulasAyB', position: '10.72 -1 16.89', rotation: '0 50 0' } ] },
-        'entradaCapilla': { imagen: '#img-entradaCapilla', rotacionSky: '0 -90 0', flechas: [ { target: 'salidaAreasVerdes', position: '1.92 -1 -19.91', rotation: '0 180 0' }, { target: 'fabLab', position: '-20 -1 10', rotation: '0 0 0' } ] },
-        'fabLab': { imagen: '#img-fabLab', rotacionSky: '0 -90 0', flechas: [ { target: 'explanadaConvention', position: '2 -1 -10', rotation: '0 180 0' }, { target: 'entradaCapilla', position: '15 -1 -2', rotation: '0 115 0' } ] }
+        'entrada': { 
+            imagen: '#img-entrada', rotacionSky: '0 -90 0', 
+            flechas: [ { target: 'jardin', position: '0 -1 -20', rotation: '0 0 0' } ] 
+        },
+        'jardin': { 
+            imagen: '#img-jardin', rotacionSky: '0 -90 0', 
+            flechas: [ 
+                { target: 'fuente', position: '0 -1 -20', rotation: '0 0 0' }, 
+                { target: 'entrada', position: '0 -1 20', rotation: '0 180 0' } 
+            ] 
+        },
+        'fuente': { 
+            imagen: '#img-fuente', rotacionSky: '0 -90 0', 
+            flechas: [ 
+                { target: 'capilla', position: '-14 -1 -14', rotation: '0 -45 0' }, 
+                { target: 'edificioD', position: '14 -1 -14', rotation: '0 45 0' }, 
+                { target: 'jardin', position: '0 -1 20', rotation: '0 180 0' } 
+            ] 
+        },
+        'capilla': { 
+            imagen: '#img-capilla', rotacionSky: '0 -90 0', 
+            flechas: [ 
+                { target: 'fablab', position: '0 -1 -20', rotation: '0 0 0' }, 
+                { target: 'fuente', position: '0 -1 20', rotation: '0 180 0' } 
+            ] 
+        },
+        'fablab': { 
+            imagen: '#img-fablab', rotacionSky: '0 -90 0', 
+            flechas: [ 
+                { target: 'voley', position: '0 -1 -20', rotation: '0 0 0' }, 
+                { target: 'capilla', position: '0 -1 20', rotation: '0 180 0' } 
+            ] 
+        },
+        'voley': { 
+            imagen: '#img-voley', rotacionSky: '0 -90 0', 
+            flechas: [ 
+                { target: 'basquet', position: '0 -1 -20', rotation: '0 0 0' }, 
+                { target: 'fablab', position: '0 -1 20', rotation: '0 180 0' } 
+            ] 
+        },
+        'basquet': { 
+            imagen: '#img-basquet', rotacionSky: '0 -90 0', 
+            flechas: [ 
+                { target: 'explanada', position: '0 -1 -20', rotation: '0 0 0' }, 
+                { target: 'voley', position: '0 -1 20', rotation: '0 180 0' } 
+            ] 
+        },
+        'explanada': { 
+            imagen: '#img-explanada', rotacionSky: '0 -90 0', 
+            flechas: [ 
+                { target: 'eventos', position: '0 -1 -20', rotation: '0 0 0' }, 
+                { target: 'cafeteria', position: '20 -1 0', rotation: '0 90 0' }, 
+                { target: 'basquet', position: '0 -1 20', rotation: '0 180 0' } 
+            ] 
+        },
+        'eventos': { 
+            imagen: '#img-eventos', rotacionSky: '0 -90 0', 
+            flechas: [ 
+                { target: 'biblioteca', position: '0 -1 -20', rotation: '0 0 0' }, 
+                { target: 'butacas', position: '-20 -1 0', rotation: '0 -90 0' }, 
+                { target: 'danza', position: '20 -1 0', rotation: '0 90 0' }, 
+                { target: 'explanada', position: '0 -1 20', rotation: '0 180 0' } 
+            ] 
+        },
+        'butacas': { 
+            imagen: '#img-butacas', rotacionSky: '0 -90 0', 
+            flechas: [ { target: 'eventos', position: '0 -1 20', rotation: '0 180 0' } ] 
+        },
+        'biblioteca': { 
+            imagen: '#img-biblioteca', rotacionSky: '0 -90 0', 
+            flechas: [ { target: 'eventos', position: '0 -1 20', rotation: '0 180 0' } ] 
+        },
+        'danza': { 
+            imagen: '#img-danza', rotacionSky: '0 -90 0', 
+            flechas: [ { target: 'eventos', position: '0 -1 20', rotation: '0 180 0' } ] 
+        },
+        'edificioD': { 
+            imagen: '#img-edificioD', rotacionSky: '0 -90 0', 
+            flechas: [ 
+                { target: 'edificioA', position: '0 -1 -20', rotation: '0 0 0' }, 
+                { target: 'fuente', position: '0 -1 20', rotation: '0 180 0' } 
+            ] 
+        },
+        'edificioA': { 
+            imagen: '#img-edificioA', rotacionSky: '0 -90 0', 
+            flechas: [ 
+                { target: 'cafeteria', position: '0 -1 -20', rotation: '0 0 0' }, 
+                { target: 'edificioD', position: '0 -1 20', rotation: '0 180 0' } 
+            ] 
+        },
+        'cafeteria': { 
+            imagen: '#img-cafeteria', rotacionSky: '0 -90 0', 
+            flechas: [ 
+                { target: 'explanada', position: '-20 -1 0', rotation: '0 -90 0' }, 
+                { target: 'edificioA', position: '0 -1 20', rotation: '0 180 0' } 
+            ] 
+        }
       };
 
       // =============================================================
       // COMPONENTES LÓGICOS
       // =============================================================
       
-      // Control de clicks y hover en flechas
       AFRAME.registerComponent('tour-logic', {
         init: function () {
           var el = this.el;
@@ -100,14 +187,13 @@
         }
       });
 
-      // Lógica del Menú Holográfico 3D
       AFRAME.registerComponent('menu-interactivo', {
         init: function () {
           var el = this.el;
           el.addEventListener('click', function () {
             var target = el.getAttribute('data-target');
             if (target) {
-              toggleMenu3D(); // Llamamos a la función para que desactive las colisiones y cambie el texto
+              toggleMenu3D(); 
               iniciarTransicion(target, 0);
             }
           });
@@ -122,10 +208,8 @@
         }
       });
 
-      // Escuchar botones de los mandos VR
       AFRAME.registerComponent('vr-controller-listener', {
         init: function () {
-          // El menú se abrirá con el botón "B", "Y", o el de menú del mando VR
           this.el.addEventListener('bbuttondown', toggleMenu3D);
           this.el.addEventListener('ybuttondown', toggleMenu3D);
           this.el.addEventListener('menudown', toggleMenu3D);
@@ -180,15 +264,12 @@
         contenedor.innerHTML = '';
         
         listaFlechas.forEach(flecha => {
-          // Contenedor padre para la rotación y posición
           var wrapper = document.createElement('a-entity');
           wrapper.setAttribute('position', flecha.position);
           wrapper.setAttribute('rotation', `0 ${parseRotation(flecha.rotation)} 0`); 
 
-          // Animación "Idle" de flotación suave en el eje Y (respira)
           wrapper.setAttribute('animation', `property: position; dir: alternate; dur: 2000; easing: easeInOutSine; loop: true; to: ${flecha.position.split(' ')[0]} ${parseFloat(flecha.position.split(' ')[1]) + 0.5} ${flecha.position.split(' ')[2]}`);
 
-          // La entidad del modelo 3D propiamente
           var entidad = document.createElement('a-entity');
           entidad.setAttribute('gltf-model', '#modelo-flecha');
           entidad.setAttribute('scale', '20 20 20'); 
@@ -207,7 +288,6 @@
              });
           });
 
-          // Etiqueta flotante
           var nombreLugar = nombresDestinos[flecha.target] || flecha.target;
           var etiqueta = document.createElement('a-entity');
           etiqueta.classList.add('etiqueta-flotante');
@@ -242,14 +322,10 @@
         return parseFloat(rotString.split(' ')[1]) || 0;
       }
 
-      // =============================================================
-      // CONSTRUCTOR DEL MENÚ 3D HOLOGRÁFICO
-      // =============================================================
       function construirMenu3D() {
         var menu = document.querySelector('#menu-3d');
         var keys = Object.keys(nombresDestinos);
         
-        // Título del menú
         var titulo = document.createElement('a-text');
         titulo.setAttribute('value', 'MAPA VIRTUAL ESAN');
         titulo.setAttribute('align', 'center');
@@ -258,7 +334,6 @@
         titulo.setAttribute('width', '4');
         menu.appendChild(titulo);
 
-        // Cuadrícula de botones (4 columnas x 4 filas)
         let cols = 4;
         let startX = -1.2;
         let startY = 0.8;
@@ -292,14 +367,14 @@
           menu.appendChild(btn);
         });
       }
-	function toggleMenu3D() {
+
+      function toggleMenu3D() {
         var menu = document.querySelector('#menu-3d');
         var cam = document.querySelector('#camara-principal');
         var btn2D = document.getElementById('btn-menu-2d');
         var isVisible = menu.getAttribute('visible');
         
         if (!isVisible) {
-            // 1. Posicionar el menú frente al usuario
             var cam3D = cam.getObject3D('camera');
             if (cam3D) {
                 var posCamara = new THREE.Vector3();
@@ -312,28 +387,21 @@
                 menu.setAttribute('look-at', '#camara-principal');
             }
 
-            // 2. Mostrar el menú y cambiar el texto del botón
             menu.setAttribute('visible', 'true');
             if (btn2D) btn2D.innerText = 'Cerrar Menú de Navegación';
 
-            // 3. Activar colisiones para el rayo láser (Agregar clase 'clickable')
             var botonesMenu = menu.querySelectorAll('.menu-btn');
             botonesMenu.forEach(b => b.classList.add('clickable'));
 
         } else {
-            // 1. Ocultar el menú y restaurar el texto
             menu.setAttribute('visible', 'false');
             if (btn2D) btn2D.innerText = 'Abrir Menú de Navegación';
 
-            // 2. Desactivar colisiones para evitar los GHOST CLICKS
             var botonesMenu = menu.querySelectorAll('.menu-btn');
             botonesMenu.forEach(b => b.classList.remove('clickable'));
         }
       }
 
-      // =============================================================
-      // INICIALIZACIÓN
-      // =============================================================
       window.onload = function() { 
         var datos = escenas['entrada'];
         var cieloFondo = document.querySelector('#cielo-fondo');
@@ -351,7 +419,6 @@
             scene.addEventListener('loaded', ocultarLoader);
         }
 
-        // Lógica del botón 2D para desktop/móvil
         document.getElementById('btn-menu-2d').addEventListener('click', toggleMenu3D);
       };
 
@@ -379,22 +446,23 @@
       raycaster="objects: .clickable">
       
       <a-assets>
-        <img id="img-entrada" src="imagenes/Entrada.jpeg">
-        <img id="img-entrada2" src="imagenes/Entrada2.jpeg">
-        <img id="img-selector1" src="imagenes/Selector1.jpeg">
-        <img id="img-pasajeServicioAcademico" src="imagenes/PasajeServicioAcademico.jpeg">
-        <img id="img-comedor2doPiso" src="imagenes/Comedor2doPiso.jpeg">
-        <img id="img-edificioD" src="imagenes/EdificioD.jpeg">
-        <img id="img-edificioA" src="imagenes/EdificioA.jpeg">
-        <img id="img-cafeteria" src="imagenes/Cafeteria.jpeg">
-        <img id="img-explanadaConvention" src="imagenes/ExplanadaConvention.jpeg">
-        <img id="img-pabellonA" src="imagenes/PabellonA.jpeg">
-        <img id="img-entradaGTH" src="imagenes/EntradaGTH.jpeg">
-        <img id="img-accesoGTH" src="imagenes/AccesoGTH.jpeg">
-        <img id="img-aulasAyB" src="imagenes/AulasAyB.jpeg">
-        <img id="img-salidaAreasVerdes" src="imagenes/SalidaAreasVerdes.jpeg">
-        <img id="img-entradaCapilla" src="imagenes/EntradaCapilla.jpeg">
-        <img id="img-fabLab" src="imagenes/FabLab.jpeg">
+        <img id="img-entrada" src="imagenes/entrada.jpg">
+        <img id="img-jardin" src="imagenes/jardin.jpg">
+        <img id="img-fuente" src="imagenes/fuente.jpg">
+        <img id="img-capilla" src="imagenes/capilla.jpg">
+        <img id="img-fablab" src="imagenes/fabLab.jpeg">
+        <img id="img-voley" src="imagenes/voley.jpg">
+        <img id="img-basquet" src="imagenes/basquet.jpg">
+        <img id="img-explanada" src="imagenes/explanadaconvention.jpeg">
+        <img id="img-eventos" src="imagenes/eventos.jpg">
+        <img id="img-butacas" src="imagenes/butacas actualizado.jpg">
+        <img id="img-biblioteca" src="imagenes/biblioteca.jpg">
+        <img id="img-danza" src="imagenes/danza.jpg">
+        
+        <img id="img-edificioD" src="imagenes/edificioD.jpg">
+        
+        <img id="img-edificioA" src="imagenes/edificioA.jpeg">
+        <img id="img-cafeteria" src="imagenes/cafeteria.jpeg">
 
         <a-asset-item id="modelo-flecha" src="imagenes/Flecha.glb"></a-asset-item>
       </a-assets>
