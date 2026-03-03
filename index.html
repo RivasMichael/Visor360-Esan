@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <title>Tour ESAN 360 - Experiencia VR Premium</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
+
+    <style>
+      /* ESTILOS DEL LOADER Y UI 2D */
+      #pantalla-carga {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: linear-gradient(135deg, #001f3f, #00BFFF);
+        z-index: 9999; display: flex; flex-direction: column;
+        justify-content: center; align-items: center;
+        color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        transition: opacity 1s ease, transform 1s ease;
+      }
+      .oculto { opacity: 0; pointer-events: none; transform: scale(1.1); }
+      
+      /* Botón de UI para PC/Móvil (fuera de VR) */
+      #btn-menu-2d {
+        position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+        padding: 15px 30px; background-color: rgba(0, 0, 0, 0.7); color: white;
+        border: 2px solid #00BFFF; border-radius: 30px; font-size: 16px;
+        font-weight: bold; cursor: pointer; z-index: 100; backdrop-filter: blur(5px);
+        transition: all 0.3s ease; box-shadow: 0 0 15px rgba(0, 191, 255, 0.5);
+      }
+      #btn-menu-2d:hover { background-color: #00BFFF; color: #000; scale: 1.05; }
+      
+      /* Ocultar botón 2D si entra en modo inmersivo VR */
+      .a-enter-vr #btn-menu-2d { display: none; }
+    </style>
+    
+    <script>
+      const nombresDestinos = {
+        'entrada': 'Entrada Principal', 'entrada2': 'Pórtico Entrada',
+        'selector1': 'Patio Central', 'pasajeServicioAcademico': 'Servicio Académico',
+        'comedor2doPiso': 'Comedor (2do Piso)', 'edificioD': 'Edificio D',
+        'edificioA': 'Edificio A', 'cafeteria': 'Cafetería',
+        'explanadaConvention': 'Explanada Convention', 'pabellonA': 'Pabellón A',
+        'entradaGTH': 'Entrada GTH', 'accesoGTH': 'Acceso GTH',
+        'aulasAyB': 'Aulas A y B', 'salidaAreasVerdes': 'Áreas Verdes',
+        'entradaCapilla': 'Capilla', 'fabLab': 'FabLab'
+      };
+
+      // =============================================================
+      // BASE DE DATOS DE ESCENAS (Se mantiene igual)
+      // =============================================================
+      const escenas = {
+        'entrada': { imagen: '#img-entrada', rotacionSky: '0 -90 0', flechas: [ { target: 'entrada2', position: '19.82 -1 2.64', rotation: '0 100 0' } ] },
+        'entrada2': { imagen: '#img-entrada2', rotacionSky: '0 -90 0', flechas: [ { target: 'selector1', position: '-15.31 -1 12.86', rotation: '0 -30 0' }, { target: 'entrada', position: '17.26 -1 -10.10', rotation: '0 150 0' } ] },
+        'selector1': { imagen: '#img-selector1', rotacionSky: '0 -90 0', flechas: [ { target: 'pasajeServicioAcademico', position: '19.99 -1 -0.67', rotation: '0 100 0' }, { target: 'entradaGTH', position: '-10.52 -1 -17.01', rotation: '0 -140 0' }, { target: 'entrada2', position: '-13.28 -1 14.96', rotation: '0 -20 0' } ] },
+        'pasajeServicioAcademico': { imagen: '#img-pasajeServicioAcademico', rotacionSky: '0 -90 0', flechas: [ { target: 'comedor2doPiso', position: '14.88 -1 13.36', rotation: '0 85 0' }, { target: 'selector1', position: '6.66 -1 -18.86', rotation: '0 180 0' } ] },
+        'comedor2doPiso': { imagen: '#img-comedor2doPiso', rotacionSky: '0 -90 0', flechas: [ { target: 'edificioD', position: '-19.95 -1 1.47', rotation: '0 -40 0' }, { target: 'pasajeServicioAcademico', position: '19.34 -1 -5.08', rotation: '0 130 0' } ] },
+        'edificioD': { imagen: '#img-edificioD', rotacionSky: '0 -90 0', flechas: [ { target: 'edificioA', position: '-19.21 -1 5.57', rotation: '0 -50 0' }, { target: 'comedor2doPiso', position: '19.94 -1 -1.60', rotation: '0 130 0' } ] },
+        'edificioA': { imagen: '#img-edificioA', rotacionSky: '0 -90 0', flechas: [ { target: 'cafeteria', position: '18.65 -1 7.21', rotation: '0 130 0' }, { target: 'pabellonA', position: '-18.50 -1 7.61', rotation: '0 -45 0' }, { target: 'edificioD', position: '-7.46 -1 -18.56', rotation: '0 220 0' } ] },
+        'cafeteria': { imagen: '#img-cafeteria', rotacionSky: '0 -90 0', flechas: [ { target: 'explanadaConvention', position: '-8.38 -1 -18.16', rotation: '0 -125 0' }, { target: 'edificioA', position: '6.47 -1 18.93', rotation: '0 55 0' } ] },
+        'explanadaConvention': { imagen: '#img-explanadaConvention', rotacionSky: '0 -90 0', flechas: [ { target: 'cafeteria', position: '10.52 -1 -17.01', rotation: '0 180 0' } ] },
+        'pabellonA': { imagen: '#img-pabellonA', rotacionSky: '0 -90 0', flechas: [ { target: 'edificioA', position: '-12.48 -1 15.63', rotation: '0 0 0' } ] },
+        'entradaGTH': { imagen: '#img-entradaGTH', rotacionSky: '0 -90 0', flechas: [ { target: 'accesoGTH', position: '-20.00 -1 0.05', rotation: '0 -65 0' }, { target: 'selector1', position: '-0.05 -1 20.00', rotation: '0 25 0' } ] },
+        'accesoGTH': { imagen: '#img-accesoGTH', rotacionSky: '0 -90 0', flechas: [ { target: 'aulasAyB', position: '3.28 -1 -19.73', rotation: '0 -150 0' }, { target: 'entradaGTH', position: '-1.37 -1 19.95', rotation: '0 35 0' } ] },
+        'aulasAyB': { imagen: '#img-aulasAyB', rotacionSky: '0 -90 0', flechas: [ { target: 'salidaAreasVerdes', position: '-17.38 -1 9.90', rotation: '0 -30 0' }, { target: 'accesoGTH', position: '17.33 -1 -9.97', rotation: '0 140 0' } ] },
+        'salidaAreasVerdes': { imagen: '#img-salidaAreasVerdes', rotacionSky: '0 -90 0', flechas: [ { target: 'entradaCapilla', position: '15.97 -1 -12.04', rotation: '0 150 0' }, { target: 'aulasAyB', position: '10.72 -1 16.89', rotation: '0 50 0' } ] },
+        'entradaCapilla': { imagen: '#img-entradaCapilla', rotacionSky: '0 -90 0', flechas: [ { target: 'salidaAreasVerdes', position: '1.92 -1 -19.91', rotation: '0 180 0' }, { target: 'fabLab', position: '-20 -1 10', rotation: '0 0 0' } ] },
+        'fabLab': { imagen: '#img-fabLab', rotacionSky: '0 -90 0', flechas: [ { target: 'explanadaConvention', position: '2 -1 -10', rotation: '0 180 0' }, { target: 'entradaCapilla', position: '15 -1 -2', rotation: '0 115 0' } ] }
+      };
+
+      // =============================================================
+      // COMPONENTES LÓGICOS
+      // =============================================================
+      
+      // Control de clicks y hover en flechas
+      AFRAME.registerComponent('tour-logic', {
+        init: function () {
+          var el = this.el;
+          
+          el.addEventListener('click', function (evt) {
+            var target = el.getAttribute('data-target');
+            var rotacionFlecha = el.parentElement.getAttribute('rotation'); 
+            var anguloDestino = rotacionFlecha ? rotacionFlecha.y : 0;
+            if (target && target !== "null") iniciarTransicion(target, anguloDestino);
+          });
+
+          el.addEventListener('mouseenter', function () {
+            el.setAttribute('animation__scale', 'property: scale; to: 24 24 24; dur: 200; easing: easeOutQuad');
+            const mesh = el.getObject3D('mesh');
+            if (mesh) mesh.traverse(node => { if (node.isMesh) node.material.emissive.set('#550000'); });
+            var etiqueta = el.querySelector('.etiqueta-flotante');
+            if (etiqueta) etiqueta.setAttribute('visible', 'true');
+          });
+
+          el.addEventListener('mouseleave', function () {
+            el.setAttribute('animation__scale', 'property: scale; to: 20 20 20; dur: 200; easing: easeOutQuad');
+            const mesh = el.getObject3D('mesh');
+            if (mesh) mesh.traverse(node => { if (node.isMesh) node.material.emissive.set('#000000'); });
+            var etiqueta = el.querySelector('.etiqueta-flotante');
+            if (etiqueta) etiqueta.setAttribute('visible', 'false');
+          });
+        }
+      });
+
+      // Lógica del Menú Holográfico 3D
+      AFRAME.registerComponent('menu-interactivo', {
+        init: function () {
+          var el = this.el;
+          el.addEventListener('click', function () {
+            var target = el.getAttribute('data-target');
+            if (target) {
+              toggleMenu3D(); // Llamamos a la función para que desactive las colisiones y cambie el texto
+              iniciarTransicion(target, 0);
+            }
+          });
+          el.addEventListener('mouseenter', function () {
+            el.setAttribute('color', '#00BFFF');
+            el.setAttribute('scale', '1.05 1.05 1.05');
+          });
+          el.addEventListener('mouseleave', function () {
+            el.setAttribute('color', '#111111');
+            el.setAttribute('scale', '1 1 1');
+          });
+        }
+      });
+
+      // Escuchar botones de los mandos VR
+      AFRAME.registerComponent('vr-controller-listener', {
+        init: function () {
+          // El menú se abrirá con el botón "B", "Y", o el de menú del mando VR
+          this.el.addEventListener('bbuttondown', toggleMenu3D);
+          this.el.addEventListener('ybuttondown', toggleMenu3D);
+          this.el.addEventListener('menudown', toggleMenu3D);
+        }
+      });
+
+      // =============================================================
+      // FUNCIONES PRINCIPALES
+      // =============================================================
+
+      function resetearCamaraInterna() {
+        var cam = document.getElementById('camara-principal');
+        if (!cam) return;
+        var lookControls = cam.components['look-controls'];
+        if (lookControls) {
+          lookControls.yawObject.rotation.y = 0;
+          lookControls.pitchObject.rotation.x = 0;
+        }
+        cam.setAttribute('rotation', '0 0 0');
+      }
+
+      function iniciarTransicion(nombreEscena, anguloDestino) {
+        var datos = escenas[nombreEscena];
+        var contenedorFlechas = document.querySelector('#flechas-container');
+        var cieloFondo = document.querySelector('#cielo-fondo'); 
+        var overlayFade = document.querySelector('#overlay-fade');
+        var duracionFade = 500; 
+
+        contenedorFlechas.setAttribute('visible', 'false');
+
+        // Fade out
+        overlayFade.setAttribute('animation', { property: 'material.opacity', from: 0, to: 1, dur: duracionFade, easing: 'linear' });
+
+        setTimeout(() => {
+            cieloFondo.setAttribute('src', datos.imagen);
+            cieloFondo.setAttribute('rotation', datos.rotacionSky || "0 -90 0");
+            
+            var rig = document.querySelector('#rig');
+            rig.setAttribute('rotation', `0 ${anguloDestino || 0} 0`);
+            resetearCamaraInterna();
+            
+            generarFlechas(datos.flechas);
+            contenedorFlechas.setAttribute('visible', 'true');
+            
+            // Fade in
+            overlayFade.setAttribute('animation', { property: 'material.opacity', from: 1, to: 0, dur: duracionFade, easing: 'linear' });
+        }, duracionFade + 50);
+      }
+
+      function generarFlechas(listaFlechas) {
+        var contenedor = document.querySelector('#flechas-container');
+        contenedor.innerHTML = '';
+        
+        listaFlechas.forEach(flecha => {
+          // Contenedor padre para la rotación y posición
+          var wrapper = document.createElement('a-entity');
+          wrapper.setAttribute('position', flecha.position);
+          wrapper.setAttribute('rotation', `0 ${parseRotation(flecha.rotation)} 0`); 
+
+          // Animación "Idle" de flotación suave en el eje Y (respira)
+          wrapper.setAttribute('animation', `property: position; dir: alternate; dur: 2000; easing: easeInOutSine; loop: true; to: ${flecha.position.split(' ')[0]} ${parseFloat(flecha.position.split(' ')[1]) + 0.5} ${flecha.position.split(' ')[2]}`);
+
+          // La entidad del modelo 3D propiamente
+          var entidad = document.createElement('a-entity');
+          entidad.setAttribute('gltf-model', '#modelo-flecha');
+          entidad.setAttribute('scale', '20 20 20'); 
+          entidad.setAttribute('data-target', flecha.target);
+          entidad.setAttribute('class', 'clickable'); 
+          entidad.setAttribute('tour-logic', ''); 
+          
+          entidad.addEventListener('model-loaded', function(){
+             const obj = entidad.getObject3D('mesh');
+             if (!obj) return;
+             obj.traverse(node => {
+                if (node.isMesh) {
+                   node.material.color.set('#FF0000');
+                   node.material.needsUpdate = true;
+                }
+             });
+          });
+
+          // Etiqueta flotante
+          var nombreLugar = nombresDestinos[flecha.target] || flecha.target;
+          var etiqueta = document.createElement('a-entity');
+          etiqueta.classList.add('etiqueta-flotante');
+          etiqueta.setAttribute('look-at', '#camara-principal');
+          etiqueta.setAttribute('scale', '0.08 0.08 0.08'); 
+          etiqueta.setAttribute('position', '0 0.35 0'); 
+          etiqueta.setAttribute('visible', 'false');
+
+          var fondo = document.createElement('a-plane');
+          fondo.setAttribute('color', '#000000');
+          fondo.setAttribute('opacity', '0.8');
+          fondo.setAttribute('width', (nombreLugar.length * 0.45).toString());
+          fondo.setAttribute('height', '1.8');
+          fondo.setAttribute('position', '0 0 -0.05'); 
+          etiqueta.appendChild(fondo);
+
+          var texto = document.createElement('a-text');
+          texto.setAttribute('value', nombreLugar);
+          texto.setAttribute('align', 'center');
+          texto.setAttribute('color', '#FFFFFF');
+          texto.setAttribute('width', '12'); 
+          etiqueta.appendChild(texto);
+
+          entidad.appendChild(etiqueta);
+          wrapper.appendChild(entidad);
+          contenedor.appendChild(wrapper);
+        });
+      }
+
+      function parseRotation(rotString) {
+        if(!rotString) return 0;
+        return parseFloat(rotString.split(' ')[1]) || 0;
+      }
+
+      // =============================================================
+      // CONSTRUCTOR DEL MENÚ 3D HOLOGRÁFICO
+      // =============================================================
+      function construirMenu3D() {
+        var menu = document.querySelector('#menu-3d');
+        var keys = Object.keys(nombresDestinos);
+        
+        // Título del menú
+        var titulo = document.createElement('a-text');
+        titulo.setAttribute('value', 'MAPA VIRTUAL ESAN');
+        titulo.setAttribute('align', 'center');
+        titulo.setAttribute('color', '#00BFFF');
+        titulo.setAttribute('position', '0 1.2 0');
+        titulo.setAttribute('width', '4');
+        menu.appendChild(titulo);
+
+        // Cuadrícula de botones (4 columnas x 4 filas)
+        let cols = 4;
+        let startX = -1.2;
+        let startY = 0.8;
+        let gapX = 0.8;
+        let gapY = 0.4;
+
+        keys.forEach((key, index) => {
+          let col = index % cols;
+          let row = Math.floor(index / cols);
+          
+          let posX = startX + (col * gapX);
+          let posY = startY - (row * gapY);
+
+          var btn = document.createElement('a-plane');
+          btn.setAttribute('width', '0.7');
+          btn.setAttribute('height', '0.3');
+          btn.setAttribute('color', '#111111');
+          btn.setAttribute('opacity', '0.85');
+          btn.setAttribute('position', `${posX} ${posY} 0`);
+          btn.setAttribute('class', 'menu-btn');
+          btn.setAttribute('data-target', key);
+          btn.setAttribute('menu-interactivo', '');
+          
+          var txt = document.createElement('a-text');
+          txt.setAttribute('value', nombresDestinos[key]);
+          txt.setAttribute('align', 'center');
+          txt.setAttribute('width', '2.5');
+          txt.setAttribute('position', '0 0 0.01');
+          btn.appendChild(txt);
+
+          menu.appendChild(btn);
+        });
+      }
+	function toggleMenu3D() {
+        var menu = document.querySelector('#menu-3d');
+        var cam = document.querySelector('#camara-principal');
+        var btn2D = document.getElementById('btn-menu-2d');
+        var isVisible = menu.getAttribute('visible');
+        
+        if (!isVisible) {
+            // 1. Posicionar el menú frente al usuario
+            var cam3D = cam.getObject3D('camera');
+            if (cam3D) {
+                var posCamara = new THREE.Vector3();
+                cam3D.getWorldPosition(posCamara);
+                var vectorDireccion = new THREE.Vector3();
+                cam3D.getWorldDirection(vectorDireccion);
+                vectorDireccion.multiplyScalar(2.5);
+                var nuevaPosicion = posCamara.clone().add(vectorDireccion);
+                menu.setAttribute('position', nuevaPosicion);
+                menu.setAttribute('look-at', '#camara-principal');
+            }
+
+            // 2. Mostrar el menú y cambiar el texto del botón
+            menu.setAttribute('visible', 'true');
+            if (btn2D) btn2D.innerText = 'Cerrar Menú de Navegación';
+
+            // 3. Activar colisiones para el rayo láser (Agregar clase 'clickable')
+            var botonesMenu = menu.querySelectorAll('.menu-btn');
+            botonesMenu.forEach(b => b.classList.add('clickable'));
+
+        } else {
+            // 1. Ocultar el menú y restaurar el texto
+            menu.setAttribute('visible', 'false');
+            if (btn2D) btn2D.innerText = 'Abrir Menú de Navegación';
+
+            // 2. Desactivar colisiones para evitar los GHOST CLICKS
+            var botonesMenu = menu.querySelectorAll('.menu-btn');
+            botonesMenu.forEach(b => b.classList.remove('clickable'));
+        }
+      }
+
+      // =============================================================
+      // INICIALIZACIÓN
+      // =============================================================
+      window.onload = function() { 
+        var datos = escenas['entrada'];
+        var cieloFondo = document.querySelector('#cielo-fondo');
+        
+        cieloFondo.setAttribute('src', datos.imagen);
+        cieloFondo.setAttribute('rotation', datos.rotacionSky || '0 -90 0');
+        
+        generarFlechas(datos.flechas);
+        construirMenu3D();
+
+        var scene = document.querySelector('a-scene');
+        if (scene.hasLoaded) {
+            ocultarLoader();
+        } else {
+            scene.addEventListener('loaded', ocultarLoader);
+        }
+
+        // Lógica del botón 2D para desktop/móvil
+        document.getElementById('btn-menu-2d').addEventListener('click', toggleMenu3D);
+      };
+
+      function ocultarLoader() {
+        var loader = document.getElementById('pantalla-carga');
+        if (loader) {
+          loader.classList.add('oculto');
+          setTimeout(() => { loader.style.display = 'none'; }, 1000);
+        }
+      }
+    </script>
+  </head>
+  
+  <body>
+    <div id="pantalla-carga">
+        <h1 style="font-size: 3em; margin-bottom: 10px;">Tour ESAN 360</h1>
+        <p style="font-size: 1.2em; letter-spacing: 2px;">INICIANDO REALIDAD VIRTUAL...</p>
+    </div>
+
+    <button id="btn-menu-2d">Abrir Menú de Navegación</button>
+
+    <a-scene 
+      renderer="antialias: true; colorManagement: true; sortObjects: true;"
+      cursor="rayOrigin: mouse" 
+      raycaster="objects: .clickable">
+      
+      <a-assets>
+        <img id="img-entrada" src="imagenes/Entrada.jpeg">
+        <img id="img-entrada2" src="imagenes/Entrada2.jpeg">
+        <img id="img-selector1" src="imagenes/Selector1.jpeg">
+        <img id="img-pasajeServicioAcademico" src="imagenes/PasajeServicioAcademico.jpeg">
+        <img id="img-comedor2doPiso" src="imagenes/Comedor2doPiso.jpeg">
+        <img id="img-edificioD" src="imagenes/EdificioD.jpeg">
+        <img id="img-edificioA" src="imagenes/EdificioA.jpeg">
+        <img id="img-cafeteria" src="imagenes/Cafeteria.jpeg">
+        <img id="img-explanadaConvention" src="imagenes/ExplanadaConvention.jpeg">
+        <img id="img-pabellonA" src="imagenes/PabellonA.jpeg">
+        <img id="img-entradaGTH" src="imagenes/EntradaGTH.jpeg">
+        <img id="img-accesoGTH" src="imagenes/AccesoGTH.jpeg">
+        <img id="img-aulasAyB" src="imagenes/AulasAyB.jpeg">
+        <img id="img-salidaAreasVerdes" src="imagenes/SalidaAreasVerdes.jpeg">
+        <img id="img-entradaCapilla" src="imagenes/EntradaCapilla.jpeg">
+        <img id="img-fabLab" src="imagenes/FabLab.jpeg">
+
+        <a-asset-item id="modelo-flecha" src="imagenes/Flecha.glb"></a-asset-item>
+      </a-assets>
+
+      <a-sky id="cielo-fondo" radius="500" rotation="0 -90 0"></a-sky>
+      <a-light type="ambient" color="#FFF" intensity="1.5"></a-light>
+
+      <a-entity id="flechas-container"></a-entity>
+
+      <a-entity id="menu-3d" visible="false"></a-entity>
+
+      <a-entity id="rig" position="0 1.6 0" rotation="0 0 0">
+        <a-camera id="camara-principal" fov="80" wasd-controls-enabled="false" look-controls="reverseMouseDrag: true">
+            <a-entity id="overlay-fade" geometry="primitive: sphere; radius: 0.1" material="color: #000; transparent: true; opacity: 0; side: back" position="0 0 0"></a-entity>
+        </a-camera>
+
+        <a-entity laser-controls="hand: right" raycaster="objects: .clickable; lineColor: #00BFFF; lineOpacity: 0.8" vr-controller-listener></a-entity>
+        <a-entity laser-controls="hand: left" raycaster="objects: .clickable; lineColor: #00BFFF; lineOpacity: 0.8" vr-controller-listener></a-entity>
+      </a-entity>
+
+    </a-scene>
+  </body>
+</html>
