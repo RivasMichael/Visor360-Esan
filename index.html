@@ -313,11 +313,11 @@
           etiqueta.classList.add('etiqueta-flotante');
           etiqueta.setAttribute('look-at', '#camara-principal');
           etiqueta.setAttribute('scale', '0.08 0.08 0.08'); 
-          etiqueta.setAttribute('position', '0 0.35 0'); 
+          etiqueta.setAttribute('position', '0 0.15 0'); 
           etiqueta.setAttribute('visible', 'false');
 
           var fondo = document.createElement('a-plane');
-          fondo.setAttribute('color', '#000000');
+          fondo.setAttribute('color', '#FFFFFF');
           fondo.setAttribute('opacity', '0.8');
           fondo.setAttribute('width', (nombreLugar.length * 0.45).toString());
           fondo.setAttribute('height', '1.8');
@@ -327,7 +327,7 @@
           var texto = document.createElement('a-text');
           texto.setAttribute('value', nombreLugar);
           texto.setAttribute('align', 'center');
-          texto.setAttribute('color', '#FFFFFF');
+          texto.setAttribute('color', '#E3173E');
           texto.setAttribute('width', '12'); 
           etiqueta.appendChild(texto);
 
@@ -345,12 +345,21 @@
       function construirMenu3D() {
         var menu = document.querySelector('#menu-3d');
         var keys = Object.keys(nombresDestinos);
+
+	// --- NUEVO: PANEL DE CRISTAL OSCURO (FONDO) ---
+        var panelFondo = document.createElement('a-plane');
+        panelFondo.setAttribute('width', '3.5');     // Envuelve las 4 columnas perfectamente
+        panelFondo.setAttribute('height', '2.2');    // Cubre desde el título hasta la última fila
+        panelFondo.setAttribute('color', '#000000'); // Negro puro
+        panelFondo.setAttribute('opacity', '0.65');  // 65% transparente para efecto cristal
+        panelFondo.setAttribute('position', '0 0.35 -0.05'); // Ligeramente atrás (-0.05) para no tapar los botones
+        menu.appendChild(panelFondo);
         
-	// --- TÍTULO ROJO ---
+	// --- TÍTULO BLANCO ---
         var titulo = document.createElement('a-text');
         titulo.setAttribute('value', 'MAPA VIRTUAL ESAN');
         titulo.setAttribute('align', 'center');
-        titulo.setAttribute('color', '#E3173E'); // Nuevo color institucional
+        titulo.setAttribute('color', '#FFFFFF'); // Nuevo color institucional
         titulo.setAttribute('position', '0 1.2 0');
         titulo.setAttribute('width', '4');
         menu.appendChild(titulo);
