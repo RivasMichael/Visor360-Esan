@@ -448,7 +448,8 @@
       cursor="rayOrigin: mouse" 
       raycaster="objects: .clickable">
       
-      <a-assets timeout="60000"> <img id="img-entrada" src="imagenes/entrada.jpg">
+      <a-assets timeout="60000"> 
+        <img id="img-entrada" src="imagenes/entrada.jpg">
         <img id="img-jardin" src="imagenes/jardin.jpg">
         <img id="img-fuente" src="imagenes/fuente.jpg">
         <img id="img-capilla" src="imagenes/capilla.jpg">
@@ -481,7 +482,6 @@
         </a-entity>
 
         <a-camera id="camara-principal" fov="80" wasd-controls-enabled="false" look-controls="reverseMouseDrag: true">
-            <a-cursor color="#00BFFF" scale="1.5 1.5 1.5"></a-cursor>
             
             <a-entity id="overlay-fade" geometry="primitive: sphere; radius: 0.1" material="color: #000; transparent: true; opacity: 0; side: back" position="0 0 0"></a-entity>
         </a-camera>
