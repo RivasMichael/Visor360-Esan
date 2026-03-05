@@ -27,9 +27,21 @@
         transition: all 0.3s ease; box-shadow: 0 0 15px rgba(0, 191, 255, 0.5);
       }
       #btn-menu-2d:hover { background-color: #E3173E; color: #000; scale: 1.05; }
+
+      /* Botón temporal de Captura (Desarrollo) - COMENTADO */
+      /*
+      #btn-capturar {
+        position: fixed; top: 20px; left: 50%; transform: translateX(-50%); 
+        padding: 10px 20px; background-color: #E3173E; color: white; 
+        border: 2px solid white; border-radius: 10px; font-weight: bold; 
+        cursor: pointer; z-index: 100; box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      }
+      #btn-capturar:hover { background-color: #00BFFF; }
+      */
       
-      /* Ocultar botón 2D si entra en modo inmersivo VR */
+      /* Ocultar botones 2D si entra en modo inmersivo VR */
       .a-enter-vr #btn-menu-2d { display: none; }
+      /* .a-enter-vr #btn-capturar { display: none; } */
     </style>
     
     <script>
@@ -52,7 +64,7 @@
       };
 
       // =============================================================
-      // COMPONENTE: LOGO SUELO (Tomado de tu proyecto FabLab)
+      // COMPONENTE: LOGO SUELO 
       // =============================================================
       AFRAME.registerComponent('rotate-with-camera', {
         tick: function () {
@@ -67,118 +79,33 @@
       // BASE DE DATOS DE ESCENAS
       // =============================================================
       const escenas = {
-        'entrada': { 
-            imagen: '#img-entrada', rotacionSky: '0 -90 0', 
-            flechas: [ { target: 'jardin', position: '0 -1 -20', rotation: '0 0 0' } ] 
-        },
-        'jardin': { 
-            imagen: '#img-jardin', rotacionSky: '0 -90 0', 
-            flechas: [ 
-                { target: 'fuente', position: '0 -1 -20', rotation: '0 0 0' }, 
-                { target: 'entrada', position: '0 -1 20', rotation: '0 180 0' } 
-            ] 
-        },
-        'fuente': { 
-            imagen: '#img-fuente', rotacionSky: '0 -90 0', 
-            flechas: [ 
-                { target: 'capilla', position: '-14 -1 -14', rotation: '0 -45 0' }, 
-                { target: 'edificioD', position: '14 -1 -14', rotation: '0 45 0' }, 
-                { target: 'jardin', position: '0 -1 20', rotation: '0 180 0' } 
-            ] 
-        },
-        'capilla': { 
-            imagen: '#img-capilla', rotacionSky: '0 -90 0', 
-            flechas: [ 
-                { target: 'fablab', position: '0 -1 -20', rotation: '0 0 0' }, 
-                { target: 'fuente', position: '0 -1 20', rotation: '0 180 0' } 
-            ] 
-        },
-        'fablab': { 
-            imagen: '#img-fablab', rotacionSky: '0 -90 0', 
-            flechas: [ 
-                { target: 'voley', position: '0 -1 -20', rotation: '0 0 0' }, 
-                { target: 'capilla', position: '0 -1 20', rotation: '0 180 0' } 
-            ] 
-        },
-        'voley': { 
-            imagen: '#img-voley', rotacionSky: '0 -90 0', 
-            flechas: [ 
-                { target: 'basquet', position: '0 -1 -20', rotation: '0 0 0' }, 
-                { target: 'fablab', position: '0 -1 20', rotation: '0 180 0' } 
-            ] 
-        },
-        'basquet': { 
-            imagen: '#img-basquet', rotacionSky: '0 -90 0', 
-            flechas: [ 
-                { target: 'explanada', position: '0 -1 -20', rotation: '0 0 0' }, 
-                { target: 'voley', position: '0 -1 20', rotation: '0 180 0' } 
-            ] 
-        },
-        'explanada': { 
-            imagen: '#img-explanada', rotacionSky: '0 -90 0', 
-            flechas: [ 
-                { target: 'eventos', position: '0 -1 -20', rotation: '0 0 0' }, 
-                { target: 'cafeteria', position: '20 -1 0', rotation: '0 90 0' }, 
-                { target: 'basquet', position: '0 -1 20', rotation: '0 180 0' } 
-            ] 
-        },
-        'eventos': { 
-            imagen: '#img-eventos', rotacionSky: '0 -90 0', 
-            flechas: [ 
-                { target: 'biblioteca', position: '0 -1 -20', rotation: '0 0 0' }, 
-                { target: 'butacas', position: '-20 -1 0', rotation: '0 -90 0' }, 
-                { target: 'danza', position: '20 -1 0', rotation: '0 90 0' }, 
-                { target: 'explanada', position: '0 -1 20', rotation: '0 180 0' } 
-            ] 
-        },
-        'butacas': { 
-            imagen: '#img-butacas', rotacionSky: '0 -90 0', 
-            flechas: [ { target: 'eventos', position: '0 -1 20', rotation: '0 180 0' } ] 
-        },
-        'biblioteca': { 
-            imagen: '#img-biblioteca', rotacionSky: '0 -90 0', 
-            flechas: [ { target: 'eventos', position: '0 -1 20', rotation: '0 180 0' } ] 
-        },
-        'danza': { 
-            imagen: '#img-danza', rotacionSky: '0 -90 0', 
-            flechas: [ { target: 'eventos', position: '0 -1 20', rotation: '0 180 0' } ] 
-        },
-        'edificioD': { 
-            imagen: '#img-edificioD', rotacionSky: '0 -90 0', 
-            flechas: [ 
-                { target: 'edificioA', position: '0 -1 -20', rotation: '0 0 0' }, 
-                { target: 'fuente', position: '0 -1 20', rotation: '0 180 0' } 
-            ] 
-        },
-        'edificioA': { 
-            imagen: '#img-edificioA', rotacionSky: '0 -90 0', 
-            flechas: [ 
-                { target: 'cafeteria', position: '0 -1 -20', rotation: '0 0 0' }, 
-                { target: 'edificioD', position: '0 -1 20', rotation: '0 180 0' } 
-            ] 
-        },
-        'cafeteria': { 
-            imagen: '#img-cafeteria', rotacionSky: '0 -90 0', 
-            flechas: [ 
-                { target: 'explanada', position: '-20 -1 0', rotation: '0 -90 0' }, 
-                { target: 'edificioA', position: '0 -1 20', rotation: '0 180 0' } 
-            ] 
-        }
+        'entrada': { imagen: '#img-entrada', rotacionSky: '0 90 0', flechas: [ { target: 'jardin', position: '-0.51 -1 -18', rotation: '0 -155 0' } ] },
+        'jardin': { imagen: '#img-jardin', rotacionSky: '0 -90 0', flechas: [ { target: 'fuente', position: '-19.68 -1 -3.55', rotation: '0 -70 0' }, { target: 'entrada', position: '13.95 -1 -14.33', rotation: '0 150 0' } ] },
+        'fuente': { imagen: '#img-fuente', rotacionSky: '0 50.5 0', flechas: [ { target: 'capilla', position: '-19.77 -1 3.67', rotation: '0 -20 0' }, { target: 'edificioD', position: '20 -1 0.36', rotation: '0 120 0' }, { target: 'jardin', position: '14 -1 8', rotation: '0 70 0' } ] },
+        'capilla': { imagen: '#img-capilla', rotacionSky: '0 -90 0', flechas: [ { target: 'fablab', position: '19.73 -1 3.25', rotation: '0 110 0' }, { target: 'fuente', position: '-19.29 -1 5.26', rotation: '0 -75 0' } ] },
+        'fablab': { imagen: '#img-fablab', rotacionSky: '0 -90 0', flechas: [ { target: 'voley', position: '3.5 -1 -12.50', rotation: '0 180 0' }, { target: 'capilla', position: '19.86 -1 -2.37', rotation: '0 120 0' } ] },
+        'voley': { imagen: '#img-voley', rotacionSky: '0 -90 0', flechas: [ { target: 'basquet', position: '15 -1 -25', rotation: '0 160 0' }, { target: 'fablab', position: '14.51 -1 25.61', rotation: '0 50 0' } ] },
+        'basquet': { imagen: '#img-basquet', rotacionSky: '0 -90 0', flechas: [ { target: 'explanada', position: '20 -1 -25', rotation: '0 140 0' }, { target: 'voley', position: '-20 -1 25', rotation: '0 -45 0' } ] },
+        'explanada': { imagen: '#img-explanada', rotacionSky: '0 -90 0', flechas: [ { target: 'eventos', position: '-23 -1 2', rotation: '0 -60 0' }, { target: 'cafeteria', position: '10 -1 -18', rotation: '0 156 0' }, { target: 'basquet', position: '-13 -1 15', rotation: '0 -20 0' } ] },
+        'eventos': { imagen: '#img-eventos', rotacionSky: '0 -90 0', flechas: [ { target: 'biblioteca', position: '1.15 -1 20', rotation: '0 50 0' }, { target: 'butacas', position: '20 -1 3.43', rotation: '0 110 0' }, { target: 'danza', position: '5.21 -1 19.31', rotation: '0 50 0' }, { target: 'explanada', position: '16.59 -1 -11', rotation: '0 150 0' } ] },
+        'butacas': { imagen: '#img-butacas', rotacionSky: '0 -90 0', flechas: [ { target: 'eventos', position: '-8 5 25', rotation: '0 5 0' } ] },
+        'biblioteca': { imagen: '#img-biblioteca', rotacionSky: '0 -90 0', flechas: [ { target: 'eventos', position: '17 -1 20', rotation: '0 40 0' } ] },
+        'danza': { imagen: '#img-danza', rotacionSky: '0 -90 0', flechas: [ { target: 'eventos', position: '7 -1 -25', rotation: '0 180 0' } ] },
+        'edificioD': { imagen: '#img-edificioD', rotacionSky: '0 -90 0', flechas: [ { target: 'edificioA', position: '-17.24 -1 10.13', rotation: '0 -70 0' }, { target: 'fuente', position: '-7 -1 18', rotation: '0 20 0' } ] },
+        'edificioA': { imagen: '#img-edificioA', rotacionSky: '0 -90 0', flechas: [ { target: 'cafeteria', position: '17 -1 9', rotation: '0 120 0' }, { target: 'edificioD', position: '-9 -1 -20', rotation: '0 -140 0' } ] },
+        'cafeteria': { imagen: '#img-cafeteria', rotacionSky: '0 -90 0', flechas: [ { target: 'explanada', position: '-9 -1 -17.35', rotation: '0 -140 0' }, { target: 'edificioA', position: '4.67 -1 20', rotation: '0 40 0' } ] }
       };
 
       // =============================================================
       // COMPONENTES LÓGICOS
       // =============================================================
-      
       AFRAME.registerComponent('tour-logic', {
         init: function () {
           var el = this.el;
           
           el.addEventListener('click', function (evt) {
             var target = el.getAttribute('data-target');
-            var rotacionFlecha = el.parentElement.getAttribute('rotation'); 
-            var anguloDestino = rotacionFlecha ? rotacionFlecha.y : 0;
-            if (target && target !== "null") iniciarTransicion(target, anguloDestino);
+            if (target && target !== "null") iniciarTransicion(target);
           });
 
           el.addEventListener('mouseenter', function () {
@@ -206,11 +133,10 @@
             var target = el.getAttribute('data-target');
             if (target) {
               toggleMenu3D(); 
-              iniciarTransicion(target, 0);
+              iniciarTransicion(target);
             }
           });
 
-	  // Efecto Hover: Fondo blanco, Letras rojas
           el.addEventListener('mouseenter', function () {
             el.setAttribute('color', '#FFFFFF');
             el.setAttribute('scale', '1.05 1.05 1.05');
@@ -218,7 +144,6 @@
             if(textoAsociado) textoAsociado.setAttribute('color', '#E3173E');
           });
           
-          // Estado Base: Fondo rojo, Letras blancas
           el.addEventListener('mouseleave', function () {
             el.setAttribute('color', '#E3173E');
             el.setAttribute('scale', '1 1 1');
@@ -230,28 +155,16 @@
 
       AFRAME.registerComponent('vr-controller-listener', {
         init: function () {
-          this.el.addEventListener('bbuttondown', toggleMenu3D);
-          this.el.addEventListener('ybuttondown', toggleMenu3D);
-          this.el.addEventListener('menudown', toggleMenu3D);
+          this.el.addEventListener('abuttondown', toggleMenu3D);
+          this.el.addEventListener('xbuttondown', toggleMenu3D);
         }
       });
 
       // =============================================================
       // FUNCIONES PRINCIPALES
       // =============================================================
-
-      function resetearCamaraInterna() {
-        var cam = document.getElementById('camara-principal');
-        if (!cam) return;
-        var lookControls = cam.components['look-controls'];
-        if (lookControls) {
-          lookControls.yawObject.rotation.y = 0;
-          lookControls.pitchObject.rotation.x = 0;
-        }
-        cam.setAttribute('rotation', '0 0 0');
-      }
-
-      function iniciarTransicion(nombreEscena, anguloDestino) {
+      
+      function iniciarTransicion(nombreEscena) {
         var datos = escenas[nombreEscena];
         var contenedorFlechas = document.querySelector('#flechas-container');
         var cieloFondo = document.querySelector('#cielo-fondo'); 
@@ -259,23 +172,21 @@
         var duracionFade = 500; 
 
         contenedorFlechas.setAttribute('visible', 'false');
-
-        // Fade out
         overlayFade.setAttribute('animation', { property: 'material.opacity', from: 0, to: 1, dur: duracionFade, easing: 'linear' });
 
         setTimeout(() => {
             cieloFondo.setAttribute('src', datos.imagen);
             cieloFondo.setAttribute('rotation', datos.rotacionSky || "0 -90 0");
-            
-            var rig = document.querySelector('#rig');
-            rig.setAttribute('rotation', `0 ${anguloDestino || 0} 0`);
-            resetearCamaraInterna();
-            
             generarFlechas(datos.flechas);
-            contenedorFlechas.setAttribute('visible', 'true');
             
-            // Fade in
-            overlayFade.setAttribute('animation', { property: 'material.opacity', from: 1, to: 0, dur: duracionFade, easing: 'linear' });
+            // Esperar evento 'materialtextureloaded' (GPU lista) para revelar la escena
+            function revelarEscena() {
+                cieloFondo.removeEventListener('materialtextureloaded', revelarEscena);
+                contenedorFlechas.setAttribute('visible', 'true');
+                overlayFade.setAttribute('animation', { property: 'material.opacity', from: 1, to: 0, dur: duracionFade, easing: 'linear' });
+            }
+
+            cieloFondo.addEventListener('materialtextureloaded', revelarEscena);
         }, duracionFade + 50);
       }
 
@@ -313,22 +224,23 @@
           etiqueta.classList.add('etiqueta-flotante');
           etiqueta.setAttribute('look-at', '#camara-principal');
           etiqueta.setAttribute('scale', '0.08 0.08 0.08'); 
-          etiqueta.setAttribute('position', '0 0.15 0'); 
+          etiqueta.setAttribute('position', '0 0.12 0'); 
           etiqueta.setAttribute('visible', 'false');
 
           var fondo = document.createElement('a-plane');
-          fondo.setAttribute('color', '#FFFFFF');
-          fondo.setAttribute('opacity', '0.8');
-          fondo.setAttribute('width', (nombreLugar.length * 0.45).toString());
-          fondo.setAttribute('height', '1.8');
+          fondo.setAttribute('color', '#FFFFFF'); 
+          fondo.setAttribute('opacity', '0.9');
+          fondo.setAttribute('width', (nombreLugar.length * 0.35).toString());
+          fondo.setAttribute('height', '0.7'); 
           fondo.setAttribute('position', '0 0 -0.05'); 
           etiqueta.appendChild(fondo);
 
           var texto = document.createElement('a-text');
           texto.setAttribute('value', nombreLugar);
           texto.setAttribute('align', 'center');
-          texto.setAttribute('color', '#E3173E');
-          texto.setAttribute('width', '12'); 
+          texto.setAttribute('color', '#E3173E'); 
+          texto.setAttribute('width', '5'); 
+          texto.setAttribute('position', '0 0 0.05'); 
           etiqueta.appendChild(texto);
 
           entidad.appendChild(etiqueta);
@@ -346,20 +258,18 @@
         var menu = document.querySelector('#menu-3d');
         var keys = Object.keys(nombresDestinos);
 
-	// --- NUEVO: PANEL DE CRISTAL OSCURO (FONDO) ---
         var panelFondo = document.createElement('a-plane');
-        panelFondo.setAttribute('width', '3.5');     // Envuelve las 4 columnas perfectamente
-        panelFondo.setAttribute('height', '2.2');    // Cubre desde el título hasta la última fila
-        panelFondo.setAttribute('color', '#000000'); // Negro puro
-        panelFondo.setAttribute('opacity', '0.65');  // 65% transparente para efecto cristal
-        panelFondo.setAttribute('position', '0 0.35 -0.05'); // Ligeramente atrás (-0.05) para no tapar los botones
+        panelFondo.setAttribute('width', '3.5');     
+        panelFondo.setAttribute('height', '2.6'); 
+        panelFondo.setAttribute('color', '#000000'); 
+        panelFondo.setAttribute('opacity', '0.65');  
+        panelFondo.setAttribute('position', '0 0.15 -0.05'); 
         menu.appendChild(panelFondo);
         
-	// --- TÍTULO BLANCO ---
         var titulo = document.createElement('a-text');
         titulo.setAttribute('value', 'MAPA VIRTUAL ESAN');
         titulo.setAttribute('align', 'center');
-        titulo.setAttribute('color', '#FFFFFF'); // Nuevo color institucional
+        titulo.setAttribute('color', '#FFFFFF'); 
         titulo.setAttribute('position', '0 1.2 0');
         titulo.setAttribute('width', '4');
         menu.appendChild(titulo);
@@ -373,33 +283,65 @@
         keys.forEach((key, index) => {
           let col = index % cols;
           let row = Math.floor(index / cols);
-          
           let posX = startX + (col * gapX);
           let posY = startY - (row * gapY);
 
-	  // --- BOTÓN BASE ROJO ---
           var btn = document.createElement('a-plane');
           btn.setAttribute('width', '0.7');
           btn.setAttribute('height', '0.3');
-          btn.setAttribute('color', '#E3173E'); // Fondo rojo por defecto
-          btn.setAttribute('opacity', '0.95'); // Más sólido para evitar que el texto se vea opaco
+          btn.setAttribute('color', '#E3173E'); 
+          btn.setAttribute('opacity', '0.95'); 
           btn.setAttribute('position', `${posX} ${posY} 0`);
           btn.setAttribute('class', 'menu-btn');
           btn.setAttribute('data-target', key);
           btn.setAttribute('menu-interactivo', '');
           
-          // --- TEXTO NÍTIDO Y AJUSTADO ---
           var txt = document.createElement('a-text');
           txt.setAttribute('value', nombresDestinos[key]);
           txt.setAttribute('align', 'center');
-          txt.setAttribute('color', '#FFFFFF'); // Texto blanco por defecto
-          txt.setAttribute('width', '0.65'); // Ligeramente menor al botón (0.7) para que no se desborde
-          txt.setAttribute('wrap-count', '14'); // Fuerza el ajuste dinámico si la palabra es larga
-          txt.setAttribute('position', '0 0 0.02'); // Un poco más adelante para evitar efecto borroso (Z-fighting)
+          txt.setAttribute('color', '#FFFFFF'); 
+          txt.setAttribute('width', '0.65'); 
+          txt.setAttribute('wrap-count', '14'); 
+          txt.setAttribute('position', '0 0 0.02'); 
           btn.appendChild(txt);
 
           menu.appendChild(btn);
         });
+
+        var btnEnlace = document.createElement('a-plane');
+        btnEnlace.setAttribute('width', '2.6'); 
+        btnEnlace.setAttribute('height', '0.25'); 
+        btnEnlace.setAttribute('color', '#222222'); 
+        btnEnlace.setAttribute('opacity', '0.95');
+        btnEnlace.setAttribute('position', '0 -1.0 0'); 
+        btnEnlace.setAttribute('class', 'menu-btn'); 
+        
+        btnEnlace.addEventListener('click', function () {
+            window.location.href = 'https://esanlabs.github.io/Doble-videos-Esan/';
+        });
+
+        btnEnlace.addEventListener('mouseenter', function () {
+            btnEnlace.setAttribute('color', '#FFFFFF');
+            txtEnlace.setAttribute('color', '#E3173E');
+            btnEnlace.setAttribute('scale', '1.05 1.05 1.05');
+        });
+        
+        btnEnlace.addEventListener('mouseleave', function () {
+            btnEnlace.setAttribute('color', '#222222');
+            txtEnlace.setAttribute('color', '#FFFFFF');
+            btnEnlace.setAttribute('scale', '1 1 1');
+        });
+
+        var txtEnlace = document.createElement('a-text');
+        txtEnlace.setAttribute('value', 'Regresar a la trayectoria historica');
+        txtEnlace.setAttribute('align', 'center');
+        txtEnlace.setAttribute('color', '#FFFFFF'); 
+        txtEnlace.setAttribute('width', '2.4'); 
+        txtEnlace.setAttribute('wrap-count', '35'); 
+        txtEnlace.setAttribute('position', '0 0 0.02'); 
+        btnEnlace.appendChild(txtEnlace);
+
+        menu.appendChild(btnEnlace);
       }
 
       function toggleMenu3D() {
@@ -446,14 +388,41 @@
         generarFlechas(datos.flechas);
         construirMenu3D();
 
-        var scene = document.querySelector('a-scene');
-        if (scene.hasLoaded) {
-            ocultarLoader();
-        } else {
-            scene.addEventListener('loaded', ocultarLoader);
-        }
+        // Esperar explícitamente a que la textura inicial se cargue en GPU
+        cieloFondo.addEventListener('materialtextureloaded', function onFirstTexture() {
+            cieloFondo.removeEventListener('materialtextureloaded', onFirstTexture);
+            ocultarLoader(); // ¡Solo desaparecerá el fondo rojo cuando todo esté listo!
+        });
 
         document.getElementById('btn-menu-2d').addEventListener('click', toggleMenu3D);
+
+        // =============================================================
+        // HERRAMIENTA DE CAPTURA (COMENTADA)
+        // =============================================================
+        /*
+        document.getElementById('btn-capturar').addEventListener('click', function() {
+            var cam = document.querySelector('#camara-principal').getObject3D('camera');
+            if (!cam) return;
+            var vectorDireccion = new THREE.Vector3();
+            cam.getWorldDirection(vectorDireccion);
+            vectorDireccion.y = 0; 
+            vectorDireccion.normalize();
+            vectorDireccion.multiplyScalar(20); 
+            var posX = vectorDireccion.x.toFixed(2);
+            var posY = -1.00; 
+            var posZ = vectorDireccion.z.toFixed(2);
+            var anguloRad = Math.atan2(vectorDireccion.x, vectorDireccion.z);
+            var rotY = Math.round(anguloRad * (180 / Math.PI));
+            var codigoGenerado = `{ target: 'DESTINO', position: '${posX} ${posY} ${posZ}', rotation: '0 ${rotY} 0' },`;
+            
+            navigator.clipboard.writeText(codigoGenerado).then(function() {
+                alert("✅ ¡Copiado al portapapeles!\n\n" + codigoGenerado);
+            }).catch(function() {
+                alert("Copia este código:\n\n" + codigoGenerado);
+            });
+            console.log(codigoGenerado);
+        });
+        */
       };
 
       function ocultarLoader() {
@@ -473,14 +442,13 @@
     </div>
 
     <button id="btn-menu-2d">Abrir Menú de Navegación</button>
-
+    
     <a-scene 
       renderer="antialias: true; colorManagement: true; sortObjects: true;"
       cursor="rayOrigin: mouse" 
       raycaster="objects: .clickable">
       
-      <a-assets>
-        <img id="img-entrada" src="imagenes/entrada.jpg">
+      <a-assets timeout="60000"> <img id="img-entrada" src="imagenes/entrada.jpg">
         <img id="img-jardin" src="imagenes/jardin.jpg">
         <img id="img-fuente" src="imagenes/fuente.jpg">
         <img id="img-capilla" src="imagenes/capilla.jpg">
@@ -492,7 +460,7 @@
         <img id="img-butacas" src="imagenes/butacas actualizado.jpg">
         <img id="img-biblioteca" src="imagenes/biblioteca.jpg">
         <img id="img-danza" src="imagenes/danza.jpg">
-        <img id="img-edificioD" src="imagenes/edificioD.jpg">
+        <img id="img-edificioD" src="imagenes/edificioD.jpeg">
         <img id="img-edificioA" src="imagenes/edificioA.jpeg">
         <img id="img-cafeteria" src="imagenes/cafeteria.jpeg">
         <img id="img-logo" src="imagenes/esan.png">
@@ -504,7 +472,6 @@
       <a-light type="ambient" color="#FFF" intensity="1.5"></a-light>
 
       <a-entity id="flechas-container"></a-entity>
-
       <a-entity id="menu-3d" visible="false"></a-entity>
 
       <a-entity id="rig" position="0 1.6 0" rotation="0 0 0">
@@ -514,6 +481,8 @@
         </a-entity>
 
         <a-camera id="camara-principal" fov="80" wasd-controls-enabled="false" look-controls="reverseMouseDrag: true">
+            <a-cursor color="#00BFFF" scale="1.5 1.5 1.5"></a-cursor>
+            
             <a-entity id="overlay-fade" geometry="primitive: sphere; radius: 0.1" material="color: #000; transparent: true; opacity: 0; side: back" position="0 0 0"></a-entity>
         </a-camera>
 
