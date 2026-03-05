@@ -5,9 +5,9 @@
     <title>Tour ESAN 360 - Experiencia VR Premium</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
 
     <style>
-      /* ESTILOS DEL LOADER Y UI 2D */
       #pantalla-carga {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: linear-gradient(135deg, #E3173E, #E3173E);
@@ -18,7 +18,6 @@
       }
       .oculto { opacity: 0; pointer-events: none; transform: scale(1.1); }
       
-      /* Botón de UI para PC/Móvil (fuera de VR) */
       #btn-menu-2d {
         position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
         padding: 15px 30px; background-color: rgba(0, 0, 0, 0.7); color: white;
@@ -27,45 +26,19 @@
         transition: all 0.3s ease; box-shadow: 0 0 15px rgba(0, 191, 255, 0.5);
       }
       #btn-menu-2d:hover { background-color: #E3173E; color: #000; scale: 1.05; }
-
-      /* Botón temporal de Captura (Desarrollo) - COMENTADO */
-      /*
-      #btn-capturar {
-        position: fixed; top: 20px; left: 50%; transform: translateX(-50%); 
-        padding: 10px 20px; background-color: #E3173E; color: white; 
-        border: 2px solid white; border-radius: 10px; font-weight: bold; 
-        cursor: pointer; z-index: 100; box-shadow: 0 0 10px rgba(0,0,0,0.5);
-      }
-      #btn-capturar:hover { background-color: #00BFFF; }
-      */
-      
-      /* Ocultar botones 2D si entra en modo inmersivo VR */
       .a-enter-vr #btn-menu-2d { display: none; }
-      /* .a-enter-vr #btn-capturar { display: none; } */
     </style>
     
     <script>
       const nombresDestinos = {
-        'entrada': 'Entrada Principal',
-        'jardin': 'Jardin',
-        'fuente': 'Fuente',
-        'capilla': 'Capilla',
-        'fablab': 'FabLab',
-        'voley': 'Cancha de\nVoley',
-        'basquet': 'Cancha de\nBasquet',
-        'explanada': 'Explanada\nConvention',
-        'eventos': 'Eventos',
-        'butacas': 'Butacas',
-        'biblioteca': 'Biblioteca',
-        'danza': 'Danza',
-        'edificioD': 'Edificio D',
-        'edificioA': 'Edificio A',
+        'entrada': 'Entrada Principal', 'jardin': 'Jardin', 'fuente': 'Fuente',
+        'capilla': 'Capilla', 'fablab': 'FabLab', 'voley': 'Cancha de\nVoley',
+        'basquet': 'Cancha de\nBasquet', 'explanada': 'Explanada\nConvention',
+        'eventos': 'Eventos', 'butacas': 'Butacas', 'biblioteca': 'Biblioteca',
+        'danza': 'Danza', 'edificioD': 'Edificio D', 'edificioA': 'Edificio A',
         'cafeteria': 'Cafeteria'
       };
 
-      // =============================================================
-      // COMPONENTE: LOGO SUELO 
-      // =============================================================
       AFRAME.registerComponent('rotate-with-camera', {
         tick: function () {
           var camera = this.el.sceneEl.camera; 
@@ -76,8 +49,25 @@
       });
 
       // =============================================================
-      // BASE DE DATOS DE ESCENAS
+      // COMPONENTE FÍSICO: LANZAMIENTO REALISTA
       // =============================================================
+      AFRAME.registerComponent('impulso-fisico', {
+        init: function () {
+          var el = this.el;
+          
+          el.addEventListener('click', function () {
+            // Aplicamos un impulso físico (fuerza) a la pelota. 
+            // Los valores (x, y, z) representan la dirección y fuerza del tiro.
+            // Z negativo empuja hacia adelante, Y positivo hacia arriba.
+            var fuerza = new CANNON.Vec3(0, 7, -10); 
+            var puntoContacto = new CANNON.Vec3(0, 0, 0); // Centro de la pelota
+            
+            // Accedemos al cuerpo físico nativo (Cannon.js) de la entidad
+            el.components['dynamic-body'].body.applyImpulse(fuerza, puntoContacto);
+          });
+        }
+      });
+
       const escenas = {
         'entrada': { imagen: '#img-entrada', rotacionSky: '0 90 0', flechas: [ { target: 'jardin', position: '-0.51 -1 -18', rotation: '0 -155 0' } ] },
         'jardin': { imagen: '#img-jardin', rotacionSky: '0 -90 0', flechas: [ { target: 'fuente', position: '-19.68 -1 -3.55', rotation: '0 -70 0' }, { target: 'entrada', position: '13.95 -1 -14.33', rotation: '0 150 0' } ] },
@@ -96,18 +86,13 @@
         'cafeteria': { imagen: '#img-cafeteria', rotacionSky: '0 -90 0', flechas: [ { target: 'explanada', position: '-9 -1 -17.35', rotation: '0 -140 0' }, { target: 'edificioA', position: '4.67 -1 20', rotation: '0 40 0' } ] }
       };
 
-      // =============================================================
-      // COMPONENTES LÓGICOS
-      // =============================================================
       AFRAME.registerComponent('tour-logic', {
         init: function () {
           var el = this.el;
-          
           el.addEventListener('click', function (evt) {
             var target = el.getAttribute('data-target');
             if (target && target !== "null") iniciarTransicion(target);
           });
-
           el.addEventListener('mouseenter', function () {
             el.setAttribute('animation__scale', 'property: scale; to: 24 24 24; dur: 200; easing: easeOutQuad');
             const mesh = el.getObject3D('mesh');
@@ -115,7 +100,6 @@
             var etiqueta = el.querySelector('.etiqueta-flotante');
             if (etiqueta) etiqueta.setAttribute('visible', 'true');
           });
-
           el.addEventListener('mouseleave', function () {
             el.setAttribute('animation__scale', 'property: scale; to: 20 20 20; dur: 200; easing: easeOutQuad');
             const mesh = el.getObject3D('mesh');
@@ -131,24 +115,19 @@
           var el = this.el;
           el.addEventListener('click', function () {
             var target = el.getAttribute('data-target');
-            if (target) {
-              toggleMenu3D(); 
-              iniciarTransicion(target);
-            }
+            if (target) { toggleMenu3D(); iniciarTransicion(target); }
           });
-
           el.addEventListener('mouseenter', function () {
             el.setAttribute('color', '#FFFFFF');
             el.setAttribute('scale', '1.05 1.05 1.05');
-            var textoAsociado = el.querySelector('a-text');
-            if(textoAsociado) textoAsociado.setAttribute('color', '#E3173E');
+            var txt = el.querySelector('a-text');
+            if(txt) txt.setAttribute('color', '#E3173E');
           });
-          
           el.addEventListener('mouseleave', function () {
             el.setAttribute('color', '#E3173E');
             el.setAttribute('scale', '1 1 1');
-            var textoAsociado = el.querySelector('a-text');
-            if(textoAsociado) textoAsociado.setAttribute('color', '#FFFFFF');
+            var txt = el.querySelector('a-text');
+            if(txt) txt.setAttribute('color', '#FFFFFF');
           });
         }
       });
@@ -160,18 +139,20 @@
         }
       });
 
-      // =============================================================
-      // FUNCIONES PRINCIPALES
-      // =============================================================
-      
       function iniciarTransicion(nombreEscena) {
         var datos = escenas[nombreEscena];
         var contenedorFlechas = document.querySelector('#flechas-container');
         var cieloFondo = document.querySelector('#cielo-fondo'); 
         var overlayFade = document.querySelector('#overlay-fade');
+        var fisicaBasquet = document.querySelector('#entorno-fisicas-basquet');
+        var pelota = document.querySelector('#pelota-interactiva');
         var duracionFade = 500; 
 
         contenedorFlechas.setAttribute('visible', 'false');
+        
+        // Escondemos y desactivamos las físicas aislando la cancha de básquet
+        fisicaBasquet.setAttribute('position', '0 1000 0'); // Lo mandamos muy lejos
+        
         overlayFade.setAttribute('animation', { property: 'material.opacity', from: 0, to: 1, dur: duracionFade, easing: 'linear' });
 
         setTimeout(() => {
@@ -179,10 +160,21 @@
             cieloFondo.setAttribute('rotation', datos.rotacionSky || "0 -90 0");
             generarFlechas(datos.flechas);
             
-            // Esperar evento 'materialtextureloaded' (GPU lista) para revelar la escena
             function revelarEscena() {
                 cieloFondo.removeEventListener('materialtextureloaded', revelarEscena);
                 contenedorFlechas.setAttribute('visible', 'true');
+                
+                // Si entra a básquet, bajamos el entorno de físicas y reseteamos la pelota
+                if (nombreEscena === 'basquet') {
+                    fisicaBasquet.setAttribute('position', '0 0 0');
+                    if (pelota.components['dynamic-body']) {
+                        // Resetear posición física
+                        pelota.components['dynamic-body'].body.position.set(0, 2, -2);
+                        pelota.components['dynamic-body'].body.velocity.set(0,0,0);
+                        pelota.components['dynamic-body'].body.angularVelocity.set(0,0,0);
+                    }
+                }
+
                 overlayFade.setAttribute('animation', { property: 'material.opacity', from: 1, to: 0, dur: duracionFade, easing: 'linear' });
             }
 
@@ -193,12 +185,10 @@
       function generarFlechas(listaFlechas) {
         var contenedor = document.querySelector('#flechas-container');
         contenedor.innerHTML = '';
-        
         listaFlechas.forEach(flecha => {
           var wrapper = document.createElement('a-entity');
           wrapper.setAttribute('position', flecha.position);
-          wrapper.setAttribute('rotation', `0 ${parseRotation(flecha.rotation)} 0`); 
-
+          wrapper.setAttribute('rotation', `0 ${parseFloat(flecha.rotation.split(' ')[1]) || 0} 0`); 
           wrapper.setAttribute('animation', `property: position; dir: alternate; dur: 2000; easing: easeInOutSine; loop: true; to: ${flecha.position.split(' ')[0]} ${parseFloat(flecha.position.split(' ')[1]) + 0.5} ${flecha.position.split(' ')[2]}`);
 
           var entidad = document.createElement('a-entity');
@@ -212,10 +202,7 @@
              const obj = entidad.getObject3D('mesh');
              if (!obj) return;
              obj.traverse(node => {
-                if (node.isMesh) {
-                   node.material.color.set('#FF0000');
-                   node.material.needsUpdate = true;
-                }
+                if (node.isMesh) { node.material.color.set('#FF0000'); node.material.needsUpdate = true; }
              });
           });
 
@@ -249,11 +236,6 @@
         });
       }
 
-      function parseRotation(rotString) {
-        if(!rotString) return 0;
-        return parseFloat(rotString.split(' ')[1]) || 0;
-      }
-
       function construirMenu3D() {
         var menu = document.querySelector('#menu-3d');
         var keys = Object.keys(nombresDestinos);
@@ -275,72 +257,47 @@
         menu.appendChild(titulo);
 
         let cols = 4;
-        let startX = -1.2;
-        let startY = 0.8;
-        let gapX = 0.8;
-        let gapY = 0.4;
+        let startX = -1.2; let startY = 0.8; let gapX = 0.8; let gapY = 0.4;
 
         keys.forEach((key, index) => {
-          let col = index % cols;
-          let row = Math.floor(index / cols);
-          let posX = startX + (col * gapX);
-          let posY = startY - (row * gapY);
+          let col = index % cols; let row = Math.floor(index / cols);
+          let posX = startX + (col * gapX); let posY = startY - (row * gapY);
 
           var btn = document.createElement('a-plane');
-          btn.setAttribute('width', '0.7');
-          btn.setAttribute('height', '0.3');
-          btn.setAttribute('color', '#E3173E'); 
-          btn.setAttribute('opacity', '0.95'); 
+          btn.setAttribute('width', '0.7'); btn.setAttribute('height', '0.3');
+          btn.setAttribute('color', '#E3173E'); btn.setAttribute('opacity', '0.95'); 
           btn.setAttribute('position', `${posX} ${posY} 0`);
-          btn.setAttribute('class', 'menu-btn');
-          btn.setAttribute('data-target', key);
+          btn.setAttribute('class', 'menu-btn'); btn.setAttribute('data-target', key);
           btn.setAttribute('menu-interactivo', '');
           
           var txt = document.createElement('a-text');
           txt.setAttribute('value', nombresDestinos[key]);
-          txt.setAttribute('align', 'center');
-          txt.setAttribute('color', '#FFFFFF'); 
-          txt.setAttribute('width', '0.65'); 
-          txt.setAttribute('wrap-count', '14'); 
+          txt.setAttribute('align', 'center'); txt.setAttribute('color', '#FFFFFF'); 
+          txt.setAttribute('width', '0.65'); txt.setAttribute('wrap-count', '14'); 
           txt.setAttribute('position', '0 0 0.02'); 
           btn.appendChild(txt);
-
           menu.appendChild(btn);
         });
 
         var btnEnlace = document.createElement('a-plane');
-        btnEnlace.setAttribute('width', '2.6'); 
-        btnEnlace.setAttribute('height', '0.25'); 
-        btnEnlace.setAttribute('color', '#222222'); 
-        btnEnlace.setAttribute('opacity', '0.95');
-        btnEnlace.setAttribute('position', '0 -1.0 0'); 
-        btnEnlace.setAttribute('class', 'menu-btn'); 
+        btnEnlace.setAttribute('width', '2.6'); btnEnlace.setAttribute('height', '0.25'); 
+        btnEnlace.setAttribute('color', '#222222'); btnEnlace.setAttribute('opacity', '0.95');
+        btnEnlace.setAttribute('position', '0 -1.0 0'); btnEnlace.setAttribute('class', 'menu-btn'); 
         
-        btnEnlace.addEventListener('click', function () {
-            window.location.href = 'https://esanlabs.github.io/Doble-videos-Esan/';
-        });
-
+        btnEnlace.addEventListener('click', function () { window.location.href = 'https://esanlabs.github.io/Doble-videos-Esan/'; });
         btnEnlace.addEventListener('mouseenter', function () {
-            btnEnlace.setAttribute('color', '#FFFFFF');
-            txtEnlace.setAttribute('color', '#E3173E');
-            btnEnlace.setAttribute('scale', '1.05 1.05 1.05');
+            btnEnlace.setAttribute('color', '#FFFFFF'); btnEnlace.setAttribute('scale', '1.05 1.05 1.05');
         });
-        
         btnEnlace.addEventListener('mouseleave', function () {
-            btnEnlace.setAttribute('color', '#222222');
-            txtEnlace.setAttribute('color', '#FFFFFF');
-            btnEnlace.setAttribute('scale', '1 1 1');
+            btnEnlace.setAttribute('color', '#222222'); btnEnlace.setAttribute('scale', '1 1 1');
         });
 
         var txtEnlace = document.createElement('a-text');
         txtEnlace.setAttribute('value', 'Regresar a la trayectoria historica');
-        txtEnlace.setAttribute('align', 'center');
-        txtEnlace.setAttribute('color', '#FFFFFF'); 
-        txtEnlace.setAttribute('width', '2.4'); 
-        txtEnlace.setAttribute('wrap-count', '35'); 
+        txtEnlace.setAttribute('align', 'center'); txtEnlace.setAttribute('color', '#FFFFFF'); 
+        txtEnlace.setAttribute('width', '2.4'); txtEnlace.setAttribute('wrap-count', '35'); 
         txtEnlace.setAttribute('position', '0 0 0.02'); 
         btnEnlace.appendChild(txtEnlace);
-
         menu.appendChild(btnEnlace);
       }
 
@@ -362,17 +319,13 @@
                 menu.setAttribute('position', nuevaPosicion);
                 menu.setAttribute('look-at', '#camara-principal');
             }
-
             menu.setAttribute('visible', 'true');
             if (btn2D) btn2D.innerText = 'Cerrar Menú de Navegación';
-
             var botonesMenu = menu.querySelectorAll('.menu-btn');
             botonesMenu.forEach(b => b.classList.add('clickable'));
-
         } else {
             menu.setAttribute('visible', 'false');
             if (btn2D) btn2D.innerText = 'Abrir Menú de Navegación';
-
             var botonesMenu = menu.querySelectorAll('.menu-btn');
             botonesMenu.forEach(b => b.classList.remove('clickable'));
         }
@@ -388,41 +341,12 @@
         generarFlechas(datos.flechas);
         construirMenu3D();
 
-        // Esperar explícitamente a que la textura inicial se cargue en GPU
         cieloFondo.addEventListener('materialtextureloaded', function onFirstTexture() {
             cieloFondo.removeEventListener('materialtextureloaded', onFirstTexture);
-            ocultarLoader(); // ¡Solo desaparecerá el fondo rojo cuando todo esté listo!
+            ocultarLoader(); 
         });
 
         document.getElementById('btn-menu-2d').addEventListener('click', toggleMenu3D);
-
-        // =============================================================
-        // HERRAMIENTA DE CAPTURA (COMENTADA)
-        // =============================================================
-        /*
-        document.getElementById('btn-capturar').addEventListener('click', function() {
-            var cam = document.querySelector('#camara-principal').getObject3D('camera');
-            if (!cam) return;
-            var vectorDireccion = new THREE.Vector3();
-            cam.getWorldDirection(vectorDireccion);
-            vectorDireccion.y = 0; 
-            vectorDireccion.normalize();
-            vectorDireccion.multiplyScalar(20); 
-            var posX = vectorDireccion.x.toFixed(2);
-            var posY = -1.00; 
-            var posZ = vectorDireccion.z.toFixed(2);
-            var anguloRad = Math.atan2(vectorDireccion.x, vectorDireccion.z);
-            var rotY = Math.round(anguloRad * (180 / Math.PI));
-            var codigoGenerado = `{ target: 'DESTINO', position: '${posX} ${posY} ${posZ}', rotation: '0 ${rotY} 0' },`;
-            
-            navigator.clipboard.writeText(codigoGenerado).then(function() {
-                alert("✅ ¡Copiado al portapapeles!\n\n" + codigoGenerado);
-            }).catch(function() {
-                alert("Copia este código:\n\n" + codigoGenerado);
-            });
-            console.log(codigoGenerado);
-        });
-        */
       };
 
       function ocultarLoader() {
@@ -442,8 +366,9 @@
     </div>
 
     <button id="btn-menu-2d">Abrir Menú de Navegación</button>
-    
+
     <a-scene 
+      physics="debug: true; gravity: -9.8"
       renderer="antialias: true; colorManagement: true; sortObjects: true;"
       cursor="rayOrigin: mouse" 
       raycaster="objects: .clickable">
@@ -475,14 +400,32 @@
       <a-entity id="flechas-container"></a-entity>
       <a-entity id="menu-3d" visible="false"></a-entity>
 
+      <a-entity id="entorno-fisicas-basquet" position="0 1000 0">
+          
+          <a-plane static-body position="0 -1.5 0" rotation="-90 0 0" width="50" height="50" visible="false"></a-plane>
+
+          <a-box static-body position="0 4 -12" width="2.5" height="1.5" depth="0.1" visible="false"></a-box>
+
+          <a-sphere 
+              id="pelota-interactiva" 
+              dynamic-body="mass: 1; bounce: 0.75" 
+              position="0 2 -2" 
+              radius="0.3" 
+              color="#D95C14" 
+              class="clickable" 
+              impulso-fisico>
+          </a-sphere>
+
+          <a-text value="Dispara la pelota" position="0 2.5 -2" align="center" color="#FFFFFF" scale="0.8 0.8 0.8" look-at="#camara-principal"></a-text>
+
+      </a-entity>
+
       <a-entity id="rig" position="0 1.6 0" rotation="0 0 0">
-        
         <a-entity rotate-with-camera position="0 -2 0">
             <a-circle src="#img-logo" radius="1.5" position="0 0 0" rotation="-90 0 0" material="transparent: true; opacity: 1" shader="flat"></a-circle>
         </a-entity>
 
         <a-camera id="camara-principal" fov="80" wasd-controls-enabled="false" look-controls="reverseMouseDrag: true">
-            
             <a-entity id="overlay-fade" geometry="primitive: sphere; radius: 0.1" material="color: #000; transparent: true; opacity: 0; side: back" position="0 0 0"></a-entity>
         </a-camera>
 
