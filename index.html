@@ -7,8 +7,6 @@
     <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
     
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
-    <script src="https://unpkg.com/super-hands@^3.0.3/dist/super-hands.min.js"></script>
-    <script src="https://unpkg.com/aframe-physics-extras@0.1.2/dist/aframe-physics-extras.min.js"></script>
 
     <style>
       #pantalla-carga {
@@ -52,6 +50,73 @@
       });
 
       // =============================================================
+      // NUEVO: SISTEMA DE TELEQUINESIS (APUNTAR Y LANZAR)
+      // =============================================================
+      AFRAME.registerComponent('telekinesis-balon', {
+        init: function () {
+          this.manoActiva = null;
+          this.agarrado = false;
+
+          // Cuando aprietas el gatillo
+          this.el.addEventListener('mousedown', (evt) => {
+            if (this.agarrado) return;
+            // Detecta si es el mando VR o el ratón en la PC
+            this.manoActiva = evt.detail.cursorEl || document.querySelector('#camara-principal'); 
+            this.agarrado = true;
+            
+            // Quitamos la gravedad temporalmente para que flote en tu mano
+            this.el.removeAttribute('dynamic-body'); 
+          });
+
+          // Cuando sueltas el gatillo (Lanzamiento)
+          this.el.addEventListener('mouseup', () => {
+            if (!this.agarrado) return;
+            this.agarrado = false;
+            
+            // Devolvemos la masa y el rebote
+            this.el.setAttribute('dynamic-body', 'mass: 1; bounce: 0.75'); 
+            
+            // Calculamos hacia dónde apunta el mando
+            var dir = new THREE.Vector3();
+            this.manoActiva.object3D.getWorldDirection(dir);
+            dir.multiplyScalar(-1); // Corrección matemática para "frente"
+
+            // Fuerza de lanzamiento (12 = fuerza, 4 = curva hacia arriba)
+            dir.multiplyScalar(12); 
+            dir.y += 4; 
+
+            // Aplicamos el empuje físico
+            setTimeout(() => {
+              if(this.el.components['dynamic-body']) {
+                 this.el.components['dynamic-body'].body.velocity.set(0,0,0); // Reinicia inercia previa
+                 this.el.components['dynamic-body'].body.applyImpulse(
+                   new CANNON.Vec3(dir.x, dir.y, dir.z),
+                   new CANNON.Vec3(0, 0, 0)
+                 );
+              }
+            }, 50);
+
+            this.manoActiva = null;
+          });
+        },
+        tick: function () {
+          // Si lo tenemos agarrado, hacemos que siga al puntero láser en tiempo real
+          if (this.agarrado && this.manoActiva) {
+            var posPuntero = new THREE.Vector3();
+            this.manoActiva.object3D.getWorldPosition(posPuntero);
+            
+            var dirPuntero = new THREE.Vector3();
+            this.manoActiva.object3D.getWorldDirection(dirPuntero);
+            dirPuntero.multiplyScalar(-1);
+
+            // Lo colocamos a 0.6 metros exactos de la punta del láser/mando
+            posPuntero.add(dirPuntero.multiplyScalar(0.6));
+            this.el.object3D.position.copy(posPuntero);
+          }
+        }
+      });
+
+      // =============================================================
       // COMPONENTE: DETECTOR DE CANASTA (MARCADOR)
       // =============================================================
       AFRAME.registerComponent('sistema-puntos', {
@@ -61,7 +126,6 @@
           this.pelota = document.querySelector('#pelota-interactiva');
           this.marcador = document.querySelector('#texto-marcador');
           
-          // Posición central del aro para calcular si encestaste
           this.posAro = new THREE.Vector3(0, 3.5, -11.5); 
         },
         tick: function () {
@@ -69,10 +133,11 @@
           var posPelota = this.pelota.object3D.position;
           var distancia = posPelota.distanceTo(this.posAro);
 
+          // Si pasa por la canasta (0.8 metros de margen)
           if (distancia < 0.8) {
             this.puntos++;
             this.marcador.setAttribute('value', 'PUNTOS: ' + this.puntos);
-            this.pelota.setAttribute('color', '#00FF00');
+            this.pelota.setAttribute('color', '#00FF00'); // Destello Verde
             this.puedeAnotar = false; 
             
             setTimeout(() => {
@@ -81,6 +146,7 @@
             }, 1500);
           }
 
+          // Si la pelota se cae fuera del mapa, auto-reset
           if (posPelota.y < -5 || posPelota.distanceTo(new THREE.Vector3(0,0,0)) > 30) {
              resetearPelota();
           }
@@ -192,13 +258,22 @@
         }, duracionFade + 50);
       }
 
+      // Evita errores de físicas si se resetea mientras lo tienes agarrado
       function resetearPelota() {
           var pelota = document.querySelector('#pelota-interactiva');
-          if (pelota && pelota.components['dynamic-body']) {
-              pelota.components['dynamic-body'].body.velocity.set(0,0,0);
-              pelota.components['dynamic-body'].body.angularVelocity.set(0,0,0);
-              // Spawn frente a ti a la altura del pecho
-              pelota.components['dynamic-body'].body.position.set(0, 1.2, -2); 
+          if (pelota) {
+              pelota.components['telekinesis-balon'].agarrado = false;
+              if (!pelota.getAttribute('dynamic-body')) {
+                  pelota.setAttribute('dynamic-body', 'mass: 1; bounce: 0.75');
+              }
+              
+              setTimeout(() => {
+                  if (pelota.components['dynamic-body']) {
+                      pelota.components['dynamic-body'].body.velocity.set(0,0,0);
+                      pelota.components['dynamic-body'].body.angularVelocity.set(0,0,0);
+                      pelota.components['dynamic-body'].body.position.set(0, 1.2, -2); 
+                  }
+              }, 50);
           }
       }
 
@@ -465,8 +540,8 @@
 
           <a-sphere 
               id="pelota-interactiva" 
-              class="grabbable"
-              hoverable grabbable stretchable draggable droppable
+              class="clickable"
+              telekinesis-balon
               dynamic-body="mass: 1; bounce: 0.75" 
               position="0 1.5 -2" 
               radius="0.3" 
@@ -493,8 +568,8 @@
             <a-entity id="overlay-fade" geometry="primitive: sphere; radius: 0.1" material="color: #000; transparent: true; opacity: 0; side: back" position="0 0 0"></a-entity>
         </a-camera>
 
-        <a-entity laser-controls="hand: right" raycaster="objects: .clickable" sphere-collider="objects: .grabbable; radius: 0.1" super-hands vr-controller-listener></a-entity>
-        <a-entity laser-controls="hand: left" raycaster="objects: .clickable" sphere-collider="objects: .grabbable; radius: 0.1" super-hands vr-controller-listener></a-entity>
+        <a-entity laser-controls="hand: right" raycaster="objects: .clickable" vr-controller-listener></a-entity>
+        <a-entity laser-controls="hand: left" raycaster="objects: .clickable" vr-controller-listener></a-entity>
       </a-entity>
 
     </a-scene>
