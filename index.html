@@ -31,101 +31,87 @@
     </style>
     
     <script>
+      // =============================================================
+      // DICCIONARIO (ACTUALIZADO CON FABLAB 2, CONDUCTA Y ECOESAN)
+      // =============================================================
       const nombresDestinos = {
         'entrada': 'Entrada Principal', 'jardin': 'Jardin', 'fuente': 'Fuente',
-        'capilla': 'Capilla', 'fablab': 'FabLab', 'voley': 'Cancha de\nVoley',
-        'basquet': 'Cancha de\nBasquet', 'explanada': 'Explanada\nConvention',
-        'eventos': 'Eventos', 'butacas': 'Butacas', 'biblioteca': 'Biblioteca',
-        'danza': 'Danza', 'edificioD': 'Edificio D', 'edificioA': 'Edificio A',
-        'cafeteria': 'Cafeteria'
+        'capilla': 'Capilla', 'fablab': 'FabLab', 'fablab2': 'FabLab 2',
+        'voley': 'Cancha de\nVoley', 'basquet': 'Cancha de\nBasquet', 
+        'explanada': 'Explanada\nConvention', 'eventos': 'Eventos', 
+        'butacas': 'Butacas', 'biblioteca': 'Biblioteca', 'danza': 'Danza', 
+        'edificioD': 'Edificio D', 'conducta': 'Lab Conducta', 'edificioA': 'Edificio A',
+        'ecoesan': 'EcoESAN', 'aula': 'Aula', 'laboratorio': 'Lab de Computo',
+        'datalab': 'Data Lab'
       };
 
       AFRAME.registerComponent('rotate-with-camera', {
         tick: function () {
           var camera = this.el.sceneEl.camera; 
           if (!camera) return;
-          var camRot = document.querySelector('[camera]').getAttribute('rotation');
-          this.el.setAttribute('rotation', {x: 0, y: camRot.y, z: 0});
+          var camEl = document.querySelector('[camera]');
+          if (!camEl) return;
+          var camRot = camEl.getAttribute('rotation');
+          if(camRot){
+              this.el.setAttribute('rotation', {x: 0, y: camRot.y, z: 0});
+          }
         }
       });
 
-      // =============================================================
-      // NUEVO: SISTEMA DE TELEQUINESIS (APUNTAR Y LANZAR)
-      // =============================================================
       AFRAME.registerComponent('telekinesis-balon', {
         init: function () {
           this.manoActiva = null;
           this.agarrado = false;
 
-          // Cuando aprietas el gatillo
           this.el.addEventListener('mousedown', (evt) => {
             if (this.agarrado) return;
-            // Detecta si es el mando VR o el ratón en la PC
             this.manoActiva = evt.detail.cursorEl || document.querySelector('#camara-principal'); 
             this.agarrado = true;
-            
-            // Quitamos la gravedad temporalmente para que flote en tu mano
             this.el.removeAttribute('dynamic-body'); 
           });
 
-          // Cuando sueltas el gatillo (Lanzamiento)
           this.el.addEventListener('mouseup', () => {
             if (!this.agarrado) return;
             this.agarrado = false;
-            
-            // Devolvemos la masa y el rebote
             this.el.setAttribute('dynamic-body', 'mass: 1; bounce: 0.75'); 
             
-            // Calculamos hacia dónde apunta el mando
             var dir = new THREE.Vector3();
             this.manoActiva.object3D.getWorldDirection(dir);
-            dir.multiplyScalar(-1); // Corrección matemática para "frente"
-
-            // Fuerza de lanzamiento (12 = fuerza, 4 = curva hacia arriba)
+            dir.multiplyScalar(-1); 
             dir.multiplyScalar(12); 
             dir.y += 4; 
 
-            // Aplicamos el empuje físico
             setTimeout(() => {
               if(this.el.components['dynamic-body']) {
-                 this.el.components['dynamic-body'].body.velocity.set(0,0,0); // Reinicia inercia previa
+                 this.el.components['dynamic-body'].body.velocity.set(0,0,0);
                  this.el.components['dynamic-body'].body.applyImpulse(
                    new CANNON.Vec3(dir.x, dir.y, dir.z),
                    new CANNON.Vec3(0, 0, 0)
                  );
               }
             }, 50);
-
             this.manoActiva = null;
           });
         },
         tick: function () {
-          // Si lo tenemos agarrado, hacemos que siga al puntero láser en tiempo real
           if (this.agarrado && this.manoActiva) {
             var posPuntero = new THREE.Vector3();
             this.manoActiva.object3D.getWorldPosition(posPuntero);
-            
             var dirPuntero = new THREE.Vector3();
             this.manoActiva.object3D.getWorldDirection(dirPuntero);
             dirPuntero.multiplyScalar(-1);
-
-            // Lo colocamos a 0.6 metros exactos de la punta del láser/mando
             posPuntero.add(dirPuntero.multiplyScalar(0.6));
             this.el.object3D.position.copy(posPuntero);
           }
         }
       });
 
-      // =============================================================
-      // COMPONENTE: DETECTOR DE CANASTA (MARCADOR)
-      // =============================================================
       AFRAME.registerComponent('sistema-puntos', {
         init: function () {
           this.puntos = 0;
           this.puedeAnotar = true;
           this.pelota = document.querySelector('#pelota-interactiva');
           this.marcador = document.querySelector('#texto-marcador');
-          
           this.posAro = new THREE.Vector3(0, 3.5, -11.5); 
         },
         tick: function () {
@@ -133,11 +119,10 @@
           var posPelota = this.pelota.object3D.position;
           var distancia = posPelota.distanceTo(this.posAro);
 
-          // Si pasa por la canasta (0.8 metros de margen)
           if (distancia < 0.8) {
             this.puntos++;
             this.marcador.setAttribute('value', 'PUNTOS: ' + this.puntos);
-            this.pelota.setAttribute('color', '#00FF00'); // Destello Verde
+            this.pelota.setAttribute('color', '#00FF00'); 
             this.puedeAnotar = false; 
             
             setTimeout(() => {
@@ -146,29 +131,152 @@
             }, 1500);
           }
 
-          // Si la pelota se cae fuera del mapa, auto-reset
           if (posPelota.y < -5 || posPelota.distanceTo(new THREE.Vector3(0,0,0)) > 30) {
              resetearPelota();
           }
         }
       });
 
+      // =============================================================
+      // MAPA DE NAVEGACIÓN (INTEGRANDO ECOESAN, FABLAB 2 Y CONDUCTA)
+      // =============================================================
       const escenas = {
-        'entrada': { imagen: '#img-entrada', rotacionSky: '0 90 0', flechas: [ { target: 'jardin', position: '-0.51 -1 -18', rotation: '0 -155 0' } ] },
-        'jardin': { imagen: '#img-jardin', rotacionSky: '0 -90 0', flechas: [ { target: 'fuente', position: '-19.68 -1 -3.55', rotation: '0 -70 0' }, { target: 'entrada', position: '13.95 -1 -14.33', rotation: '0 150 0' } ] },
-        'fuente': { imagen: '#img-fuente', rotacionSky: '0 50.5 0', flechas: [ { target: 'capilla', position: '-19.77 -1 3.67', rotation: '0 -20 0' }, { target: 'edificioD', position: '20 -1 0.36', rotation: '0 120 0' }, { target: 'jardin', position: '14 -1 8', rotation: '0 70 0' } ] },
-        'capilla': { imagen: '#img-capilla', rotacionSky: '0 -90 0', flechas: [ { target: 'fablab', position: '19.73 -1 3.25', rotation: '0 110 0' }, { target: 'fuente', position: '-19.29 -1 5.26', rotation: '0 -75 0' } ] },
-        'fablab': { imagen: '#img-fablab', rotacionSky: '0 -90 0', flechas: [ { target: 'voley', position: '3.5 -1 -12.50', rotation: '0 180 0' }, { target: 'capilla', position: '19.86 -1 -2.37', rotation: '0 120 0' } ] },
-        'voley': { imagen: '#img-voley', rotacionSky: '0 -90 0', flechas: [ { target: 'basquet', position: '15 -1 -25', rotation: '0 160 0' }, { target: 'fablab', position: '14.51 -1 25.61', rotation: '0 50 0' } ] },
-        'basquet': { imagen: '#img-basquet', rotacionSky: '0 -90 0', flechas: [ { target: 'explanada', position: '20 -1 -25', rotation: '0 140 0' }, { target: 'voley', position: '-20 -1 25', rotation: '0 -45 0' } ] },
-        'explanada': { imagen: '#img-explanada', rotacionSky: '0 -90 0', flechas: [ { target: 'eventos', position: '-23 -1 2', rotation: '0 -60 0' }, { target: 'cafeteria', position: '10 -1 -18', rotation: '0 156 0' }, { target: 'basquet', position: '-13 -1 15', rotation: '0 -20 0' } ] },
-        'eventos': { imagen: '#img-eventos', rotacionSky: '0 -90 0', flechas: [ { target: 'biblioteca', position: '1.15 -1 20', rotation: '0 50 0' }, { target: 'butacas', position: '20 -1 3.43', rotation: '0 110 0' }, { target: 'danza', position: '5.21 -1 19.31', rotation: '0 50 0' }, { target: 'explanada', position: '16.59 -1 -11', rotation: '0 150 0' } ] },
+        'entrada': { 
+            imagen: '#img-entrada', rotacionSky: '0 90 0', 
+            flechas: [ { target: 'jardin', position: '-0.51 -1 -18', rotation: '0 -155 0' } ] 
+        },
+        'jardin': { 
+            imagen: '#img-jardin', rotacionSky: '0 -90 0', 
+            flechas: [ 
+                { target: 'capilla', position: '0 -1 -10', rotation: '0 0 0' }, 
+                { target: 'edificioD', position: '5 -1 -10', rotation: '0 -45 0' }, 
+                { target: 'ecoesan', position: '-5 -1 -10', rotation: '0 45 0' }, // Actualizado
+                { target: 'entrada', position: '13.95 -1 -14.33', rotation: '0 150 0' } 
+            ] 
+        },
+        'capilla': { 
+            imagen: '#img-capilla', rotacionSky: '0 -90 0', 
+            flechas: [ 
+                { target: 'fablab', position: '19.73 -1 3.25', rotation: '0 110 0' }, 
+                { target: 'jardin', position: '-19.29 -1 5.26', rotation: '0 -75 0' } 
+            ] 
+        },
+        'fablab': { 
+            imagen: '#img-fablab', rotacionSky: '0 -90 0', 
+            flechas: [ 
+                { target: 'voley', position: '3.5 -1 -12.50', rotation: '0 180 0' }, 
+                { target: 'basquet', position: '10 -1 -10', rotation: '0 -45 0' },
+                { target: 'capilla', position: '19.86 -1 -2.37', rotation: '0 120 0' },
+                { target: 'fablab2', position: '0 -1 -10', rotation: '0 0 0' } // Nuevo
+            ] 
+        },
+        'fablab2': { // Novedad
+            imagen: '#img-fablab2', rotacionSky: '0 0 0', 
+            flechas: [ 
+                { target: 'fablab', position: '0 -1 -10', rotation: '0 0 0' } 
+            ] 
+        },
+        'voley': { 
+            imagen: '#img-voley', rotacionSky: '0 -90 0', 
+            flechas: [ 
+                { target: 'basquet', position: '15 -1 -25', rotation: '0 160 0' }, 
+                { target: 'explanada', position: '-10 -1 -15', rotation: '0 45 0' },
+                { target: 'fablab', position: '14.51 -1 25.61', rotation: '0 50 0' } 
+            ] 
+        },
+        'basquet': { 
+            imagen: '#img-basquet', rotacionSky: '0 -90 0', 
+            flechas: [ 
+                { target: 'voley', position: '-20 -1 25', rotation: '0 -45 0' },
+                { target: 'explanada', position: '20 -1 -25', rotation: '0 140 0' }, 
+                { target: 'fablab', position: '0 -1 25', rotation: '0 180 0' }
+            ] 
+        },
+        'explanada': { 
+            imagen: '#img-explanada', rotacionSky: '0 -90 0', 
+            flechas: [ 
+                { target: 'voley', position: '15 -1 -15', rotation: '0 -45 0' },
+                { target: 'basquet', position: '-13 -1 15', rotation: '0 -20 0' },
+                { target: 'eventos', position: '-23 -1 2', rotation: '0 -60 0' }, 
+                { target: 'ecoesan', position: '10 -1 -18', rotation: '0 156 0' } // Actualizado
+            ] 
+        },
+        'ecoesan': { // Reemplaza a la Cafetería
+            imagen: '#img-ecoesan', rotacionSky: '0 -90 0', 
+            flechas: [ 
+                { target: 'explanada', position: '-9 -1 -17.35', rotation: '0 -140 0' }, 
+                { target: 'edificioA', position: '4.67 -1 20', rotation: '0 40 0' },
+                { target: 'fuente', position: '10 -1 0', rotation: '0 90 0' }
+            ] 
+        },
+        'edificioA': { 
+            imagen: '#img-edificioA', rotacionSky: '0 -90 0', 
+            flechas: [ 
+                { target: 'ecoesan', position: '17 -1 9', rotation: '0 120 0' }, // Actualizado
+                { target: 'edificioD', position: '-9 -1 -20', rotation: '0 -140 0' },
+                { target: 'aula', position: '0 -1 -10', rotation: '0 0 0' },
+                { target: 'laboratorio', position: '-10 -1 0', rotation: '0 -90 0' }
+            ] 
+        },
+        'edificioD': { 
+            imagen: '#img-edificioD', rotacionSky: '0 -90 0', 
+            flechas: [ 
+                { target: 'edificioA', position: '-17.24 -1 10.13', rotation: '0 -70 0' }, 
+                { target: 'jardin', position: '15 -1 0', rotation: '0 90 0' },
+                { target: 'fuente', position: '-7 -1 18', rotation: '0 20 0' },
+                { target: 'datalab', position: '0 -1 -15', rotation: '0 0 0' },
+                { target: 'conducta', position: '-5 -1 -10', rotation: '0 45 0' } // Nuevo
+            ] 
+        },
+        'conducta': { // Novedad
+            imagen: '#img-conducta', rotacionSky: '0 0 0', 
+            flechas: [ 
+                { target: 'edificioD', position: '0 -1 -10', rotation: '0 0 0' } 
+            ] 
+        },
+        'fuente': { 
+            imagen: '#img-fuente', rotacionSky: '0 50.5 0', 
+            flechas: [ 
+                { target: 'ecoesan', position: '10 -1 -10', rotation: '0 -45 0' }, // Actualizado
+                { target: 'edificioD', position: '20 -1 0.36', rotation: '0 120 0' }
+            ] 
+        },
+        'datalab': {
+            imagen: '#img-datalab', rotacionSky: '0 0 0',
+            flechas: [
+                { target: 'edificioD', position: '0 -1 10', rotation: '0 180 0' },
+                { target: 'aula', position: '10 -1 0', rotation: '0 90 0' },
+                { target: 'laboratorio', position: '-10 -1 0', rotation: '0 -90 0' }
+            ]
+        },
+        'aula': {
+            imagen: '#img-aula', rotacionSky: '0 0 0',
+            flechas: [
+                { target: 'edificioA', position: '0 -1 10', rotation: '0 180 0' },
+                { target: 'datalab', position: '-10 -1 0', rotation: '0 -90 0' },
+                { target: 'laboratorio', position: '10 -1 0', rotation: '0 90 0' } 
+            ]
+        },
+        'laboratorio': {
+            imagen: '#img-laboratorio', rotacionSky: '0 0 0',
+            flechas: [
+                { target: 'edificioA', position: '0 -1 10', rotation: '0 180 0' },
+                { target: 'datalab', position: '10 -1 0', rotation: '0 90 0' },
+                { target: 'aula', position: '-10 -1 0', rotation: '0 -90 0' } 
+            ]
+        },
+        'eventos': { 
+            imagen: '#img-eventos', rotacionSky: '0 -90 0', 
+            flechas: [ 
+                { target: 'biblioteca', position: '1.15 -1 20', rotation: '0 50 0' }, 
+                { target: 'butacas', position: '20 -1 3.43', rotation: '0 110 0' }, 
+                { target: 'danza', position: '5.21 -1 19.31', rotation: '0 50 0' }, 
+                { target: 'explanada', position: '16.59 -1 -11', rotation: '0 150 0' } 
+            ] 
+        },
         'butacas': { imagen: '#img-butacas', rotacionSky: '0 -90 0', flechas: [ { target: 'eventos', position: '-8 5 25', rotation: '0 5 0' } ] },
         'biblioteca': { imagen: '#img-biblioteca', rotacionSky: '0 -90 0', flechas: [ { target: 'eventos', position: '17 -1 20', rotation: '0 40 0' } ] },
-        'danza': { imagen: '#img-danza', rotacionSky: '0 -90 0', flechas: [ { target: 'eventos', position: '7 -1 -25', rotation: '0 180 0' } ] },
-        'edificioD': { imagen: '#img-edificioD', rotacionSky: '0 -90 0', flechas: [ { target: 'edificioA', position: '-17.24 -1 10.13', rotation: '0 -70 0' }, { target: 'fuente', position: '-7 -1 18', rotation: '0 20 0' } ] },
-        'edificioA': { imagen: '#img-edificioA', rotacionSky: '0 -90 0', flechas: [ { target: 'cafeteria', position: '17 -1 9', rotation: '0 120 0' }, { target: 'edificioD', position: '-9 -1 -20', rotation: '0 -140 0' } ] },
-        'cafeteria': { imagen: '#img-cafeteria', rotacionSky: '0 -90 0', flechas: [ { target: 'explanada', position: '-9 -1 -17.35', rotation: '0 -140 0' }, { target: 'edificioA', position: '4.67 -1 20', rotation: '0 40 0' } ] }
+        'danza': { imagen: '#img-danza', rotacionSky: '0 -90 0', flechas: [ { target: 'eventos', position: '7 -1 -25', rotation: '0 180 0' } ] }
       };
 
       AFRAME.registerComponent('tour-logic', {
@@ -176,19 +284,16 @@
           var el = this.el;
           el.addEventListener('click', function (evt) {
             var target = el.getAttribute('data-target');
-            if (target && target !== "null") iniciarTransicion(target);
+            var direccionDeseada = el.getAttribute('data-mirar'); 
+            if (target && target !== "null") iniciarTransicion(target, direccionDeseada);
           });
           el.addEventListener('mouseenter', function () {
-            el.setAttribute('animation__scale', 'property: scale; to: 24 24 24; dur: 200; easing: easeOutQuad');
-            const mesh = el.getObject3D('mesh');
-            if (mesh) mesh.traverse(node => { if (node.isMesh) node.material.emissive.set('#550000'); });
+            el.setAttribute('animation__scale', 'property: scale; to: 3 3 3; dur: 200; easing: easeOutQuad');
             var etiqueta = el.querySelector('.etiqueta-flotante');
             if (etiqueta) etiqueta.setAttribute('visible', 'true');
           });
           el.addEventListener('mouseleave', function () {
-            el.setAttribute('animation__scale', 'property: scale; to: 20 20 20; dur: 200; easing: easeOutQuad');
-            const mesh = el.getObject3D('mesh');
-            if (mesh) mesh.traverse(node => { if (node.isMesh) node.material.emissive.set('#000000'); });
+            el.setAttribute('animation__scale', 'property: scale; to: 2.5 2.5 2.5; dur: 200; easing: easeOutQuad');
             var etiqueta = el.querySelector('.etiqueta-flotante');
             if (etiqueta) etiqueta.setAttribute('visible', 'false');
           });
@@ -200,7 +305,7 @@
           var el = this.el;
           el.addEventListener('click', function () {
             var target = el.getAttribute('data-target');
-            if (target) { toggleMenu3D(); iniciarTransicion(target); }
+            if (target) { toggleMenu3D(); iniciarTransicion(target, "0 0 0"); } 
           });
           el.addEventListener('mouseenter', function () {
             el.setAttribute('color', '#FFFFFF');
@@ -224,7 +329,7 @@
         }
       });
 
-      function iniciarTransicion(nombreEscena) {
+      function iniciarTransicion(nombreEscena, direccionDeseada) {
         var datos = escenas[nombreEscena];
         var contenedorFlechas = document.querySelector('#flechas-container');
         var cieloFondo = document.querySelector('#cielo-fondo'); 
@@ -243,6 +348,16 @@
             cieloFondo.setAttribute('rotation', datos.rotacionSky || "0 -90 0");
             generarFlechas(datos.flechas);
             
+            var rig = document.querySelector('#rig');
+            rig.setAttribute('rotation', direccionDeseada || "0 0 0");
+
+            var camara = document.querySelector('#camara-principal');
+            var lookControls = camara.components['look-controls'];
+            if (lookControls) {
+                lookControls.pitchObject.rotation.x = 0;
+                lookControls.yawObject.rotation.y = 0;
+            }
+
             function revelarEscena() {
                 cieloFondo.removeEventListener('materialtextureloaded', revelarEscena);
                 contenedorFlechas.setAttribute('visible', 'true');
@@ -258,7 +373,6 @@
         }, duracionFade + 50);
       }
 
-      // Evita errores de físicas si se resetea mientras lo tienes agarrado
       function resetearPelota() {
           var pelota = document.querySelector('#pelota-interactiva');
           if (pelota) {
@@ -266,7 +380,6 @@
               if (!pelota.getAttribute('dynamic-body')) {
                   pelota.setAttribute('dynamic-body', 'mass: 1; bounce: 0.75');
               }
-              
               setTimeout(() => {
                   if (pelota.components['dynamic-body']) {
                       pelota.components['dynamic-body'].body.velocity.set(0,0,0);
@@ -286,7 +399,6 @@
 
           var btnVolver = document.querySelector('#btn-volver-tour');
           btnVolver.classList.add('clickable');
-          
           var btnReset = document.querySelector('#btn-reset-balon');
           btnReset.classList.add('clickable');
 
@@ -309,40 +421,39 @@
         var contenedor = document.querySelector('#flechas-container');
         contenedor.innerHTML = '';
         listaFlechas.forEach(flecha => {
+          
           var wrapper = document.createElement('a-entity');
           wrapper.setAttribute('position', flecha.position);
-          wrapper.setAttribute('rotation', `0 ${parseFloat(flecha.rotation.split(' ')[1]) || 0} 0`); 
-          wrapper.setAttribute('animation', `property: position; dir: alternate; dur: 2000; easing: easeInOutSine; loop: true; to: ${flecha.position.split(' ')[0]} ${parseFloat(flecha.position.split(' ')[1]) + 0.5} ${flecha.position.split(' ')[2]}`);
+          wrapper.setAttribute('animation', `property: position; dir: alternate; dur: 2000; easing: easeInOutSine; loop: true; to: ${flecha.position.split(' ')[0]} ${parseFloat(flecha.position.split(' ')[1]) + 0.3} ${flecha.position.split(' ')[2]}`);
 
-          var entidad = document.createElement('a-entity');
-          entidad.setAttribute('gltf-model', '#modelo-flecha');
-          entidad.setAttribute('scale', '20 20 20'); 
+          // ICONO 2D (Flecha)
+          var entidad = document.createElement('a-image');
+          entidad.setAttribute('src', '#img-flecha-plana');
+          entidad.setAttribute('scale', '2.5 2.5 2.5'); 
+          entidad.setAttribute('look-at', '[camera]'); 
+          entidad.setAttribute('transparent', 'true');
+          
           entidad.setAttribute('data-target', flecha.target);
           entidad.setAttribute('class', 'clickable'); 
+          if (flecha.mirarAlLlegar) {
+              entidad.setAttribute('data-mirar', flecha.mirarAlLlegar);
+          }
           entidad.setAttribute('tour-logic', ''); 
-          
-          entidad.addEventListener('model-loaded', function(){
-             const obj = entidad.getObject3D('mesh');
-             if (!obj) return;
-             obj.traverse(node => {
-                if (node.isMesh) { node.material.color.set('#FF0000'); node.material.needsUpdate = true; }
-             });
-          });
 
+          // ETIQUETA FLOTANTE (Cuadro blanco con texto rojo)
           var nombreLugar = nombresDestinos[flecha.target] || flecha.target;
           var etiqueta = document.createElement('a-entity');
           etiqueta.classList.add('etiqueta-flotante');
-          etiqueta.setAttribute('look-at', '#camara-principal');
-          etiqueta.setAttribute('scale', '0.08 0.08 0.08'); 
-          etiqueta.setAttribute('position', '0 0.12 0'); 
-          etiqueta.setAttribute('visible', 'false');
+          etiqueta.setAttribute('position', '0 0.8 0.05'); 
+          etiqueta.setAttribute('scale', '0.4 0.4 0.4'); 
+          etiqueta.setAttribute('visible', 'false'); 
 
           var fondo = document.createElement('a-plane');
           fondo.setAttribute('color', '#FFFFFF'); 
-          fondo.setAttribute('opacity', '0.9');
-          fondo.setAttribute('width', (nombreLugar.length * 0.35).toString());
-          fondo.setAttribute('height', '0.7'); 
-          fondo.setAttribute('position', '0 0 -0.05'); 
+          fondo.setAttribute('opacity', '0.95');
+          fondo.setAttribute('width', (nombreLugar.length * 0.4).toString()); 
+          fondo.setAttribute('height', '0.8'); 
+          fondo.setAttribute('position', '0 0 -0.01'); 
           etiqueta.appendChild(fondo);
 
           var texto = document.createElement('a-text');
@@ -350,7 +461,7 @@
           texto.setAttribute('align', 'center');
           texto.setAttribute('color', '#E3173E'); 
           texto.setAttribute('width', '5'); 
-          texto.setAttribute('position', '0 0 0.05'); 
+          texto.setAttribute('position', '0 0 0.01'); 
           etiqueta.appendChild(texto);
 
           entidad.appendChild(etiqueta);
@@ -364,8 +475,9 @@
         var keys = Object.keys(nombresDestinos);
 
         var panelFondo = document.createElement('a-plane');
-        panelFondo.setAttribute('width', '3.5');     
-        panelFondo.setAttribute('height', '2.6'); 
+        panelFondo.setAttribute('width', '3.8');     
+        // Aumentado el alto a 3.2 para que entren las 5 filas (20 lugares) cómodamente
+        panelFondo.setAttribute('height', '3.2'); 
         panelFondo.setAttribute('color', '#000000'); 
         panelFondo.setAttribute('opacity', '0.65');  
         panelFondo.setAttribute('position', '0 0.15 -0.05'); 
@@ -375,19 +487,19 @@
         titulo.setAttribute('value', 'MAPA VIRTUAL ESAN');
         titulo.setAttribute('align', 'center');
         titulo.setAttribute('color', '#FFFFFF'); 
-        titulo.setAttribute('position', '0 1.2 0');
+        titulo.setAttribute('position', '0 1.5 0'); // Título más arriba
         titulo.setAttribute('width', '4');
         menu.appendChild(titulo);
 
         let cols = 4;
-        let startX = -1.2; let startY = 0.8; let gapX = 0.8; let gapY = 0.4;
+        let startX = -1.35; let startY = 1.1; let gapX = 0.9; let gapY = 0.4;
 
         keys.forEach((key, index) => {
           let col = index % cols; let row = Math.floor(index / cols);
           let posX = startX + (col * gapX); let posY = startY - (row * gapY);
 
           var btn = document.createElement('a-plane');
-          btn.setAttribute('width', '0.7'); btn.setAttribute('height', '0.3');
+          btn.setAttribute('width', '0.8'); btn.setAttribute('height', '0.3');
           btn.setAttribute('color', '#E3173E'); btn.setAttribute('opacity', '0.95'); 
           btn.setAttribute('position', `${posX} ${posY} 0`);
           btn.setAttribute('class', 'menu-btn'); btn.setAttribute('data-target', key);
@@ -405,22 +517,30 @@
         var btnEnlace = document.createElement('a-plane');
         btnEnlace.setAttribute('width', '2.6'); btnEnlace.setAttribute('height', '0.25'); 
         btnEnlace.setAttribute('color', '#222222'); btnEnlace.setAttribute('opacity', '0.95');
-        btnEnlace.setAttribute('position', '0 -1.0 0'); btnEnlace.setAttribute('class', 'menu-btn'); 
+        // Bajado el botón para que no choque con la fila nueva
+        btnEnlace.setAttribute('position', '0 -1.2 0'); btnEnlace.setAttribute('class', 'menu-btn'); 
         
-        btnEnlace.addEventListener('click', function () { window.location.href = 'https://esanlabs.github.io/Doble-videos-Esan/'; });
-        btnEnlace.addEventListener('mouseenter', function () {
-            btnEnlace.setAttribute('color', '#FFFFFF'); btnEnlace.setAttribute('scale', '1.05 1.05 1.05');
-        });
-        btnEnlace.addEventListener('mouseleave', function () {
-            btnEnlace.setAttribute('color', '#222222'); btnEnlace.setAttribute('scale', '1 1 1');
-        });
-
         var txtEnlace = document.createElement('a-text');
         txtEnlace.setAttribute('value', 'Regresar a la trayectoria historica');
         txtEnlace.setAttribute('align', 'center'); txtEnlace.setAttribute('color', '#FFFFFF'); 
         txtEnlace.setAttribute('width', '2.4'); txtEnlace.setAttribute('wrap-count', '35'); 
         txtEnlace.setAttribute('position', '0 0 0.02'); 
         btnEnlace.appendChild(txtEnlace);
+
+        btnEnlace.addEventListener('click', function () { window.location.href = 'https://esanlabs.github.io/Doble-videos-Esan/'; });
+        
+        btnEnlace.addEventListener('mouseenter', function () {
+            btnEnlace.setAttribute('color', '#FFFFFF'); 
+            btnEnlace.setAttribute('scale', '1.05 1.05 1.05');
+            txtEnlace.setAttribute('color', '#E3173E'); 
+        });
+        
+        btnEnlace.addEventListener('mouseleave', function () {
+            btnEnlace.setAttribute('color', '#222222'); 
+            btnEnlace.setAttribute('scale', '1 1 1');
+            txtEnlace.setAttribute('color', '#FFFFFF'); 
+        });
+
         menu.appendChild(btnEnlace);
       }
 
@@ -440,15 +560,15 @@
                 vectorDireccion.multiplyScalar(2.5);
                 var nuevaPosicion = posCamara.clone().add(vectorDireccion);
                 menu.setAttribute('position', nuevaPosicion);
-                menu.setAttribute('look-at', '#camara-principal');
+                menu.setAttribute('look-at', '[camera]');
             }
             menu.setAttribute('visible', 'true');
-            if (btn2D) btn2D.innerText = 'Cerrar Menú de Navegación';
+            if (btn2D) btn2D.innerText = 'Cerrar Menu de Navegacion';
             var botonesMenu = menu.querySelectorAll('.menu-btn');
             botonesMenu.forEach(b => b.classList.add('clickable'));
         } else {
             menu.setAttribute('visible', 'false');
-            if (btn2D) btn2D.innerText = 'Abrir Menú de Navegación';
+            if (btn2D) btn2D.innerText = 'Abrir Menu de Navegacion';
             var botonesMenu = menu.querySelectorAll('.menu-btn');
             botonesMenu.forEach(b => b.classList.remove('clickable'));
         }
@@ -492,7 +612,7 @@
         <p style="font-size: 1.2em; letter-spacing: 2px;">INICIANDO REALIDAD VIRTUAL...</p>
     </div>
 
-    <button id="btn-menu-2d">Abrir Menú de Navegación</button>
+    <button id="btn-menu-2d">Abrir Menu de Navegacion</button>
 
     <a-scene 
       physics="debug: false; gravity: -9.8"
@@ -505,7 +625,8 @@
         <img id="img-jardin" src="imagenes/jardin.jpg">
         <img id="img-fuente" src="imagenes/fuente.jpg">
         <img id="img-capilla" src="imagenes/capilla.jpg">
-        <img id="img-fablab" src="imagenes/fabLab.jpeg">
+        <img id="img-fablab" src="imagenes/fablab.jpg">
+        <img id="img-fablab2" src="imagenes/fablab 2.jpg">
         <img id="img-voley" src="imagenes/voley.jpg">
         <img id="img-basquet" src="imagenes/basquet.jpg">
         <img id="img-explanada" src="imagenes/explanadaconvention.jpeg">
@@ -514,10 +635,15 @@
         <img id="img-biblioteca" src="imagenes/biblioteca.jpg">
         <img id="img-danza" src="imagenes/danza.jpg">
         <img id="img-edificioD" src="imagenes/edificioD.jpeg">
-        <img id="img-edificioA" src="imagenes/edificioA.jpeg">
-        <img id="img-cafeteria" src="imagenes/cafeteria.jpeg">
+        <img id="img-edificioA" src="imagenes/edificioA.jpg">
+        <img id="img-ecoesan" src="imagenes/ecoesan.jpg">
+        <img id="img-aula" src="imagenes/aula.jpg">
+        <img id="img-laboratorio" src="imagenes/laboratorio computo.jpg">
+        <img id="img-datalab" src="imagenes/datalab.jpg">
+        <img id="img-conducta" src="imagenes/conducta.jpg">
         <img id="img-logo" src="imagenes/esan.png">
-        <a-asset-item id="modelo-flecha" src="imagenes/Flecha.glb"></a-asset-item>
+        
+        <img id="img-flecha-plana" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='rgba(255,255,255,0.8)' stroke='%23E3173E' stroke-width='6'/><path d='M30 60 L50 40 L70 60' fill='none' stroke='%23E3173E' stroke-width='8' stroke-linecap='round' stroke-linejoin='round'/></svg>">
       </a-assets>
 
       <a-sky id="cielo-fondo" radius="500" rotation="0 -90 0"></a-sky>
@@ -526,16 +652,13 @@
       <a-entity id="flechas-container"></a-entity>
       <a-entity id="menu-3d" visible="false"></a-entity>
 
-      <a-plane id="btn-lanzar-minijuego" position="3 1.5 -8" look-at="#camara-principal" width="3" height="1" color="#E3173E" visible="false">
+      <a-plane id="btn-lanzar-minijuego" position="3 1.5 -8" look-at="[camera]" width="3" height="1" color="#E3173E" visible="false">
           <a-text value="¡Juega un rato!" align="center" color="#FFFFFF" scale="1.5 1.5 1.5"></a-text>
       </a-plane>
 
       <a-entity id="entorno-fisicas-basquet" position="0 0 0" visible="false" sistema-puntos>
-          
           <a-plane static-body position="0 0 0" rotation="-90 0 0" width="20" height="20" color="#222222" opacity="0.8"></a-plane>
-
           <a-box static-body position="0 4 -12" width="2.5" height="1.5" depth="0.1" color="#FF0000" opacity="0.6"></a-box>
-
           <a-text id="texto-marcador" value="PUNTOS: 0" position="0 6 -12" align="center" color="#FFD700" scale="3 3 3"></a-text>
 
           <a-sphere 
@@ -548,11 +671,11 @@
               color="#D95C14">
           </a-sphere>
 
-          <a-plane id="btn-volver-tour" position="-3 1.5 -5" look-at="#camara-principal" width="2.5" height="0.8" color="#333333">
+          <a-plane id="btn-volver-tour" position="-3 1.5 -5" look-at="[camera]" width="2.5" height="0.8" color="#333333">
               <a-text value="Volver al Tour" align="center" color="#FFFFFF"></a-text>
           </a-plane>
 
-          <a-plane id="btn-reset-balon" position="3 1.5 -5" look-at="#camara-principal" width="2.5" height="0.8" color="#00BFFF">
+          <a-plane id="btn-reset-balon" position="3 1.5 -5" look-at="[camera]" width="2.5" height="0.8" color="#00BFFF">
               <a-text value="Resetear Balon" align="center" color="#FFFFFF"></a-text>
           </a-plane>
 
@@ -560,11 +683,11 @@
       </a-entity>
 
       <a-entity id="rig" position="0 1.6 0" rotation="0 0 0">
-        <a-entity rotate-with-camera position="0 -2 0">
+        <a-entity rotate-with-camera position="0 -1.5 0">
             <a-circle src="#img-logo" radius="1.5" position="0 0 0" rotation="-90 0 0" material="transparent: true; opacity: 1" shader="flat"></a-circle>
         </a-entity>
 
-        <a-camera id="camara-principal" fov="80" wasd-controls-enabled="false" look-controls="reverseMouseDrag: true">
+        <a-camera id="camara-principal" camera fov="80" wasd-controls-enabled="false" look-controls="reverseMouseDrag: true">
             <a-entity id="overlay-fade" geometry="primitive: sphere; radius: 0.1" material="color: #000; transparent: true; opacity: 0; side: back" position="0 0 0"></a-entity>
         </a-camera>
 
