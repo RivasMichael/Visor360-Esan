@@ -27,15 +27,21 @@
         transition: all 0.3s ease; box-shadow: 0 0 15px rgba(0, 191, 255, 0.5);
       }
       #btn-menu-2d:hover { background-color: #E3173E; color: #000; scale: 1.05; }
-      .a-enter-vr #btn-menu-2d { display: none; }
+      
+      #btn-capturar {
+        position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+        padding: 10px 20px; background-color: #E3173E; color: white;
+        border: 2px solid white; border-radius: 10px; font-weight: bold;
+        cursor: pointer; z-index: 100; box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      }
+      #btn-capturar:hover { background-color: #00BFFF; }
+
+      .a-enter-vr #btn-menu-2d, .a-enter-vr #btn-capturar { display: none; }
     </style>
     
     <script>
-      // =============================================================
-      // DICCIONARIO (ACTUALIZADO CON FABLAB 2, CONDUCTA Y ECOESAN)
-      // =============================================================
       const nombresDestinos = {
-        'entrada': 'Entrada Principal', 'jardin': 'Jardin', 'fuente': 'Fuente',
+        'entrada': 'Entrada\nPrincipal', 'jardin': 'Jardin', 'fuente': 'Fuente',
         'capilla': 'Capilla', 'fablab': 'FabLab', 'fablab2': 'FabLab 2',
         'voley': 'Cancha de\nVoley', 'basquet': 'Cancha de\nBasquet', 
         'explanada': 'Explanada\nConvention', 'eventos': 'Eventos', 
@@ -136,22 +142,55 @@
           }
         }
       });
+      // =============================================================
+      // COMPONENTE PARA HOTSPOTS INFORMATIVOS (CLICK PARA ABRIR/CERRAR)
+      // =============================================================
+      AFRAME.registerComponent('hotspot-info', {
+        schema: {
+          target: {type: 'string'} // ID del panel que va a mostrar
+        },
+        init: function () {
+          var el = this.el;
+          var data = this.data;
+          
+          el.addEventListener('click', function (evt) {
+            var panel = document.querySelector(data.target);
+            if (panel) {
+              // Alternar visibilidad
+              var isVisible = panel.getAttribute('visible');
+              panel.setAttribute('visible', !isVisible);
+              
+              // Evitar que el clic se propague si hacemos clic en el botón de cerrar
+              if (evt.target.classList.contains('close-btn')) {
+                  panel.setAttribute('visible', false);
+              }
+            }
+          });
+          
+          // Efecto hover simple para el ícono de info
+          el.addEventListener('mouseenter', function () {
+            el.setAttribute('scale', '1.2 1.2 1.2');
+          });
+          el.addEventListener('mouseleave', function () {
+            el.setAttribute('scale', '1 1 1');
+          });
+        }
+      });
 
       // =============================================================
-      // MAPA DE NAVEGACIÓN (INTEGRANDO ECOESAN, FABLAB 2 Y CONDUCTA)
+      // MAPA DE NAVEGACIÓN REPARADO (Jardín actualizado)
       // =============================================================
       const escenas = {
         'entrada': { 
             imagen: '#img-entrada', rotacionSky: '0 90 0', 
-            flechas: [ { target: 'jardin', position: '-0.51 -1 -18', rotation: '0 -155 0' } ] 
+            flechas: [ { target: 'jardin', position: '-0.70 2 -18', rotation: '0 -155 0' } ] 
         },
         'jardin': { 
             imagen: '#img-jardin', rotacionSky: '0 -90 0', 
             flechas: [ 
-                { target: 'capilla', position: '0 -1 -10', rotation: '0 0 0' }, 
-                { target: 'edificioD', position: '5 -1 -10', rotation: '0 -45 0' }, 
-                { target: 'ecoesan', position: '-5 -1 -10', rotation: '0 45 0' }, // Actualizado
-                { target: 'entrada', position: '13.95 -1 -14.33', rotation: '0 150 0' } 
+                { target: 'fuente', position: '-11.99 3 -0.5', rotation: '0 0 0' }, 
+                { target: 'edificioD', position: '-0.17 3.2 -12', rotation: '0 -45 0' }, 
+                { target: 'entrada', position: '9.12 3.1 -7.79', rotation: '0 150 0' } 
             ] 
         },
         'capilla': { 
@@ -167,10 +206,10 @@
                 { target: 'voley', position: '3.5 -1 -12.50', rotation: '0 180 0' }, 
                 { target: 'basquet', position: '10 -1 -10', rotation: '0 -45 0' },
                 { target: 'capilla', position: '19.86 -1 -2.37', rotation: '0 120 0' },
-                { target: 'fablab2', position: '0 -1 -10', rotation: '0 0 0' } // Nuevo
+                { target: 'fablab2', position: '0 -1 -10', rotation: '0 0 0' } 
             ] 
         },
-        'fablab2': { // Novedad
+        'fablab2': { 
             imagen: '#img-fablab2', rotacionSky: '0 0 0', 
             flechas: [ 
                 { target: 'fablab', position: '0 -1 -10', rotation: '0 0 0' } 
@@ -198,10 +237,10 @@
                 { target: 'voley', position: '15 -1 -15', rotation: '0 -45 0' },
                 { target: 'basquet', position: '-13 -1 15', rotation: '0 -20 0' },
                 { target: 'eventos', position: '-23 -1 2', rotation: '0 -60 0' }, 
-                { target: 'ecoesan', position: '10 -1 -18', rotation: '0 156 0' } // Actualizado
+                { target: 'ecoesan', position: '10 -1 -18', rotation: '0 156 0' } 
             ] 
         },
-        'ecoesan': { // Reemplaza a la Cafetería
+        'ecoesan': { 
             imagen: '#img-ecoesan', rotacionSky: '0 -90 0', 
             flechas: [ 
                 { target: 'explanada', position: '-9 -1 -17.35', rotation: '0 -140 0' }, 
@@ -212,7 +251,7 @@
         'edificioA': { 
             imagen: '#img-edificioA', rotacionSky: '0 -90 0', 
             flechas: [ 
-                { target: 'ecoesan', position: '17 -1 9', rotation: '0 120 0' }, // Actualizado
+                { target: 'ecoesan', position: '17 -1 9', rotation: '0 120 0' }, 
                 { target: 'edificioD', position: '-9 -1 -20', rotation: '0 -140 0' },
                 { target: 'aula', position: '0 -1 -10', rotation: '0 0 0' },
                 { target: 'laboratorio', position: '-10 -1 0', rotation: '0 -90 0' }
@@ -225,10 +264,10 @@
                 { target: 'jardin', position: '15 -1 0', rotation: '0 90 0' },
                 { target: 'fuente', position: '-7 -1 18', rotation: '0 20 0' },
                 { target: 'datalab', position: '0 -1 -15', rotation: '0 0 0' },
-                { target: 'conducta', position: '-5 -1 -10', rotation: '0 45 0' } // Nuevo
+                { target: 'conducta', position: '-5 -1 -10', rotation: '0 45 0' } 
             ] 
         },
-        'conducta': { // Novedad
+        'conducta': { 
             imagen: '#img-conducta', rotacionSky: '0 0 0', 
             flechas: [ 
                 { target: 'edificioD', position: '0 -1 -10', rotation: '0 0 0' } 
@@ -237,8 +276,9 @@
         'fuente': { 
             imagen: '#img-fuente', rotacionSky: '0 50.5 0', 
             flechas: [ 
-                { target: 'ecoesan', position: '10 -1 -10', rotation: '0 -45 0' }, // Actualizado
-                { target: 'edificioD', position: '20 -1 0.36', rotation: '0 120 0' }
+                { target: 'ecoesan', position: '10 -1 -10', rotation: '0 -45 0' }, 
+                { target: 'edificioD', position: '20 -1 0.36', rotation: '0 120 0' },
+                { target: 'capilla', position: '-10 -1 -10', rotation: '0 45 0' } // Añadido para poder ir a la capilla
             ] 
         },
         'datalab': {
@@ -288,12 +328,12 @@
             if (target && target !== "null") iniciarTransicion(target, direccionDeseada);
           });
           el.addEventListener('mouseenter', function () {
-            el.setAttribute('animation__scale', 'property: scale; to: 3 3 3; dur: 200; easing: easeOutQuad');
+            el.setAttribute('animation__scale', 'property: scale; to: 2.1 2.1 2.1; dur: 200; easing: easeOutQuad');
             var etiqueta = el.querySelector('.etiqueta-flotante');
             if (etiqueta) etiqueta.setAttribute('visible', 'true');
           });
           el.addEventListener('mouseleave', function () {
-            el.setAttribute('animation__scale', 'property: scale; to: 2.5 2.5 2.5; dur: 200; easing: easeOutQuad');
+            el.setAttribute('animation__scale', 'property: scale; to: 1.8 1.8 1.8; dur: 200; easing: easeOutQuad');
             var etiqueta = el.querySelector('.etiqueta-flotante');
             if (etiqueta) etiqueta.setAttribute('visible', 'false');
           });
@@ -341,6 +381,15 @@
         btnLanzarMinijuego.setAttribute('visible', 'false');
         btnLanzarMinijuego.classList.remove('clickable');
         
+        // --- NUEVO: Ocultar todos los grupos de hotspots ---
+        var todosHotspots = document.querySelectorAll('.grupo-hotspots');
+        todosHotspots.forEach(function(grupo) {
+            grupo.setAttribute('visible', 'false');
+            // Cerramos los paneles abiertos por si acaso
+            var paneles = grupo.querySelectorAll('[id^="panel-info"]');
+            paneles.forEach(p => p.setAttribute('visible', 'false'));
+        });
+        
         overlayFade.setAttribute('animation', { property: 'material.opacity', from: 0, to: 1, dur: duracionFade, easing: 'linear' });
 
         setTimeout(() => {
@@ -365,6 +414,12 @@
                 if (nombreEscena === 'basquet') {
                     btnLanzarMinijuego.setAttribute('visible', 'true');
                     btnLanzarMinijuego.classList.add('clickable');
+                }
+                
+                // --- NUEVO: Mostrar el grupo de hotspots si existe para esta escena ---
+                var hotspotActual = document.querySelector('#hotspots-' + nombreEscena);
+                if (hotspotActual) {
+                    hotspotActual.setAttribute('visible', 'true');
                 }
 
                 overlayFade.setAttribute('animation', { property: 'material.opacity', from: 1, to: 0, dur: duracionFade, easing: 'linear' });
@@ -424,12 +479,11 @@
           
           var wrapper = document.createElement('a-entity');
           wrapper.setAttribute('position', flecha.position);
-          wrapper.setAttribute('animation', `property: position; dir: alternate; dur: 2000; easing: easeInOutSine; loop: true; to: ${flecha.position.split(' ')[0]} ${parseFloat(flecha.position.split(' ')[1]) + 0.3} ${flecha.position.split(' ')[2]}`);
+          wrapper.setAttribute('animation', `property: position; dir: alternate; dur: 2000; easing: easeInOutSine; loop: true; to: ${flecha.position.split(' ')[0]} ${parseFloat(flecha.position.split(' ')[1]) + 0.2} ${flecha.position.split(' ')[2]}`);
 
-          // ICONO 2D (Flecha)
           var entidad = document.createElement('a-image');
           entidad.setAttribute('src', '#img-flecha-plana');
-          entidad.setAttribute('scale', '2.5 2.5 2.5'); 
+          entidad.setAttribute('scale', '1.8 1.8 1.8'); 
           entidad.setAttribute('look-at', '[camera]'); 
           entidad.setAttribute('transparent', 'true');
           
@@ -440,19 +494,18 @@
           }
           entidad.setAttribute('tour-logic', ''); 
 
-          // ETIQUETA FLOTANTE (Cuadro blanco con texto rojo)
           var nombreLugar = nombresDestinos[flecha.target] || flecha.target;
           var etiqueta = document.createElement('a-entity');
           etiqueta.classList.add('etiqueta-flotante');
-          etiqueta.setAttribute('position', '0 0.8 0.05'); 
-          etiqueta.setAttribute('scale', '0.4 0.4 0.4'); 
+          etiqueta.setAttribute('position', '0 1.2 0.05'); 
+          etiqueta.setAttribute('scale', '0.9 0.9 0.9'); 
           etiqueta.setAttribute('visible', 'false'); 
 
           var fondo = document.createElement('a-plane');
           fondo.setAttribute('color', '#FFFFFF'); 
           fondo.setAttribute('opacity', '0.95');
-          fondo.setAttribute('width', (nombreLugar.length * 0.4).toString()); 
-          fondo.setAttribute('height', '0.8'); 
+          fondo.setAttribute('width', (Math.max(nombreLugar.length * 0.45, 2.5)).toString()); 
+          fondo.setAttribute('height', '0.65'); 
           fondo.setAttribute('position', '0 0 -0.01'); 
           etiqueta.appendChild(fondo);
 
@@ -460,7 +513,7 @@
           texto.setAttribute('value', nombreLugar);
           texto.setAttribute('align', 'center');
           texto.setAttribute('color', '#E3173E'); 
-          texto.setAttribute('width', '5'); 
+          texto.setAttribute('width', '6.5'); 
           texto.setAttribute('position', '0 0 0.01'); 
           etiqueta.appendChild(texto);
 
@@ -476,7 +529,6 @@
 
         var panelFondo = document.createElement('a-plane');
         panelFondo.setAttribute('width', '3.8');     
-        // Aumentado el alto a 3.2 para que entren las 5 filas (20 lugares) cómodamente
         panelFondo.setAttribute('height', '3.2'); 
         panelFondo.setAttribute('color', '#000000'); 
         panelFondo.setAttribute('opacity', '0.65');  
@@ -487,7 +539,7 @@
         titulo.setAttribute('value', 'MAPA VIRTUAL ESAN');
         titulo.setAttribute('align', 'center');
         titulo.setAttribute('color', '#FFFFFF'); 
-        titulo.setAttribute('position', '0 1.5 0'); // Título más arriba
+        titulo.setAttribute('position', '0 1.5 0');
         titulo.setAttribute('width', '4');
         menu.appendChild(titulo);
 
@@ -517,7 +569,6 @@
         var btnEnlace = document.createElement('a-plane');
         btnEnlace.setAttribute('width', '2.6'); btnEnlace.setAttribute('height', '0.25'); 
         btnEnlace.setAttribute('color', '#222222'); btnEnlace.setAttribute('opacity', '0.95');
-        // Bajado el botón para que no choque con la fila nueva
         btnEnlace.setAttribute('position', '0 -1.2 0'); btnEnlace.setAttribute('class', 'menu-btn'); 
         
         var txtEnlace = document.createElement('a-text');
@@ -590,10 +641,36 @@
         });
 
         document.getElementById('btn-menu-2d').addEventListener('click', toggleMenu3D);
-        
         document.querySelector('#btn-lanzar-minijuego').addEventListener('click', activarMinijuego);
         document.querySelector('#btn-volver-tour').addEventListener('click', desactivarMinijuego);
         document.querySelector('#btn-reset-balon').addEventListener('click', resetearPelota);
+
+        document.getElementById('btn-capturar').addEventListener('click', function() {
+            var cam = document.querySelector('#camara-principal').getObject3D('camera');
+            if (!cam) return;
+
+            var vectorDireccion = new THREE.Vector3();
+            cam.getWorldDirection(vectorDireccion);
+            
+            var distancia = 12; 
+            
+            var posX = (vectorDireccion.x * distancia).toFixed(2);
+            var posY = (vectorDireccion.y * distancia).toFixed(2); 
+            var posZ = (vectorDireccion.z * distancia).toFixed(2);
+            
+            var anguloRad = Math.atan2(vectorDireccion.x, vectorDireccion.z);
+            var rotY = Math.round(anguloRad * (180 / Math.PI));
+
+            var codigoGenerado = `{ target: 'DESTINO', position: '${posX} ${posY} ${posZ}', rotation: '0 ${rotY} 0' },`;
+            
+            navigator.clipboard.writeText(codigoGenerado).then(function() {
+                alert("✅ ¡Cartel capturado en tu portapapeles!\n\n" + codigoGenerado + "\n\nPegalo en tu código.");
+            }).catch(function() {
+                prompt("Copia este código:", codigoGenerado);
+            });
+            console.log("%c🎯 NUEVA COORDENADA CAPTURADA", "color: #E3173E; font-size: 16px; font-weight: bold;");
+            console.log(codigoGenerado);
+        });
       };
 
       function ocultarLoader() {
@@ -613,6 +690,7 @@
     </div>
 
     <button id="btn-menu-2d">Abrir Menu de Navegacion</button>
+    <button id="btn-capturar">🎯 Capturar Coordenada</button>
 
     <a-scene 
       physics="debug: false; gravity: -9.8"
@@ -625,8 +703,8 @@
         <img id="img-jardin" src="imagenes/jardin.jpg">
         <img id="img-fuente" src="imagenes/fuente.jpg">
         <img id="img-capilla" src="imagenes/capilla.jpg">
-        <img id="img-fablab" src="imagenes/fablab.jpg">
-        <img id="img-fablab2" src="imagenes/fablab 2.jpg">
+        <img id="img-fablab" src="imagenes/fabLab.jpeg">
+        <img id="img-fablab2" src="imagenes/fablab%202.jpg">
         <img id="img-voley" src="imagenes/voley.jpg">
         <img id="img-basquet" src="imagenes/basquet.jpg">
         <img id="img-explanada" src="imagenes/explanadaconvention.jpeg">
@@ -635,15 +713,16 @@
         <img id="img-biblioteca" src="imagenes/biblioteca.jpg">
         <img id="img-danza" src="imagenes/danza.jpg">
         <img id="img-edificioD" src="imagenes/edificioD.jpeg">
-        <img id="img-edificioA" src="imagenes/edificioA.jpg">
+        <img id="img-edificioA" src="imagenes/edificioA.jpeg">
         <img id="img-ecoesan" src="imagenes/ecoesan.jpg">
         <img id="img-aula" src="imagenes/aula.jpg">
-        <img id="img-laboratorio" src="imagenes/laboratorio computo.jpg">
+        <img id="img-laboratorio" src="imagenes/laboratorio%20computo.jpg">
         <img id="img-datalab" src="imagenes/datalab.jpg">
         <img id="img-conducta" src="imagenes/conducta.jpg">
         <img id="img-logo" src="imagenes/esan.png">
         
         <img id="img-flecha-plana" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='rgba(255,255,255,0.8)' stroke='%23E3173E' stroke-width='6'/><path d='M30 60 L50 40 L70 60' fill='none' stroke='%23E3173E' stroke-width='8' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+	<img id="img-info-icon" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23FF0000'/><text x='50' y='75' font-family='Arial' font-size='65' font-weight='bold' fill='white' text-anchor='middle'>i</text></svg>">
       </a-assets>
 
       <a-sky id="cielo-fondo" radius="500" rotation="0 -90 0"></a-sky>
@@ -651,6 +730,28 @@
 
       <a-entity id="flechas-container"></a-entity>
       <a-entity id="menu-3d" visible="false"></a-entity>
+
+      <a-entity id="hotspots-jardin" class="grupo-hotspots" visible="false">
+          <a-image 
+              src="#img-info-icon" 
+              position="11.99 3 -0.20" scale="0.8 0.8 0.8" 
+              look-at="[camera]" 
+              class="clickable" 
+              hotspot-info="target: #panel-info-jardin">
+          </a-image>
+
+          <a-entity id="panel-info-jardin" position="-3 1.5 -4.9" visible="false" look-at="[camera]">
+              <a-plane color="#FFFFFF" opacity="0.95" width="3" height="2" position="0 0 0"></a-plane>
+              
+              <a-text value="JARDIN CENTRAL" color="#E3173E" align="center" width="5" position="0 0.7 0.01" font="roboto"></a-text>
+              
+              <a-text value="Este es el area principal de descanso para los alumnos.\n\nAquí puedes relajarte, conversar o estudiar al aire libre.\n\n¡Disfruta del entorno verde!" color="#333333" align="left" width="2.5" position="-1.2 0.1 0.01" wrap-count="30"></a-text>
+              
+              <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.3 0.8 0.02" hotspot-info="target: #panel-info-jardin">
+                  <a-text value="X" color="#FFFFFF" align="center" width="5" position="0 0 0.01"></a-text>
+              </a-plane>
+          </a-entity>
+      </a-entity>
 
       <a-plane id="btn-lanzar-minijuego" position="3 1.5 -8" look-at="[camera]" width="3" height="1" color="#E3173E" visible="false">
           <a-text value="¡Juega un rato!" align="center" color="#FFFFFF" scale="1.5 1.5 1.5"></a-text>
@@ -689,6 +790,13 @@
 
         <a-camera id="camara-principal" camera fov="80" wasd-controls-enabled="false" look-controls="reverseMouseDrag: true">
             <a-entity id="overlay-fade" geometry="primitive: sphere; radius: 0.1" material="color: #000; transparent: true; opacity: 0; side: back" position="0 0 0"></a-entity>
+            
+            <a-entity 
+                geometry="primitive: ring; radiusInner: 0.015; radiusOuter: 0.025" 
+                material="color: #00BFFF; shader: flat; opacity: 0.8" 
+                position="0 0 -1" 
+                raycaster="enabled: false">
+            </a-entity>
         </a-camera>
 
         <a-entity laser-controls="hand: right" raycaster="objects: .clickable" vr-controller-listener></a-entity>
