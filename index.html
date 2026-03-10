@@ -144,29 +144,30 @@
       });
 
       // =============================================================
-      // NUEVO COMPONENTE: SEGUIMIENTO DE MIRADA (HUD FLOTANTE)
+      // NUEVO: SEGUIMIENTO DE MIRADA Y CORRECCIÓN DE INCLINACIÓN
       // =============================================================
       AFRAME.registerComponent('smooth-follow', {
         tick: function () {
-          // Si el panel está cerrado, no calculamos nada para ahorrar recursos
           if (this.el.getAttribute('visible') === false) return;
           
           var cam = document.querySelector('#camara-principal').object3D;
           
-          // Calculamos el punto destino: 3.5 metros frente a la cámara
-          var targetPos = new THREE.Vector3(0, 0, -3.5);
+          // Distancia aumentada a 5.5 metros para que no se sienta abrumador
+          var targetPos = new THREE.Vector3(0, 0, -5.5);
           targetPos.applyMatrix4(cam.matrixWorld);
           
-          // Lerp hace que el panel "persiga" la mirada suavemente en lugar de pegarse bruscamente
+          // Lerp hace que siga la vista suavemente
           this.el.object3D.position.lerp(targetPos, 0.08);
           
-          // Obligamos al panel a mirar siempre directo a la cámara para evitar deformaciones
-          this.el.object3D.lookAt(cam.position);
+          // CORRECCIÓN: Mirar al usuario PERO manteniéndose totalmente vertical (pitch bloqueado)
+          var lookAtPos = new THREE.Vector3().copy(cam.position);
+          lookAtPos.y = this.el.object3D.position.y; // Iguala la altura para no inclinarse hacia atrás/adelante
+          this.el.object3D.lookAt(lookAtPos);
         }
       });
 
       // =============================================================
-      // COMPONENTE HOTSPOT: LÓGICA DE APERTURA MEJORADA
+      // APERTURA DE HOTSPOT Y MODO OSCURO
       // =============================================================
       AFRAME.registerComponent('hotspot-info', {
         schema: {
@@ -179,40 +180,39 @@
           
           el.addEventListener('click', function (evt) {
             var panel = document.querySelector(data.target);
-            if (!panel) return;
+            var fondoOscuro = document.querySelector('#hotspot-darkbg'); // Fondo negro
             
-            evt.stopPropagation(); // Evita clics dobles
+            if (!panel) return;
+            evt.stopPropagation(); 
 
             if (data.action === 'close') {
                 panel.setAttribute('visible', 'false');
                 panel.classList.remove('panel-activo');
+                if(fondoOscuro) fondoOscuro.setAttribute('visible', 'false');
             } else {
                 panel.setAttribute('visible', 'true');
                 panel.classList.add('panel-activo');
+                if(fondoOscuro) fondoOscuro.setAttribute('visible', 'true'); // Oscurece el mundo
                 
-                // MAGIA: Al abrirlo, lo teletransportamos instantáneamente frente al usuario
-                // para que el smooth-follow no lo traiga volando desde muy lejos
+                // Teletransporte inicial a 5.5 metros antes de hacer smooth follow
                 var cam = document.querySelector('#camara-principal').object3D;
-                var startPos = new THREE.Vector3(0, 0, -3.5);
+                var startPos = new THREE.Vector3(0, 0, -5.5); 
                 startPos.applyMatrix4(cam.matrixWorld);
                 panel.object3D.position.copy(startPos);
-                panel.object3D.lookAt(cam.position);
+                
+                var lookAtPos = new THREE.Vector3().copy(cam.position);
+                lookAtPos.y = panel.object3D.position.y;
+                panel.object3D.lookAt(lookAtPos);
             }
           });
           
           el.addEventListener('mouseenter', function () {
-              if (data.action !== 'close') {
-                  el.setAttribute('scale', '0.9 0.9 0.9'); // Animación sutil del ícono 'i'
-              } else {
-                  el.setAttribute('color', '#FF5555'); // Iluminar botón X
-              }
+              if (data.action !== 'close') el.setAttribute('scale', '0.9 0.9 0.9'); 
+              else el.setAttribute('color', '#FF5555'); 
           });
           el.addEventListener('mouseleave', function () {
-              if (data.action !== 'close') {
-                  el.setAttribute('scale', '0.8 0.8 0.8');
-              } else {
-                  el.setAttribute('color', '#FF0000');
-              }
+              if (data.action !== 'close') el.setAttribute('scale', '0.8 0.8 0.8');
+              else el.setAttribute('color', '#FF0000');
           });
         }
       });
@@ -412,13 +412,16 @@
         var cieloFondo = document.querySelector('#cielo-fondo'); 
         var overlayFade = document.querySelector('#overlay-fade');
         var btnLanzarMinijuego = document.querySelector('#btn-lanzar-minijuego');
+        var fondoOscuro = document.querySelector('#hotspot-darkbg'); 
         var duracionFade = 500; 
 
         contenedorFlechas.setAttribute('visible', 'false');
         btnLanzarMinijuego.setAttribute('visible', 'false');
         btnLanzarMinijuego.classList.remove('clickable');
         
-        // --- Ocultar Hotspots al cambiar de escena ---
+        if(fondoOscuro) fondoOscuro.setAttribute('visible', 'false'); 
+
+        // Ocultar Hotspots al cambiar de escena
         var todosHotspots = document.querySelectorAll('.grupo-hotspots');
         todosHotspots.forEach(function(grupo) {
             grupo.setAttribute('visible', 'false');
@@ -457,7 +460,7 @@
                     btnLanzarMinijuego.classList.add('clickable');
                 }
                 
-                // --- Mostrar Hotspots de la escena actual ---
+                // Mostrar Hotspots de la escena actual
                 var hotspotActual = document.querySelector('#hotspots-' + nombreEscena);
                 if (hotspotActual) {
                     hotspotActual.setAttribute('visible', 'true');
@@ -765,12 +768,13 @@
         <img id="img-logo" src="imagenes/esan.png">
         
         <img id="img-flecha-plana" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='rgba(255,255,255,0.8)' stroke='%23E3173E' stroke-width='6'/><path d='M30 60 L50 40 L70 60' fill='none' stroke='%23E3173E' stroke-width='8' stroke-linecap='round' stroke-linejoin='round'/></svg>">
-        
         <img id="img-info-icon" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23FF0000'/><text x='50' y='75' font-family='Arial' font-size='65' font-weight='bold' fill='white' text-anchor='middle'>i</text></svg>">
       </a-assets>
 
       <a-sky id="cielo-fondo" radius="500" rotation="0 -90 0"></a-sky>
       <a-light type="ambient" color="#FFF" intensity="1.5"></a-light>
+      
+      <a-entity id="hotspot-darkbg" geometry="primitive: sphere; radius: 100" material="color: #000000; transparent: true; opacity: 0.6; side: back" visible="false"></a-entity>
 
       <a-entity id="flechas-container"></a-entity>
       <a-entity id="menu-3d" visible="false"></a-entity>
@@ -778,23 +782,22 @@
       <a-entity id="hotspots-jardin" class="grupo-hotspots" visible="false">
           <a-image 
               src="#img-info-icon" 
-              position="-3 1.5 -5" 
-              scale="0.8 0.8 0.8" 
+              position="11.99 3 -0.20" scale="0.8 0.8 0.8" 
               look-at="[camera]" 
               class="clickable icono-hotspot" 
               hotspot-info="target: #panel-info-jardin; action: toggle">
           </a-image>
 
-          <a-entity id="panel-info-jardin" visible="false" smooth-follow>
+          <a-entity id="panel-info-jardin" visible="false" smooth-follow scale="1.5 1.5 1.5">
               <a-plane color="#FFFFFF" opacity="0.95" width="4" height="2.8" position="0 0 0"></a-plane>
               
-              <a-text value="JARDIN CENTRAL" color="#E3173E" align="center" width="7" position="0 1.1 0.01"></a-text>
+              <a-text value="JARDIN CENTRAL" color="#E3173E" align="center" width="7" position="0 1.05 0.01"></a-text>
               
               <a-text value="Este es el area principal de descanso para los alumnos de ESAN.\n\nAquí puedes relajarte, conversar o estudiar al aire libre rodeado de naturaleza.\n\n¡Disfruta del entorno verde y mantenlo limpio!" 
-                      color="#333333" align="center" width="4" position="0 0 0.01" wrap-count="35"></a-text>
+                      color="#333333" align="center" width="3.5" position="0 -0.1 0.01" wrap-count="35"></a-text>
               
               <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.7 1.1 0.02" hotspot-info="target: #panel-info-jardin; action: close">
-                  <a-text value="X" color="#FFFFFF" align="center" width="5" position="0 0 0.01"></a-text>
+                  <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
               </a-plane>
           </a-entity>
       </a-entity>
