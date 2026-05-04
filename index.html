@@ -218,27 +218,36 @@
       });
 
       const escenas = {
-        'entrada': { 
-            imagen: '#img-entrada', rotacionSky: '0 90 0', 
-            flechas: [ { target: 'jardin', position: '-0.70 2 -18', rotation: '0 -155 0' } ] 
+
+      'entrada': { 
+      imagen: '#img-entrada',
+      rotacionSky: '0 90 0', 
+      flechas: [ { target: 'jardin', position: '-0.70 2 -18', rotation: '0 -155 0' } ]
         },
-        'jardin': { 
-            imagen: '#img-jardin', rotacionSky: '0 -90 0', 
-            flechas: [ 
-                { target: 'fuente', position: '-11.99 3 -0.5', rotation: '0 0 0' }, 
-                { target: 'edificioD', position: '-0.17 3.2 -12', rotation: '0 -45 0' }, 
-                { target: 'entrada', position: '9.12 3.1 -7.79', rotation: '0 150 0' } 
-            ] 
+        // 'entrada': {
+        //     imagen: 'https://esanlabs.blob.core.windows.net/media/imagenes/entrada.jpg?sp=r&st=2026-04-28T15:38:39Z&se=2027-04-28T23:53:39Z&spr=https&sv=2025-11-05&sr=b&sig=zcn6m%2FSCuLHqCuRc1hugYAYVFRN2ygvyENCmauK0cjk%3D', 
+        //     rotacionSky: '0 90 0', 
+        //     flechas: [ { target: 'jardin', position: '-0.70 2 -18', rotation: '0 -155 0' } ] 
+        // },
+
+        'jardin': {
+            imagen: 'imagenes/jardin.jpg', rotacionSky: '0 -90 0',
+            flechas: [
+                { target: 'fuente', position: '-11.99 3 -0.5', rotation: '0 0 0' },
+                { target: 'edificioD', position: '-0.17 3.2 -12', rotation: '0 -45 0' },
+                { target: 'entrada', position: '9.12 3.1 -7.79', rotation: '0 150 0' }
+            ]
         },
+
         'capilla': { 
-            imagen: '#img-capilla', rotacionSky: '0 -90 0', 
+            imagen: 'imagenes/capilla.jpg', rotacionSky: '0 -90 0',
             flechas: [ 
                 { target: 'fablab', position: '19.73 -1 3.25', rotation: '0 110 0' }, 
                 { target: 'jardin', position: '-19.29 -1 5.26', rotation: '0 -75 0' } 
             ] 
         },
         'fablab': { 
-            imagen: '#img-fablab', rotacionSky: '0 -90 0', 
+            imagen: 'imagenes/fabLab.jpeg', rotacionSky: '0 -90 0',
             flechas: [ 
                 { target: 'voley', position: '3.5 -1 -12.50', rotation: '0 180 0' }, 
                 { target: 'basquet', position: '10 -1 -10', rotation: '0 -45 0' },
@@ -247,13 +256,13 @@
             ] 
         },
         'fablab2': { 
-            imagen: '#img-fablab2', rotacionSky: '0 0 0', 
+            imagen: 'imagenes/fablab%202.jpg', rotacionSky: '0 0 0',
             flechas: [ 
                 { target: 'fablab', position: '0 -1 -10', rotation: '0 0 0' } 
             ] 
         },
         'voley': { 
-            imagen: '#img-voley', rotacionSky: '0 -90 0', 
+            imagen: 'imagenes/voley.jpg', rotacionSky: '0 -90 0',
             flechas: [ 
                 { target: 'basquet', position: '15 -1 -25', rotation: '0 160 0' }, 
                 { target: 'explanada', position: '-10 -1 -15', rotation: '0 45 0' },
@@ -261,7 +270,7 @@
             ] 
         },
         'basquet': { 
-            imagen: '#img-basquet', rotacionSky: '0 -90 0', 
+            imagen: 'imagenes/basquet.jpg', rotacionSky: '0 -90 0',
             flechas: [ 
                 { target: 'voley', position: '-20 -1 25', rotation: '0 -45 0' },
                 { target: 'explanada', position: '20 -1 -25', rotation: '0 140 0' }, 
@@ -269,7 +278,7 @@
             ] 
         },
         'explanada': { 
-            imagen: '#img-explanada', rotacionSky: '0 -90 0', 
+            imagen: 'imagenes/explanadaconvention.jpeg', rotacionSky: '0 -90 0',
             flechas: [ 
                 { target: 'voley', position: '15 -1 -15', rotation: '0 -45 0' },
                 { target: 'basquet', position: '-13 -1 15', rotation: '0 -20 0' },
@@ -278,7 +287,7 @@
             ] 
         },
         'ecoesan': { 
-            imagen: '#img-ecoesan', rotacionSky: '0 -90 0', 
+            imagen: 'imagenes/ecoesan.jpg', rotacionSky: '0 -90 0',
             flechas: [ 
                 { target: 'explanada', position: '-9 -1 -17.35', rotation: '0 -140 0' }, 
                 { target: 'edificioA', position: '4.67 -1 20', rotation: '0 40 0' },
@@ -286,7 +295,7 @@
             ] 
         },
         'edificioA': { 
-            imagen: '#img-edificioA', rotacionSky: '0 -90 0', 
+            imagen: 'imagenes/edificioA.jpeg', rotacionSky: '0 -90 0',
             flechas: [ 
                 { target: 'ecoesan', position: '17 -1 9', rotation: '0 120 0' }, 
                 { target: 'edificioD', position: '-9 -1 -20', rotation: '0 -140 0' },
@@ -295,7 +304,7 @@
             ] 
         },
         'edificioD': { 
-            imagen: '#img-edificioD', rotacionSky: '0 -90 0', 
+            imagen: 'imagenes/edificioD.jpeg', rotacionSky: '0 -90 0',
             flechas: [ 
                 { target: 'edificioA', position: '-17.24 -1 10.13', rotation: '0 -70 0' }, 
                 { target: 'jardin', position: '15 -1 0', rotation: '0 90 0' },
@@ -305,13 +314,13 @@
             ] 
         },
         'conducta': { 
-            imagen: '#img-conducta', rotacionSky: '0 0 0', 
+            imagen: 'imagenes/conducta.jpg', rotacionSky: '0 0 0',
             flechas: [ 
                 { target: 'edificioD', position: '0 -1 -10', rotation: '0 0 0' } 
             ] 
         },
         'fuente': { 
-            imagen: '#img-fuente', rotacionSky: '0 50.5 0', 
+            imagen: 'imagenes/fuente.jpg', rotacionSky: '0 50.5 0',
             flechas: [ 
                 { target: 'ecoesan', position: '10 -1 -10', rotation: '0 -45 0' }, 
                 { target: 'edificioD', position: '20 -1 0.36', rotation: '0 120 0' },
@@ -319,7 +328,7 @@
             ] 
         },
         'datalab': {
-            imagen: '#img-datalab', rotacionSky: '0 0 0',
+            imagen: 'imagenes/datalab.jpg', rotacionSky: '0 0 0',
             flechas: [
                 { target: 'edificioD', position: '0 -1 10', rotation: '0 180 0' },
                 { target: 'aula', position: '10 -1 0', rotation: '0 90 0' },
@@ -327,7 +336,7 @@
             ]
         },
         'aula': {
-            imagen: '#img-aula', rotacionSky: '0 0 0',
+            imagen: 'imagenes/aula.jpg', rotacionSky: '0 0 0',
             flechas: [
                 { target: 'edificioA', position: '0 -1 10', rotation: '0 180 0' },
                 { target: 'datalab', position: '-10 -1 0', rotation: '0 -90 0' },
@@ -335,7 +344,7 @@
             ]
         },
         'laboratorio': {
-            imagen: '#img-laboratorio', rotacionSky: '0 0 0',
+            imagen: 'imagenes/laboratorio%20computo.jpg', rotacionSky: '0 0 0',
             flechas: [
                 { target: 'edificioA', position: '0 -1 10', rotation: '0 180 0' },
                 { target: 'datalab', position: '10 -1 0', rotation: '0 90 0' },
@@ -343,7 +352,7 @@
             ]
         },
         'eventos': { 
-            imagen: '#img-eventos', rotacionSky: '0 -90 0', 
+            imagen: 'imagenes/eventos.jpg', rotacionSky: '0 -90 0',
             flechas: [ 
                 { target: 'biblioteca', position: '1.15 -1 20', rotation: '0 50 0' }, 
                 { target: 'butacas', position: '20 -1 3.43', rotation: '0 110 0' }, 
@@ -351,9 +360,9 @@
                 { target: 'explanada', position: '16.59 -1 -11', rotation: '0 150 0' } 
             ] 
         },
-        'butacas': { imagen: '#img-butacas', rotacionSky: '0 -90 0', flechas: [ { target: 'eventos', position: '-8 5 25', rotation: '0 5 0' } ] },
-        'biblioteca': { imagen: '#img-biblioteca', rotacionSky: '0 -90 0', flechas: [ { target: 'eventos', position: '17 -1 20', rotation: '0 40 0' } ] },
-        'danza': { imagen: '#img-danza', rotacionSky: '0 -90 0', flechas: [ { target: 'eventos', position: '7 -1 -25', rotation: '0 180 0' } ] }
+        'butacas': { imagen: 'imagenes/butacas%20actualizado.jpg', rotacionSky: '0 -90 0', flechas: [ { target: 'eventos', position: '-8 5 25', rotation: '0 5 0' } ] },
+        'biblioteca': { imagen: 'imagenes/biblioteca.jpg', rotacionSky: '0 -90 0', flechas: [ { target: 'eventos', position: '17 -1 20', rotation: '0 40 0' } ] },
+        'danza': { imagen: 'imagenes/danza.jpg', rotacionSky: '0 -90 0', flechas: [ { target: 'eventos', position: '7 -1 -25', rotation: '0 180 0' } ] }
       };
 
       AFRAME.registerComponent('tour-logic', {
@@ -469,6 +478,7 @@
                 }
 
                 overlayFade.setAttribute('animation', { property: 'material.opacity', from: 1, to: 0, dur: duracionFade, easing: 'linear' });
+                precargarAdyacentes(nombreEscena);
             }
             cieloFondo.addEventListener('materialtextureloaded', revelarEscena);
         }, duracionFade + 50);
@@ -683,7 +693,8 @@
 
         cieloFondo.addEventListener('materialtextureloaded', function onFirstTexture() {
             cieloFondo.removeEventListener('materialtextureloaded', onFirstTexture);
-            ocultarLoader(); 
+            ocultarLoader();
+            precargarAdyacentes('entrada');
         });
 
         document.getElementById('btn-menu-2d').addEventListener('click', toggleMenu3D);
@@ -726,6 +737,21 @@
           setTimeout(() => { loader.style.display = 'none'; }, 1000);
         }
       }
+
+      const _preCache = {};
+      function precargarAdyacentes(nombreEscena) {
+        var datos = escenas[nombreEscena];
+        if (!datos || !datos.flechas) return;
+        datos.flechas.forEach(function(flecha) {
+          var destino = escenas[flecha.target];
+          if (!destino) return;
+          var src = destino.imagen;
+          if (!src || src.startsWith('#') || _preCache[src]) return;
+          _preCache[src] = true;
+          var img = new Image();
+          img.src = src;
+        });
+      }
     </script>
   </head>
   
@@ -744,29 +770,9 @@
       cursor="rayOrigin: mouse" 
       raycaster="objects: .clickable">
       
-      <a-assets timeout="60000"> 
+      <a-assets timeout="10000">
         <img id="img-entrada" src="imagenes/entrada.jpg">
-        <img id="img-jardin" src="imagenes/jardin.jpg">
-        <img id="img-fuente" src="imagenes/fuente.jpg">
-        <img id="img-capilla" src="imagenes/capilla.jpg">
-        <img id="img-fablab" src="imagenes/fabLab.jpeg">
-        <img id="img-fablab2" src="imagenes/fablab%202.jpg">
-        <img id="img-voley" src="imagenes/voley.jpg">
-        <img id="img-basquet" src="imagenes/basquet.jpg">
-        <img id="img-explanada" src="imagenes/explanadaconvention.jpeg">
-        <img id="img-eventos" src="imagenes/eventos.jpg">
-        <img id="img-butacas" src="imagenes/butacas actualizado.jpg">
-        <img id="img-biblioteca" src="imagenes/biblioteca.jpg">
-        <img id="img-danza" src="imagenes/danza.jpg">
-        <img id="img-edificioD" src="imagenes/edificioD.jpeg">
-        <img id="img-edificioA" src="imagenes/edificioA.jpeg">
-        <img id="img-ecoesan" src="imagenes/ecoesan.jpg">
-        <img id="img-aula" src="imagenes/aula.jpg">
-        <img id="img-laboratorio" src="imagenes/laboratorio%20computo.jpg">
-        <img id="img-datalab" src="imagenes/datalab.jpg">
-        <img id="img-conducta" src="imagenes/conducta.jpg">
         <img id="img-logo" src="imagenes/esan.png">
-        
         <img id="img-flecha-plana" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='rgba(255,255,255,0.8)' stroke='%23E3173E' stroke-width='6'/><path d='M30 60 L50 40 L70 60' fill='none' stroke='%23E3173E' stroke-width='8' stroke-linecap='round' stroke-linejoin='round'/></svg>">
         <img id="img-info-icon" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23FF0000'/><text x='50' y='75' font-family='Arial' font-size='65' font-weight='bold' fill='white' text-anchor='middle'>i</text></svg>">
       </a-assets>
