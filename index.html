@@ -51,6 +51,24 @@
         'datalab': 'Data Lab', 'cafeteria': 'Cafeteria'
       };
 
+      AFRAME.registerGeometry('rounded-rect', {
+        schema: { width: {default: 1}, height: {default: 1}, radius: {default: 0.05} },
+        init: function(data) {
+          var shape = new THREE.Shape();
+          var w = data.width / 2, h = data.height / 2, r = Math.min(data.radius, w, h);
+          shape.moveTo(-w + r, -h);
+          shape.lineTo(w - r, -h);
+          shape.quadraticCurveTo(w, -h, w, -h + r);
+          shape.lineTo(w, h - r);
+          shape.quadraticCurveTo(w, h, w - r, h);
+          shape.lineTo(-w + r, h);
+          shape.quadraticCurveTo(-w, h, -w, h - r);
+          shape.lineTo(-w, -h + r);
+          shape.quadraticCurveTo(-w, -h, -w + r, -h);
+          this.geometry = new THREE.ShapeGeometry(shape, 8);
+        }
+      });
+
       AFRAME.registerComponent('rotate-with-camera', {
         tick: function () {
           var camera = this.el.sceneEl.camera; 
@@ -149,19 +167,16 @@
       AFRAME.registerComponent('smooth-follow', {
         tick: function () {
           if (this.el.getAttribute('visible') === false) return;
-          
+
           var cam = document.querySelector('#camara-principal').object3D;
-          
-          // Distancia aumentada a 5.5 metros para que no se sienta abrumador
-          var targetPos = new THREE.Vector3(0, 0, -5.5);
+
+          var targetPos = new THREE.Vector3(0, 0, -8);
           targetPos.applyMatrix4(cam.matrixWorld);
-          
-          // Lerp hace que siga la vista suavemente
+
           this.el.object3D.position.lerp(targetPos, 0.08);
-          
-          // CORRECCIÓN: Mirar al usuario PERO manteniéndose totalmente vertical (pitch bloqueado)
+
           var lookAtPos = new THREE.Vector3().copy(cam.position);
-          lookAtPos.y = this.el.object3D.position.y; // Iguala la altura para no inclinarse hacia atrás/adelante
+          lookAtPos.y = this.el.object3D.position.y;
           this.el.object3D.lookAt(lookAtPos);
         }
       });
@@ -194,9 +209,8 @@
                 panel.classList.add('panel-activo');
                 if(fondoOscuro) fondoOscuro.setAttribute('visible', 'true'); // Oscurece el mundo
                 
-                // Teletransporte inicial a 5.5 metros antes de hacer smooth follow
                 var cam = document.querySelector('#camara-principal').object3D;
-                var startPos = new THREE.Vector3(0, 0, -5.5); 
+                var startPos = new THREE.Vector3(0, 0, -8);
                 startPos.applyMatrix4(cam.matrixWorld);
                 panel.object3D.position.copy(startPos);
                 
@@ -414,13 +428,13 @@
             if (target) { toggleMenu3D(); iniciarTransicion(target, "0 0 0"); } 
           });
           el.addEventListener('mouseenter', function () {
-            el.setAttribute('color', '#FFFFFF');
+            el.setAttribute('material', 'color: #FFFFFF; opacity: 0.95');
             el.setAttribute('scale', '1.05 1.05 1.05');
             var txt = el.querySelector('a-text');
             if(txt) txt.setAttribute('color', '#E3173E');
           });
           el.addEventListener('mouseleave', function () {
-            el.setAttribute('color', '#E3173E');
+            el.setAttribute('material', 'color: #E3173E; opacity: 0.95');
             el.setAttribute('scale', '1 1 1');
             var txt = el.querySelector('a-text');
             if(txt) txt.setAttribute('color', '#FFFFFF');
@@ -562,7 +576,8 @@
           
           var wrapper = document.createElement('a-entity');
           wrapper.setAttribute('position', flecha.position);
-          wrapper.setAttribute('animation', `property: position; dir: alternate; dur: 2000; easing: easeInOutSine; loop: true; to: ${flecha.position.split(' ')[0]} ${parseFloat(flecha.position.split(' ')[1]) + 0.2} ${flecha.position.split(' ')[2]}`);
+          wrapper.setAttribute('animation__float', `property: position; dir: alternate; dur: 2200; easing: easeInOutSine; loop: true; to: ${flecha.position.split(' ')[0]} ${(parseFloat(flecha.position.split(' ')[1]) + 0.22).toFixed(2)} ${flecha.position.split(' ')[2]}`);
+          wrapper.setAttribute('animation__pulse', 'property: scale; from: 0.88 0.88 0.88; to: 1.22 1.22 1.22; dir: alternate; dur: 1600; easing: easeInOutSine; loop: true');
 
           var entidad = document.createElement('a-image');
           entidad.setAttribute('src', '#img-flecha-plana');
@@ -578,26 +593,31 @@
           entidad.setAttribute('tour-logic', ''); 
 
           var nombreLugar = nombresDestinos[flecha.target] || flecha.target;
+          var lineas = nombreLugar.split('\n');
+          var maxLen = Math.max(...lineas.map(l => l.length));
+          var cardWidth = Math.max(maxLen * 0.13 + 0.4, 1.0);
+          var cardHeight = lineas.length > 1 ? 0.80 : 0.58;
+
           var etiqueta = document.createElement('a-entity');
           etiqueta.classList.add('etiqueta-flotante');
-          etiqueta.setAttribute('position', '0 1.2 0.05'); 
-          etiqueta.setAttribute('scale', '0.9 0.9 0.9'); 
-          etiqueta.setAttribute('visible', 'false'); 
+          etiqueta.setAttribute('position', '0 1.2 0.05');
+          etiqueta.setAttribute('scale', '0.9 0.9 0.9');
+          etiqueta.setAttribute('visible', 'false');
 
-          var fondo = document.createElement('a-plane');
-          fondo.setAttribute('color', '#FFFFFF'); 
-          fondo.setAttribute('opacity', '0.95');
-          fondo.setAttribute('width', (Math.max(nombreLugar.length * 0.45, 2.5)).toString()); 
-          fondo.setAttribute('height', '0.65'); 
-          fondo.setAttribute('position', '0 0 -0.01'); 
+          var fondo = document.createElement('a-entity');
+          fondo.setAttribute('geometry', `primitive: rounded-rect; width: ${cardWidth.toFixed(2)}; height: ${cardHeight}; radius: 0.08`);
+          fondo.setAttribute('material', 'color: #E3173E; opacity: 0.95');
+          fondo.setAttribute('position', '0 0 -0.01');
           etiqueta.appendChild(fondo);
 
           var texto = document.createElement('a-text');
           texto.setAttribute('value', nombreLugar);
           texto.setAttribute('align', 'center');
-          texto.setAttribute('color', '#E3173E'); 
-          texto.setAttribute('width', '6.5'); 
-          texto.setAttribute('position', '0 0 0.01'); 
+          texto.setAttribute('color', '#FFFFFF');
+          texto.setAttribute('font', 'exo2semibold');
+          texto.setAttribute('width', (cardWidth * 0.88).toFixed(2));
+          texto.setAttribute('wrap-count', String(maxLen));
+          texto.setAttribute('position', '0 0 0.01');
           etiqueta.appendChild(texto);
 
           entidad.appendChild(etiqueta);
@@ -610,20 +630,19 @@
         var menu = document.querySelector('#menu-3d');
         var keys = Object.keys(nombresDestinos);
 
-        var panelFondo = document.createElement('a-plane');
-        panelFondo.setAttribute('width', '3.8');     
-        panelFondo.setAttribute('height', '3.2'); 
-        panelFondo.setAttribute('color', '#000000'); 
-        panelFondo.setAttribute('opacity', '0.65');  
-        panelFondo.setAttribute('position', '0 0.15 -0.05'); 
+        var panelFondo = document.createElement('a-entity');
+        panelFondo.setAttribute('geometry', 'primitive: rounded-rect; width: 3.8; height: 3.2; radius: 0.15');
+        panelFondo.setAttribute('material', 'color: #000000; opacity: 0.72');
+        panelFondo.setAttribute('position', '0 0.15 -0.05');
         menu.appendChild(panelFondo);
-        
+
         var titulo = document.createElement('a-text');
         titulo.setAttribute('value', 'MAPA VIRTUAL ESAN');
         titulo.setAttribute('align', 'center');
-        titulo.setAttribute('color', '#FFFFFF'); 
+        titulo.setAttribute('color', '#FFFFFF');
+        titulo.setAttribute('font', 'exo2semibold');
         titulo.setAttribute('position', '0 1.5 0');
-        titulo.setAttribute('width', '4');
+        titulo.setAttribute('width', '4.5');
         menu.appendChild(titulo);
 
         let cols = 4;
@@ -633,46 +652,48 @@
           let col = index % cols; let row = Math.floor(index / cols);
           let posX = startX + (col * gapX); let posY = startY - (row * gapY);
 
-          var btn = document.createElement('a-plane');
-          btn.setAttribute('width', '0.8'); btn.setAttribute('height', '0.3');
-          btn.setAttribute('color', '#E3173E'); btn.setAttribute('opacity', '0.95'); 
+          var btn = document.createElement('a-entity');
+          btn.setAttribute('geometry', 'primitive: rounded-rect; width: 0.8; height: 0.3; radius: 0.06');
+          btn.setAttribute('material', 'color: #E3173E; opacity: 0.95');
           btn.setAttribute('position', `${posX} ${posY} 0`);
           btn.setAttribute('class', 'menu-btn'); btn.setAttribute('data-target', key);
           btn.setAttribute('menu-interactivo', '');
-          
+
           var txt = document.createElement('a-text');
           txt.setAttribute('value', nombresDestinos[key]);
-          txt.setAttribute('align', 'center'); txt.setAttribute('color', '#FFFFFF'); 
-          txt.setAttribute('width', '0.65'); txt.setAttribute('wrap-count', '14'); 
-          txt.setAttribute('position', '0 0 0.02'); 
+          txt.setAttribute('align', 'center'); txt.setAttribute('color', '#FFFFFF');
+          txt.setAttribute('font', 'exo2semibold');
+          txt.setAttribute('width', '0.76'); txt.setAttribute('wrap-count', '14');
+          txt.setAttribute('position', '0 0 0.02');
           btn.appendChild(txt);
           menu.appendChild(btn);
         });
 
-        var btnEnlace = document.createElement('a-plane');
-        btnEnlace.setAttribute('width', '2.6'); btnEnlace.setAttribute('height', '0.25'); 
-        btnEnlace.setAttribute('color', '#222222'); btnEnlace.setAttribute('opacity', '0.95');
-        btnEnlace.setAttribute('position', '0 -1.2 0'); btnEnlace.setAttribute('class', 'menu-btn'); 
-        
+        var btnEnlace = document.createElement('a-entity');
+        btnEnlace.setAttribute('geometry', 'primitive: rounded-rect; width: 2.6; height: 0.25; radius: 0.06');
+        btnEnlace.setAttribute('material', 'color: #222222; opacity: 0.95');
+        btnEnlace.setAttribute('position', '0 -1.2 0'); btnEnlace.setAttribute('class', 'menu-btn');
+
         var txtEnlace = document.createElement('a-text');
         txtEnlace.setAttribute('value', 'Regresar a la trayectoria historica');
-        txtEnlace.setAttribute('align', 'center'); txtEnlace.setAttribute('color', '#FFFFFF'); 
-        txtEnlace.setAttribute('width', '2.4'); txtEnlace.setAttribute('wrap-count', '35'); 
-        txtEnlace.setAttribute('position', '0 0 0.02'); 
+        txtEnlace.setAttribute('align', 'center'); txtEnlace.setAttribute('color', '#FFFFFF');
+        txtEnlace.setAttribute('font', 'exo2semibold');
+        txtEnlace.setAttribute('width', '2.5'); txtEnlace.setAttribute('wrap-count', '35');
+        txtEnlace.setAttribute('position', '0 0 0.02');
         btnEnlace.appendChild(txtEnlace);
 
         btnEnlace.addEventListener('click', function () { window.location.href = 'https://esanlabs.github.io/Doble-videos-Esan/'; });
         
         btnEnlace.addEventListener('mouseenter', function () {
-            btnEnlace.setAttribute('color', '#FFFFFF'); 
+            btnEnlace.setAttribute('material', 'color: #FFFFFF; opacity: 0.95');
             btnEnlace.setAttribute('scale', '1.05 1.05 1.05');
-            txtEnlace.setAttribute('color', '#E3173E'); 
+            txtEnlace.setAttribute('color', '#E3173E');
         });
-        
+
         btnEnlace.addEventListener('mouseleave', function () {
-            btnEnlace.setAttribute('color', '#222222'); 
+            btnEnlace.setAttribute('material', 'color: #222222; opacity: 0.95');
             btnEnlace.setAttribute('scale', '1 1 1');
-            txtEnlace.setAttribute('color', '#FFFFFF'); 
+            txtEnlace.setAttribute('color', '#FFFFFF');
         });
 
         menu.appendChild(btnEnlace);
@@ -717,6 +738,7 @@
         
         generarFlechas(datos.flechas);
         construirMenu3D();
+        aplicarMarcosPaneles();
 
         cieloFondo.addEventListener('materialtextureloaded', function onFirstTexture() {
             cieloFondo.removeEventListener('materialtextureloaded', onFirstTexture);
@@ -762,6 +784,39 @@
         });
       };
 
+      function aplicarMarcosPaneles() {
+        document.querySelectorAll('[id^="panel-info-"]').forEach(function(panel) {
+          var plano = panel.querySelector('a-plane:not(.close-btn)');
+          if (!plano) return;
+
+          var w = parseFloat(plano.getAttribute('width') || 4);
+          var h = parseFloat(plano.getAttribute('height') || 3);
+
+          // Sombra desplazada para efecto de profundidad
+          var sombra = document.createElement('a-entity');
+          sombra.setAttribute('geometry', `primitive: rounded-rect; width: ${(w + 0.3).toFixed(2)}; height: ${(h + 0.3).toFixed(2)}; radius: 0.22`);
+          sombra.setAttribute('material', 'color: #000000; opacity: 0.30; shader: flat');
+          sombra.setAttribute('position', '0.10 -0.10 -0.05');
+
+          // Marco rojo ESAN
+          var marco = document.createElement('a-entity');
+          marco.setAttribute('geometry', `primitive: rounded-rect; width: ${(w + 0.16).toFixed(2)}; height: ${(h + 0.16).toFixed(2)}; radius: 0.18`);
+          marco.setAttribute('material', 'color: #E3173E; opacity: 1; shader: flat');
+          marco.setAttribute('position', '0 0 -0.02');
+
+          // Fondo blanco con esquinas redondeadas (reemplaza a-plane)
+          var fondo = document.createElement('a-entity');
+          fondo.setAttribute('geometry', `primitive: rounded-rect; width: ${w}; height: ${h}; radius: 0.14`);
+          fondo.setAttribute('material', 'color: #FFFFFF; opacity: 0.98; shader: flat');
+          fondo.setAttribute('position', '0 0 -0.01');
+
+          panel.insertBefore(fondo, plano);
+          panel.insertBefore(marco, fondo);
+          panel.insertBefore(sombra, marco);
+          plano.remove();
+        });
+      }
+
       function ocultarLoader() {
         var loader = document.getElementById('pantalla-carga');
         if (loader) {
@@ -805,7 +860,7 @@
       <a-assets timeout="10000">
         <img id="img-entrada" src="imagenes/entrada.jpg">
         <img id="img-logo" src="imagenes/esan.png">
-        <img id="img-flecha-plana" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='rgba(255,255,255,0.8)' stroke='%23E3173E' stroke-width='6'/><path d='M30 60 L50 40 L70 60' fill='none' stroke='%23E3173E' stroke-width='8' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+        <img id="img-flecha-plana" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M19 76 L54 30 L89 76' fill='none' stroke='rgba(0,0,0,0.45)' stroke-width='34' stroke-linecap='round' stroke-linejoin='round'/><path d='M17 74 L50 28 L83 74' fill='none' stroke='%23E3173E' stroke-width='26' stroke-linecap='round' stroke-linejoin='round'/><path d='M17 74 L50 28 L83 74' fill='none' stroke='white' stroke-width='14' stroke-linecap='round' stroke-linejoin='round'/></svg>">
         <img id="img-info-icon" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23FF0000'/><text x='50' y='75' font-family='Arial' font-size='65' font-weight='bold' fill='white' text-anchor='middle'>i</text></svg>">
       </a-assets>
 
