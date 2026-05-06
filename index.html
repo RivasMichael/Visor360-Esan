@@ -1092,6 +1092,236 @@
           </a-entity>
       </a-entity>
 
+      <a-entity id="hotspots-biblioteca" class="grupo-hotspots" visible="false">
+          <a-image
+              src="#img-info-icon"
+              position="-8.69 4.11 7.19" scale="0.8 0.8 0.8"
+              look-at="[camera]"
+              class="clickable icono-hotspot"
+              hotspot-info="target: #panel-info-biblioteca; action: toggle">
+          </a-image>
+
+          <a-entity id="panel-info-biblioteca" visible="false" smooth-follow scale="1.5 1.5 1.5">
+              <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+              <a-text value="BIBLIOTECA ESAN" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
+
+              <a-text value="La Biblioteca de ESAN es el espacio ideal para estudiar, leer e investigar.\n\nCon un amplio acervo bibliografico fisico y digital, ofrece recursos academicos de primer nivel para apoyar la formacion de cada estudiante.\n\nEl silencio es la norma: un ambiente de concentracion y respeto donde el conocimiento es el protagonista."
+                      color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+              <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02" hotspot-info="target: #panel-info-biblioteca; action: close">
+                  <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+              </a-plane>
+          </a-entity>
+      </a-entity>
+
+      <a-entity id="hotspots-danza" class="grupo-hotspots" visible="false">
+          <a-image
+              src="#img-info-icon"
+              position="8.62 4.83 -6.81" scale="0.8 0.8 0.8"
+              look-at="[camera]"
+              class="clickable icono-hotspot"
+              hotspot-info="target: #panel-info-danza; action: toggle">
+          </a-image>
+
+          <a-entity id="panel-info-danza" visible="false" smooth-follow scale="1.5 1.5 1.5">
+              <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+              <a-text value="SALON DE DANZA" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
+
+              <a-text value="El salon de danza de ESAN es el espacio donde el arte y el movimiento se expresan libremente.\n\nAqui los estudiantes ensayan, crean coreografias y se preparan para presentaciones y festivales culturales que enriquecen la vida universitaria.\n\nUn lugar para soltar la creatividad, conectar con el ritmo y celebrar la cultura a traves del baile."
+                      color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+              <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02" hotspot-info="target: #panel-info-danza; action: close">
+                  <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+              </a-plane>
+          </a-entity>
+      </a-entity>
+
+      <a-entity id="hotspots-edificioA" class="grupo-hotspots" visible="false">
+          <a-image
+              src="#img-info-icon"
+              position="-10.39 3.73 -4.70" scale="0.8 0.8 0.8"
+              look-at="[camera]"
+              class="clickable icono-hotspot"
+              hotspot-info="target: #panel-info-edificioA; action: toggle">
+          </a-image>
+
+          <a-entity id="panel-info-edificioA" visible="false" smooth-follow scale="1.5 1.5 1.5">
+              <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3" position="0 0 0"></a-plane>
+
+              <a-text value="DISPENSADOR DE GOLOSINAS" color="#E3173E" align="center" width="7" position="0 1.15 0.01"></a-text>
+
+              <a-text value="El dispensador de golosinas de ESAN es el punto de recarga perfecto para los momentos de receso entre clases.\n\nEncuentra snacks, bebidas y bocadillos para reponer energias y continuar el dia con todo.\n\n¡Ideal para esos momentos de pausa que necesitas!"
+                      color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+              <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.2 0.02" hotspot-info="target: #panel-info-edificioA; action: close">
+                  <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+              </a-plane>
+          </a-entity>
+      </a-entity>
+
+      <a-entity id="hotspots-edificioD" class="grupo-hotspots" visible="false">
+          <a-image
+              src="#img-info-icon"
+              position="-11.00 3.04 3.71" scale="0.8 0.8 0.8"
+              look-at="[camera]"
+              class="clickable icono-hotspot"
+              hotspot-info="target: #panel-info-edificioD; action: toggle">
+          </a-image>
+
+          <a-entity id="panel-info-edificioD" visible="false" smooth-follow scale="1.5 1.5 1.5">
+              <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3" position="0 0 0"></a-plane>
+
+              <a-text value="CAJERO BCP" color="#E3173E" align="center" width="7" position="0 1.15 0.01"></a-text>
+
+              <a-text value="El campus ESAN cuenta con un cajero automatico del Banco de Credito del Peru (BCP) disponible para toda la comunidad universitaria.\n\nPuedes realizar retiros, consultas de saldo y otras operaciones bancarias de manera rapida y segura sin salir del campus.\n\n¡Tu banco siempre cerca cuando lo necesitas!"
+                      color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+              <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.2 0.02" hotspot-info="target: #panel-info-edificioD; action: close">
+                  <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+              </a-plane>
+          </a-entity>
+      </a-entity>
+
+      <a-entity id="hotspots-conducta" class="grupo-hotspots" visible="false">
+          <a-image
+              src="#img-info-icon"
+              position="-0.81 3.02 -11.59" scale="0.8 0.8 0.8"
+              look-at="[camera]"
+              class="clickable icono-hotspot"
+              hotspot-info="target: #panel-info-conducta; action: toggle">
+          </a-image>
+
+          <a-entity id="panel-info-conducta" visible="false" smooth-follow scale="1.5 1.5 1.5">
+              <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+              <a-text value="LAB DE CONDUCTA" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
+
+              <a-text value="El Laboratorio de Conducta de ESAN es un espacio especializado donde se brinda asesoria y orientacion conductual a los miembros de la comunidad universitaria.\n\nAqui profesionales capacitados acompanan a estudiantes y docentes en el desarrollo de habilidades sociales, gestion emocional y bienestar integral.\n\nUn lugar de apoyo, escucha y crecimiento personal."
+                      color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+              <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02" hotspot-info="target: #panel-info-conducta; action: close">
+                  <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+              </a-plane>
+          </a-entity>
+      </a-entity>
+
+      <a-entity id="hotspots-ecoesan" class="grupo-hotspots" visible="false">
+          <a-image
+              src="#img-info-icon"
+              position="1.05 3.80 -11.34" scale="0.8 0.8 0.8"
+              look-at="[camera]"
+              class="clickable icono-hotspot"
+              hotspot-info="target: #panel-info-ecoesan; action: toggle">
+          </a-image>
+
+          <a-entity id="panel-info-ecoesan" visible="false" smooth-follow scale="1.5 1.5 1.5">
+              <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+              <a-text value="ECO ESAN" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
+
+              <a-text value="EcoESAN es la iniciativa ambiental de la universidad que promueve una cultura de reciclaje y cuidado del medio ambiente dentro del campus.\n\nLos estudiantes y docentes participan en campanas de reciclaje y clasificacion de residuos, y los mejores participantes reciben premios y reconocimientos especiales.\n\n¡Reciclar es una forma de liderar con responsabilidad!"
+                      color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+              <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02" hotspot-info="target: #panel-info-ecoesan; action: close">
+                  <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+              </a-plane>
+          </a-entity>
+      </a-entity>
+
+      <a-entity id="hotspots-aula" class="grupo-hotspots" visible="false">
+          <a-image
+              src="#img-info-icon"
+              position="-3.47 3.59 -10.91" scale="0.8 0.8 0.8"
+              look-at="[camera]"
+              class="clickable icono-hotspot"
+              hotspot-info="target: #panel-info-aula; action: toggle">
+          </a-image>
+
+          <a-entity id="panel-info-aula" visible="false" smooth-follow scale="1.5 1.5 1.5">
+              <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+              <a-text value="AULA DE CLASES" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
+
+              <a-text value="Las aulas de ESAN son espacios disenados para potenciar el aprendizaje activo y el intercambio de ideas.\n\nEquipadas con tecnologia moderna, permiten desarrollar clases dinamicas, debates, casos de negocio y presentaciones que preparan a los estudiantes para los retos del mundo empresarial.\n\nAqui cada sesion es una oportunidad para crecer y transformarse."
+                      color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+              <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02" hotspot-info="target: #panel-info-aula; action: close">
+                  <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+              </a-plane>
+          </a-entity>
+      </a-entity>
+
+      <a-entity id="hotspots-laboratorio" class="grupo-hotspots" visible="false">
+          <a-image
+              src="#img-info-icon"
+              position="-1.64 3.20 -11.45" scale="0.8 0.8 0.8"
+              look-at="[camera]"
+              class="clickable icono-hotspot"
+              hotspot-info="target: #panel-info-laboratorio; action: toggle">
+          </a-image>
+
+          <a-entity id="panel-info-laboratorio" visible="false" smooth-follow scale="1.5 1.5 1.5">
+              <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+              <a-text value="LAB DE COMPUTO" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
+
+              <a-text value="El Laboratorio de Computo de ESAN esta equipado con computadoras de alto rendimiento para el desarrollo de clases que requieren herramientas digitales.\n\nAqui los estudiantes trabajan con software especializado en analisis de datos, simulaciones, programacion y mucho mas.\n\nTecnologia al servicio del aprendizaje y la innovacion."
+                      color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+              <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02" hotspot-info="target: #panel-info-laboratorio; action: close">
+                  <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+              </a-plane>
+          </a-entity>
+      </a-entity>
+
+      <a-entity id="hotspots-datalab" class="grupo-hotspots" visible="false">
+          <a-image
+              src="#img-info-icon"
+              position="-11.66 2.78 -0.57" scale="0.8 0.8 0.8"
+              look-at="[camera]"
+              class="clickable icono-hotspot"
+              hotspot-info="target: #panel-info-datalab; action: toggle">
+          </a-image>
+
+          <a-entity id="panel-info-datalab" visible="false" smooth-follow scale="1.5 1.5 1.5">
+              <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+              <a-text value="DATA LAB" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
+
+              <a-text value="El Data Lab de ESAN es el espacio dedicado al estudio y analisis de datos para la toma de decisiones empresariales.\n\nAqui los estudiantes aprenden a trabajar con Big Data, inteligencia artificial, machine learning y herramientas de visualizacion para extraer valor de la informacion.\n\nEl futuro de los negocios se construye con datos."
+                      color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+              <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02" hotspot-info="target: #panel-info-datalab; action: close">
+                  <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+              </a-plane>
+          </a-entity>
+      </a-entity>
+
+      <a-entity id="hotspots-cafeteria" class="grupo-hotspots" visible="false">
+          <a-image
+              src="#img-info-icon"
+              position="-6.24 5.00 8.94" scale="0.8 0.8 0.8"
+              look-at="[camera]"
+              class="clickable icono-hotspot"
+              hotspot-info="target: #panel-info-cafeteria; action: toggle">
+          </a-image>
+
+          <a-entity id="panel-info-cafeteria" visible="false" smooth-follow scale="1.5 1.5 1.5">
+              <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+              <a-text value="CAFETERIA ESAN" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
+
+              <a-text value="La Cafeteria de ESAN es el punto de encuentro favorito de la comunidad universitaria.\n\nUn espacio perfecto para estudiar, avanzar trabajos grupales o simplemente tomarse un cafe con los amigos entre clase y clase.\n\nCon un ambiente acogedor y una variada oferta de alimentos y bebidas, la cafeteria es el lugar donde las ideas fluyen y las amistades se fortalecen."
+                      color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+              <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02" hotspot-info="target: #panel-info-cafeteria; action: close">
+                  <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+              </a-plane>
+          </a-entity>
+      </a-entity>
+
       <a-plane id="btn-lanzar-minijuego" position="3 1.5 -8" look-at="[camera]" width="3" height="1" color="#E3173E" visible="false">
           <a-text value="¡Juega un rato!" align="center" color="#FFFFFF" scale="1.5 1.5 1.5"></a-text>
       </a-plane>
