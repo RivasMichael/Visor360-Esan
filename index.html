@@ -669,13 +669,18 @@
           menu.appendChild(btn);
         });
 
+        var btnEnlaceBorder = document.createElement('a-entity');
+        btnEnlaceBorder.setAttribute('geometry', 'primitive: rounded-rect; width: 2.64; height: 0.34; radius: 0.07');
+        btnEnlaceBorder.setAttribute('material', 'color: #FFFFFF; opacity: 0.95');
+        btnEnlaceBorder.setAttribute('position', '0.45 -0.9 -0.001');
+
         var btnEnlace = document.createElement('a-entity');
-        btnEnlace.setAttribute('geometry', 'primitive: rounded-rect; width: 2.6; height: 0.25; radius: 0.06');
+        btnEnlace.setAttribute('geometry', 'primitive: rounded-rect; width: 2.6; height: 0.3; radius: 0.06');
         btnEnlace.setAttribute('material', 'color: #222222; opacity: 0.95');
-        btnEnlace.setAttribute('position', '0 -1.2 0'); btnEnlace.setAttribute('class', 'menu-btn');
+        btnEnlace.setAttribute('position', '0.45 -0.9 0'); btnEnlace.setAttribute('class', 'menu-btn');
 
         var txtEnlace = document.createElement('a-text');
-        txtEnlace.setAttribute('value', 'Regresar a la trayectoria historica');
+        txtEnlace.setAttribute('value', 'Ver trayectoria historica');
         txtEnlace.setAttribute('align', 'center'); txtEnlace.setAttribute('color', '#FFFFFF');
         txtEnlace.setAttribute('font', 'exo2semibold');
         txtEnlace.setAttribute('width', '2.5'); txtEnlace.setAttribute('wrap-count', '35');
@@ -696,6 +701,7 @@
             txtEnlace.setAttribute('color', '#FFFFFF');
         });
 
+        menu.appendChild(btnEnlaceBorder);
         menu.appendChild(btnEnlace);
       }
 
