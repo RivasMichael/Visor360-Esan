@@ -449,6 +449,18 @@
         }
       });
 
+      AFRAME.registerComponent('auto-height', {
+        init: function () {
+          var rig = this.el;
+          this.el.sceneEl.addEventListener('enter-vr', function () {
+            rig.setAttribute('position', '0 0 0');
+          });
+          this.el.sceneEl.addEventListener('exit-vr', function () {
+            rig.setAttribute('position', '0 1.6 0');
+          });
+        }
+      });
+
       function iniciarTransicion(nombreEscena, direccionDeseada) {
         var datos = escenas[nombreEscena];
         var contenedorFlechas = document.querySelector('#flechas-container');
@@ -687,7 +699,7 @@
         txtEnlace.setAttribute('position', '0 0 0.02');
         btnEnlace.appendChild(txtEnlace);
 
-        btnEnlace.addEventListener('click', function () { window.location.href = 'https://github.com/RivasMichael/Videos-360Esan.git'; });
+        btnEnlace.addEventListener('click', function () { window.location.href = 'https://rivasmichael.github.io/Videos-360Esan/'; });
         
         btnEnlace.addEventListener('mouseenter', function () {
             btnEnlace.setAttribute('material', 'color: #FFFFFF; opacity: 0.95');
@@ -887,7 +899,7 @@
               hotspot-info="target: #panel-info-entrada; action: toggle">
           </a-image>
 
-          <a-entity id="panel-info-entrada" visible="false" smooth-follow scale="1.5 1.5 1.5">
+          <a-entity id="panel-info-entrada" visible="false" smooth-follow scale="1 1 1">
               <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3" position="0 0 0"></a-plane>
 
               <a-text value="ENTRADA PRINCIPAL ESAN" color="#E3173E" align="center" width="7" position="0 1.15 0.01"></a-text>
@@ -1413,12 +1425,12 @@
           <a-light type="point" intensity="1.2" position="0 5 0"></a-light>
       </a-entity>
 
-      <a-entity id="rig" position="0 1.6 0" rotation="0 0 0">
+      <a-entity id="rig" position="0 1.6 0" auto-height rotation="0 0 0">
         <a-entity rotate-with-camera position="0 -1.5 0">
             <a-circle src="#img-logo" radius="1.5" position="0 0 0" rotation="-90 0 0" material="transparent: true; opacity: 1" shader="flat"></a-circle>
         </a-entity>
 
-        <a-camera id="camara-principal" camera fov="80" wasd-controls-enabled="false" look-controls="reverseMouseDrag: true">
+        <a-camera id="camara-principal" camera wasd-controls-enabled="false" look-controls="reverseMouseDrag: true">
             <a-entity id="overlay-fade" geometry="primitive: sphere; radius: 0.1" material="color: #000; transparent: true; opacity: 0; side: back" position="0 0 0"></a-entity>
             
             <a-entity 
