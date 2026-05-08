@@ -300,26 +300,25 @@
         },
         'explanada': { 
             imagen: 'imagenes/explanadaconvention.jpeg', rotacionSky: '0 -90 0',
-            flechas: [ 
-                { target: 'voley', position: '15 -1 -15', rotation: '0 -45 0' },
+            flechas: [
                 { target: 'basquet', position: '-13 -1 15', rotation: '0 -20 0' },
-                { target: 'eventos', position: '-23 -1 2', rotation: '0 -60 0' }, 
-                { target: 'ecoesan', position: '10 -1 -18', rotation: '0 156 0' } 
-            ] 
+                { target: 'eventos', position: '-23 -1 2', rotation: '0 -60 0' },
+                { target: 'ecoesan', position: '10 -1 -18', rotation: '0 156 0', imgSrc: '#img-flecha-derecha' }
+            ]
         },
         'ecoesan': { 
             imagen: 'imagenes/ecoesan.jpg', rotacionSky: '0 -90 0',
             flechas: [ 
-                { target: 'explanada', position: '-9 -1 -17.35', rotation: '0 -140 0' }, 
-                { target: 'edificioA', position: '4.67 -1 20', rotation: '0 40 0' },
-                { target: 'fuente', position: '10 -1 0', rotation: '0 90 0' }
+                { target: 'explanada', position: '10.48 2.95 -5.05', rotation: '0 116 0', imgSrc: '#img-flecha-izquierda' },
+                { target: 'edificioA', position: '4.67 -1 20', rotation: '0 40 0', imgSrc: '#img-flecha-derecha' },
+                { target: 'fuente', position: '-9.44 3.55 -6.50', rotation: '0 -125 0' }
             ] 
         },
         'edificioA': {
             imagen: 'imagenes/edificioA.jpg', rotacionSky: '0 -90 0',
             flechas: [ 
-                { target: 'ecoesan', position: '17 -1 9', rotation: '0 120 0' }, 
-                { target: 'edificioD', position: '-9 -1 -20', rotation: '0 -140 0' },
+                { target: 'ecoesan', position: '5.67 4.34 9.64', rotation: '0 30 0', imgSrc: '#img-flecha-derecha' },
+                { target: 'edificioD', position: '-9 -1 -20', rotation: '0 -140 0', imgSrc: '#img-flecha-derecha' },
                 { target: 'aula', position: '0 -1 -10', rotation: '0 0 0' },
                 { target: 'laboratorio', position: '-10 -1 0', rotation: '0 -90 0' }
             ] 
@@ -330,14 +329,14 @@
                 { target: 'edificioA', position: '-17.24 -1 10.13', rotation: '0 -70 0' }, 
                 { target: 'jardin', position: '15 -1 0', rotation: '0 90 0' },
                 { target: 'fuente', position: '-7 -1 18', rotation: '0 20 0' },
-                { target: 'datalab', position: '0 -1 -15', rotation: '0 0 0' },
-                { target: 'conducta', position: '-5 -1 -10', rotation: '0 45 0' } 
+                { target: 'datalab', position: '-7.24 4.47 -8.46', rotation: '0 -139 0' },
+                { target: 'conducta', position: '-9.33 4.20 -6.26', rotation: '0 -124 0', imgSrc: '#img-flecha-derecha' }
             ] 
         },
         'conducta': { 
             imagen: 'imagenes/conducta.jpg', rotacionSky: '0 0 0',
             flechas: [ 
-                { target: 'edificioD', position: '0 -1 -10', rotation: '0 0 0' } 
+                { target: 'edificioD', position: '0 -1 -10', rotation: '0 0 0', imgSrc: '#img-flecha-abajo' }
             ] 
         },
         'fuente': { 
@@ -359,7 +358,7 @@
         'aula': {
             imagen: 'imagenes/aula.jpg', rotacionSky: '0 0 0',
             flechas: [
-                { target: 'edificioA', position: '0 -1 10', rotation: '0 180 0' },
+                { target: 'edificioA', position: '0.05 2.90 -11.64', rotation: '0 180 0', imgSrc: '#img-flecha-abajo' },
                 { target: 'datalab', position: '-10 -1 0', rotation: '0 -90 0' },
                 { target: 'laboratorio', position: '10 -1 0', rotation: '0 90 0' } 
             ]
@@ -381,14 +380,14 @@
                 { target: 'explanada', position: '16.59 -1 -11', rotation: '0 150 0' } 
             ] 
         },
-        'butacas': { imagen: 'imagenes/butacas%20actualizado.jpg', rotacionSky: '0 -90 0', flechas: [ { target: 'eventos', position: '-8 5 25', rotation: '0 5 0' } ] },
+        'butacas': { imagen: 'imagenes/butacas%20actualizado.jpg', rotacionSky: '0 -90 0', flechas: [ { target: 'eventos', position: '-8 5 25', rotation: '0 5 0' }, { target: 'biblioteca', position: '10.53 3.29 -4.71', rotation: '0 114 0', imgSrc: '#img-flecha-derecha' } ] },
         'biblioteca': { imagen: 'imagenes/biblioteca.jpg', rotacionSky: '0 -90 0', flechas: [ { target: 'eventos', position: '17 -1 20', rotation: '0 40 0' } ] },
         'danza': { imagen: 'imagenes/danza.jpg', rotacionSky: '0 -90 0', flechas: [ { target: 'eventos', position: '7 -1 -25', rotation: '0 180 0' } ] },
         'cafeteria': {
             imagen: 'imagenes/cafeteria.jpeg', rotacionSky: '0 -90 0',
             flechas: [
-                { target: 'edificioA', position: '0 -1 -10', rotation: '0 0 0' },
-                { target: 'ecoesan', position: '10 -1 0', rotation: '0 90 0' }
+                { target: 'edificioA', position: '1.63 3.52 11.35', rotation: '0 8 0' },
+                { target: 'ecoesan', position: '-11.77 2.20 -0.81', rotation: '0 -94 0' }
             ]
         }
       };
@@ -886,6 +885,8 @@
         <img id="img-flecha-plana" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M19 76 L54 30 L89 76' fill='none' stroke='rgba(0,0,0,0.45)' stroke-width='34' stroke-linecap='round' stroke-linejoin='round'/><path d='M17 74 L50 28 L83 74' fill='none' stroke='%23E3173E' stroke-width='26' stroke-linecap='round' stroke-linejoin='round'/><path d='M17 74 L50 28 L83 74' fill='none' stroke='white' stroke-width='14' stroke-linecap='round' stroke-linejoin='round'/></svg>">
         <img id="img-info-icon" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23FF0000'/><text x='50' y='75' font-family='Arial' font-size='65' font-weight='bold' fill='white' text-anchor='middle'>i</text></svg>">
         <img id="img-flecha-derecha" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><g transform='rotate(90 50 50)'><path d='M19 76 L54 30 L89 76' fill='none' stroke='rgba(0,0,0,0.45)' stroke-width='34' stroke-linecap='round' stroke-linejoin='round'/><path d='M17 74 L50 28 L83 74' fill='none' stroke='%23E3173E' stroke-width='26' stroke-linecap='round' stroke-linejoin='round'/><path d='M17 74 L50 28 L83 74' fill='none' stroke='white' stroke-width='14' stroke-linecap='round' stroke-linejoin='round'/></g></svg>">
+        <img id="img-flecha-abajo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><g transform='rotate(180 50 50)'><path d='M19 76 L54 30 L89 76' fill='none' stroke='rgba(0,0,0,0.45)' stroke-width='34' stroke-linecap='round' stroke-linejoin='round'/><path d='M17 74 L50 28 L83 74' fill='none' stroke='%23E3173E' stroke-width='26' stroke-linecap='round' stroke-linejoin='round'/><path d='M17 74 L50 28 L83 74' fill='none' stroke='white' stroke-width='14' stroke-linecap='round' stroke-linejoin='round'/></g></svg>">
+        <img id="img-flecha-izquierda" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><g transform='rotate(-90 50 50)'><path d='M19 76 L54 30 L89 76' fill='none' stroke='rgba(0,0,0,0.45)' stroke-width='34' stroke-linecap='round' stroke-linejoin='round'/><path d='M17 74 L50 28 L83 74' fill='none' stroke='%23E3173E' stroke-width='26' stroke-linecap='round' stroke-linejoin='round'/><path d='M17 74 L50 28 L83 74' fill='none' stroke='white' stroke-width='14' stroke-linecap='round' stroke-linejoin='round'/></g></svg>">
       </a-assets>
 
       <a-sky id="cielo-fondo" radius="500" rotation="0 -90 0"></a-sky>
