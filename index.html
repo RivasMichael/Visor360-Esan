@@ -170,12 +170,17 @@
 
           var cam = document.querySelector('#camara-principal').object3D;
 
-          var targetPos = new THREE.Vector3(0, 0, -8);
+          var targetPos = new THREE.Vector3(0, 0, -11);
           targetPos.applyMatrix4(cam.matrixWorld);
+
+          // Fijar Y al nivel de los ojos para que no suba ni baje con la mirada
+          var camWorldPos = new THREE.Vector3();
+          cam.getWorldPosition(camWorldPos);
+          targetPos.y = camWorldPos.y - 0.3;
 
           this.el.object3D.position.lerp(targetPos, 0.08);
 
-          var lookAtPos = new THREE.Vector3().copy(cam.position);
+          var lookAtPos = new THREE.Vector3().copy(camWorldPos);
           lookAtPos.y = this.el.object3D.position.y;
           this.el.object3D.lookAt(lookAtPos);
         }
@@ -210,11 +215,14 @@
                 if(fondoOscuro) fondoOscuro.setAttribute('visible', 'true'); // Oscurece el mundo
                 
                 var cam = document.querySelector('#camara-principal').object3D;
-                var startPos = new THREE.Vector3(0, 0, -8);
+                var startPos = new THREE.Vector3(0, 0, -11);
                 startPos.applyMatrix4(cam.matrixWorld);
+                var camWorldPos = new THREE.Vector3();
+                cam.getWorldPosition(camWorldPos);
+                startPos.y = camWorldPos.y - 0.3;
                 panel.object3D.position.copy(startPos);
-                
-                var lookAtPos = new THREE.Vector3().copy(cam.position);
+
+                var lookAtPos = new THREE.Vector3().copy(camWorldPos);
                 lookAtPos.y = panel.object3D.position.y;
                 panel.object3D.lookAt(lookAtPos);
             }
@@ -893,7 +901,7 @@
       <a-entity id="hotspots-entrada" class="grupo-hotspots" visible="false">
           <a-image
               src="#img-info-icon"
-              position="-10.46 4.34 -3.97" scale="0.8 0.8 0.8"
+              position="-10.46 6.00 -3.97" scale="0.8 0.8 0.8"
               look-at="[camera]"
               class="icono-hotspot"
               hotspot-info="target: #panel-info-entrada; action: toggle">
@@ -937,7 +945,7 @@
 
           <a-image
               src="#img-info-icon"
-              position="6.09 2.64 9.99" scale="0.8 0.8 0.8"
+              position="6.09 5.00 9.99" scale="0.8 0.8 0.8"
               look-at="[camera]"
               class="clickable icono-hotspot"
               hotspot-info="target: #panel-info-jardin2; action: toggle">
@@ -946,9 +954,9 @@
           <a-entity id="panel-info-jardin2" visible="false" smooth-follow scale="1.5 1.5 1.5">
               <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3" position="0 0 0"></a-plane>
 
-              <a-text value="AREAS VERDES ESAN" color="#E3173E" align="center" width="7" position="0 1.15 0.01"></a-text>
+              <a-text value="CAJA Y PAGOS ESAN" color="#E3173E" align="center" width="7" position="0 1.15 0.01"></a-text>
 
-              <a-text value="Las areas verdes del campus ESAN son espacios disenados para el bienestar de toda la comunidad universitaria.\n\nAqui los estudiantes pueden reunirse, estudiar al aire libre o simplemente descansar entre clases.\n\nUn espacio pensado para inspirar y conectar."
+              <a-text value="Aqui se encuentra el area administrativa de pagos de la universidad ESAN.\n\nPuedes acercarte a realizar el pago de pensiones, deudas academicas, matricula y otros conceptos de manera presencial.\n\nEl personal de caja te orientara en cada proceso de manera rapida y ordenada."
                       color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
               <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.2 0.02" hotspot-info="target: #panel-info-jardin2; action: close">
@@ -976,6 +984,27 @@
                       color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
               <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.2 0.02" hotspot-info="target: #panel-info-fuente; action: close">
+                  <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+              </a-plane>
+          </a-entity>
+
+          <a-image
+              src="#img-info-icon"
+              position="7.51 4.20 -8.36" scale="0.8 0.8 0.8"
+              look-at="[camera]"
+              class="clickable icono-hotspot"
+              hotspot-info="target: #panel-info-comedor-fuente; action: toggle">
+          </a-image>
+
+          <a-entity id="panel-info-comedor-fuente" visible="false" smooth-follow scale="1.5 1.5 1.5">
+              <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+              <a-text value="COMEDOR ESAN" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
+
+              <a-text value="El Comedor de ESAN es el espacio donde la comunidad universitaria puede disfrutar de una alimentacion variada y de calidad.\n\nOfrece menus diarios balanceados a precios accesibles, pensados para que estudiantes y docentes recarguen energias durante la jornada academica.\n\nUn lugar de encuentro, descanso y convivencia entre clases."
+                      color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+              <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02" hotspot-info="target: #panel-info-comedor-fuente; action: close">
                   <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
               </a-plane>
           </a-entity>
@@ -1232,6 +1261,7 @@
                   <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
               </a-plane>
           </a-entity>
+
       </a-entity>
 
       <a-entity id="hotspots-edificioD" class="grupo-hotspots" visible="false">
@@ -1252,6 +1282,27 @@
                       color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
               <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.2 0.02" hotspot-info="target: #panel-info-edificioD; action: close">
+                  <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+              </a-plane>
+          </a-entity>
+
+          <a-image
+              src="#img-info-icon"
+              position="-4.14 4.94 10.12" scale="0.8 0.8 0.8"
+              look-at="[camera]"
+              class="clickable icono-hotspot"
+              hotspot-info="target: #panel-info-libreria-edificioD; action: toggle">
+          </a-image>
+
+          <a-entity id="panel-info-libreria-edificioD" visible="false" smooth-follow scale="1.5 1.5 1.5">
+              <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+              <a-text value="LIBRERIA ESAN" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
+
+              <a-text value="La Libreria de ESAN es el espacio dedicado a la venta de libros, textos academicos, materiales de estudio y articulos de escritorio.\n\nAqui encontraras publicaciones especializadas en negocios, gestion, finanzas y mas, ideales para complementar tu formacion universitaria.\n\nUn recurso esencial para todo esanista comprometido con el aprendizaje."
+                      color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+              <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02" hotspot-info="target: #panel-info-libreria-edificioD; action: close">
                   <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
               </a-plane>
           </a-entity>
