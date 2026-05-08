@@ -48,7 +48,11 @@
         'butacas': 'Butacas', 'biblioteca': 'Biblioteca', 'danza': 'Danza',
         'edificioD': 'Edificio D', 'conducta': 'Lab Conducta', 'edificioA': 'Edificio A',
         'ecoesan': 'EcoESAN', 'aula': 'Aula', 'laboratorio': 'Lab de Cómputo',
-        'datalab': 'Data Lab', 'cafeteria': 'Cafetería'
+        'datalab': 'Data Lab', 'cafeteria': 'Cafetería',
+        'fuera': 'Exterior\nESAN',
+        'fisica': 'Lab de\nFísica', 'quimica': 'Lab de\nQuímica',
+        'estudio_pregrado': 'Sala Estudio\nPregrado', 'estudio_mba': 'Sala Estudio\nMBA',
+        'estudio_magister': 'Sala Estudio\nMagíster', 'descanso_magister': 'Sala Descanso\nMagíster'
       };
 
       AFRAME.registerGeometry('rounded-rect', {
@@ -391,6 +395,54 @@
             flechas: [
                 { target: 'edificioA', position: '1.63 3.52 11.35', rotation: '0 8 0' },
                 { target: 'ecoesan', position: '-11.77 2.20 -0.81', rotation: '0 -94 0' }
+            ]
+        },
+        'fuera': {
+            imagen: 'imagenes/fuera%20de%20esan.jpg', rotacionSky: '0 90 0',
+            flechas: [
+                { target: 'entrada', position: '-10 2.5 -7.42', rotation: '0 0 0' }
+            ]
+        },
+        'fisica': {
+            imagen: 'imagenes/laboratorio%20de%20fisica.jpg', rotacionSky: '0 90 0',
+            flechas: [
+                { target: 'quimica', position: '7.02 2.8 9.72', rotation: '0 0 0' }
+            ]
+        },
+        'quimica': {
+            imagen: 'imagenes/laboratorio%20de%20quimica.jpg', rotacionSky: '0 90 0',
+            flechas: [
+                { target: 'datalab', position: '7.5 2.8 9.35', rotation: '0 0 0' },
+                { target: 'fisica', position: '7.67 2.8 -9.21', rotation: '0 140 0' }
+            ]
+        },
+        'estudio_pregrado': {
+            imagen: 'imagenes/salas%20de%20estudio%20pregrado.jpg', rotacionSky: '0 90 0',
+            flechas: [
+                { target: 'estudio_magister', position: '-9.54 2.8 7.27', rotation: '0 0 0' }
+            ]
+        },
+        'estudio_mba': {
+            imagen: 'imagenes/salas%20de%20estudio%20mba.jpg', rotacionSky: '0 180 0',
+            flechas: [
+                { target: 'estudio_magister', position: '8.76 2.8 8.18', rotation: '0 0 0' },
+                { target: 'descanso_magister', position: '1.14 2.8 11.94', rotation: '0 -176 0' }
+            ]
+        },
+        'estudio_magister': {
+            imagen: 'imagenes/salas%20de%20estudio%20magister.jpg', rotacionSky: '0 -90 0',
+            flechas: [
+                { target: 'descanso_magister', position: '3.85 2.8 -11.35', rotation: '0 -105 0' },
+                { target: 'estudio_mba', position: '6.60 2.8 -10.01', rotation: '0 -113 0' },
+                { target: 'estudio_pregrado', position: '10.09 0 -6.16', rotation: '0 -116 0' },
+                { target: 'cafeteria', position: '8.83 0 7.49', rotation: '0 139 0' }
+            ]
+        },
+        'descanso_magister': {
+            imagen: 'imagenes/sala%20de%20descanso%20magister.jpg', rotacionSky: '0 0 0',
+            flechas: [
+                { target: 'estudio_magister', position: '9.10 2.8 -7.80', rotation: '0 0 0' },
+                { target: 'estudio_mba', position: '8.22 2.8 -8.72', rotation: '0 137 0' }
             ]
         }
       };
