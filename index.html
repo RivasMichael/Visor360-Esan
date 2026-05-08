@@ -205,14 +205,17 @@
             if (!panel) return;
             evt.stopPropagation(); 
 
+            var flechas = document.querySelector('#flechas-container');
             if (data.action === 'close') {
                 panel.setAttribute('visible', 'false');
                 panel.classList.remove('panel-activo');
                 if(fondoOscuro) fondoOscuro.setAttribute('visible', 'false');
+                if (!document.querySelector('.panel-activo') && flechas) flechas.setAttribute('visible', 'true');
             } else {
                 panel.setAttribute('visible', 'true');
                 panel.classList.add('panel-activo');
-                if(fondoOscuro) fondoOscuro.setAttribute('visible', 'true'); // Oscurece el mundo
+                if(fondoOscuro) fondoOscuro.setAttribute('visible', 'true');
+                if (flechas) flechas.setAttribute('visible', 'false');
                 
                 var cam = document.querySelector('#camara-principal').object3D;
                 var startPos = new THREE.Vector3(0, 0, -11);
@@ -814,19 +817,16 @@
           var w = parseFloat(plano.getAttribute('width') || 4);
           var h = parseFloat(plano.getAttribute('height') || 3);
 
-          // Sombra desplazada para efecto de profundidad
           var sombra = document.createElement('a-entity');
           sombra.setAttribute('geometry', `primitive: rounded-rect; width: ${(w + 0.3).toFixed(2)}; height: ${(h + 0.3).toFixed(2)}; radius: 0.22`);
           sombra.setAttribute('material', 'color: #000000; opacity: 0.30; shader: flat');
           sombra.setAttribute('position', '0.10 -0.10 -0.05');
 
-          // Marco rojo ESAN
           var marco = document.createElement('a-entity');
           marco.setAttribute('geometry', `primitive: rounded-rect; width: ${(w + 0.16).toFixed(2)}; height: ${(h + 0.16).toFixed(2)}; radius: 0.18`);
           marco.setAttribute('material', 'color: #E3173E; opacity: 1; shader: flat');
           marco.setAttribute('position', '0 0 -0.02');
 
-          // Fondo blanco con esquinas redondeadas (reemplaza a-plane)
           var fondo = document.createElement('a-entity');
           fondo.setAttribute('geometry', `primitive: rounded-rect; width: ${w}; height: ${h}; radius: 0.14`);
           fondo.setAttribute('material', 'color: #FFFFFF; opacity: 0.98; shader: flat');
@@ -836,6 +836,26 @@
           panel.insertBefore(marco, fondo);
           panel.insertBefore(sombra, marco);
           plano.remove();
+
+          // X: esquina superior derecha sobre el marco rojo, sin superponerse al título
+          var closeBtn = panel.querySelector('.close-btn');
+          if (closeBtn) {
+            closeBtn.setAttribute('position', `${(w / 2 - 0.15).toFixed(2)} ${(h / 2 + 0.05).toFixed(2)} 0.04`);
+          }
+
+          // Textos: z=0.06 evita z-fighting con el marco al rotar; título en negrita y bajado
+          var textos = Array.from(panel.querySelectorAll('a-text')).filter(function(t) {
+            return !t.parentElement.classList.contains('close-btn');
+          });
+          textos.forEach(function(txt, i) {
+            var pos = (txt.getAttribute('position') || '0 0 0').split(' ');
+            pos[2] = '0.06';
+            if (i === 0) {
+              pos[1] = (h / 2 - 0.50).toFixed(2);
+              txt.setAttribute('font', 'exo2bold');
+            }
+            txt.setAttribute('position', pos.join(' '));
+          });
         });
       }
 
@@ -1531,34 +1551,76 @@
           </a-entity>
       </a-entity>
 
-      <a-plane id="btn-lanzar-minijuego" position="3 1.5 -8" look-at="[camera]" width="3" height="1" color="#E3173E" visible="false">
-          <a-text value="¡Juega un rato!" align="center" color="#FFFFFF" scale="1.5 1.5 1.5"></a-text>
-      </a-plane>
+      <a-entity id="btn-lanzar-minijuego" position="3 1.5 -8" look-at="[camera]" visible="false"
+                geometry="primitive: rounded-rect; width: 3.2; height: 1.0; radius: 0.2"
+                material="color: #E3173E; opacity: 0.95; shader: flat">
+          <a-entity geometry="primitive: rounded-rect; width: 3.4; height: 1.2; radius: 0.24"
+                    material="color: #000000; opacity: 0.25; shader: flat"
+                    position="0.06 -0.06 -0.02"></a-entity>
+          <a-text value="¡Juega Basquet!" align="center" color="#FFFFFF" width="3" position="0 0.04 0.01" font="exo2bold" scale="1.1 1.1 1.1"></a-text>
+          <a-text value="Haz clic en la pelota para lanzar" align="center" color="#FFE0E0" width="2.8" position="0 -0.28 0.01" font="exo2semibold" scale="0.75 0.75 0.75"></a-text>
+      </a-entity>
 
       <a-entity id="entorno-fisicas-basquet" position="0 0 0" visible="false" sistema-puntos>
-          <a-plane static-body position="0 0 0" rotation="-90 0 0" width="20" height="20" color="#222222" opacity="0.8"></a-plane>
-          <a-box static-body position="0 4 -12" width="2.5" height="1.5" depth="0.1" color="#FF0000" opacity="0.6"></a-box>
-          <a-text id="texto-marcador" value="PUNTOS: 0" position="0 6 -12" align="center" color="#FFD700" scale="3 3 3"></a-text>
+          <!-- Piso de cancha con color madera -->
+          <a-plane static-body position="0 0 0" rotation="-90 0 0" width="20" height="20"
+                   material="color: #C87A2A; shader: flat; opacity: 1"></a-plane>
+          <!-- Línea central -->
+          <a-plane position="0 0.01 0" rotation="-90 0 0" width="0.08" height="20"
+                   material="color: #FFFFFF; shader: flat; opacity: 0.6"></a-plane>
+          <!-- Tablero -->
+          <a-box static-body position="0 4 -12" width="2.5" height="1.5" depth="0.08"
+                 material="color: #FFFFFF; opacity: 0.92; shader: flat"></a-box>
+          <!-- Rectángulo rojo en el tablero -->
+          <a-plane position="0 3.9 -11.94" width="1.2" height="0.8"
+                   material="color: #E3173E; opacity: 0.9; shader: flat"></a-plane>
+          <!-- Aro visual (sin física) -->
+          <a-torus position="0 3.5 -11.6" rotation="90 0 0" radius="0.45" radiusTubular="0.04"
+                   material="color: #FF6600; shader: flat"></a-torus>
 
-          <a-sphere 
-              id="pelota-interactiva" 
+          <!-- Marcador con panel estilizado -->
+          <a-entity position="0 7.2 -12">
+              <a-entity geometry="primitive: rounded-rect; width: 4.4; height: 1.8; radius: 0.22"
+                        material="color: #E3173E; opacity: 1; shader: flat"
+                        position="0 0 -0.08"></a-entity>
+              <a-entity geometry="primitive: rounded-rect; width: 4.0; height: 1.45; radius: 0.16"
+                        material="color: #0D0D0D; opacity: 0.96; shader: flat"
+                        position="0 0 -0.04"></a-entity>
+              <a-text value="CANCHA ESAN" align="center" color="#E3173E" width="3.8" position="0 0.35 0.02" font="exo2bold" scale="0.7 0.7 0.7"></a-text>
+              <a-text id="texto-marcador" value="PUNTOS: 0" align="center" color="#FFD700" width="3.8" position="0 -0.2 0.02" font="exo2bold" scale="1.2 1.2 1.2"></a-text>
+          </a-entity>
+
+          <a-sphere
+              id="pelota-interactiva"
               class="clickable"
               telekinesis-balon
-              dynamic-body="mass: 1; bounce: 0.75" 
-              position="0 1.5 -2" 
-              radius="0.3" 
+              dynamic-body="mass: 1; bounce: 0.75"
+              position="0 1.5 -2"
+              radius="0.3"
               color="#D95C14">
           </a-sphere>
 
-          <a-plane id="btn-volver-tour" position="-3 1.5 -5" look-at="[camera]" width="2.5" height="0.8" color="#333333">
-              <a-text value="Volver al Tour" align="center" color="#FFFFFF"></a-text>
-          </a-plane>
+          <!-- Botones de control -->
+          <a-entity id="btn-volver-tour" position="-3.5 1.4 -5" look-at="[camera]"
+                    geometry="primitive: rounded-rect; width: 2.7; height: 0.85; radius: 0.16"
+                    material="color: #222222; opacity: 0.95; shader: flat">
+              <a-entity geometry="primitive: rounded-rect; width: 2.9; height: 1.05; radius: 0.20"
+                        material="color: #000000; opacity: 0.22; shader: flat"
+                        position="0.05 -0.05 -0.02"></a-entity>
+              <a-text value="Volver al Tour" align="center" color="#FFFFFF" width="2.5" position="0 0 0.01" font="exo2semibold"></a-text>
+          </a-entity>
 
-          <a-plane id="btn-reset-balon" position="3 1.5 -5" look-at="[camera]" width="2.5" height="0.8" color="#00BFFF">
-              <a-text value="Resetear Balon" align="center" color="#FFFFFF"></a-text>
-          </a-plane>
+          <a-entity id="btn-reset-balon" position="3.5 1.4 -5" look-at="[camera]"
+                    geometry="primitive: rounded-rect; width: 2.7; height: 0.85; radius: 0.16"
+                    material="color: #0077AA; opacity: 0.95; shader: flat">
+              <a-entity geometry="primitive: rounded-rect; width: 2.9; height: 1.05; radius: 0.20"
+                        material="color: #000000; opacity: 0.22; shader: flat"
+                        position="0.05 -0.05 -0.02"></a-entity>
+              <a-text value="Resetear Balon" align="center" color="#FFFFFF" width="2.5" position="0 0 0.01" font="exo2semibold"></a-text>
+          </a-entity>
 
-          <a-light type="point" intensity="1.2" position="0 5 0"></a-light>
+          <a-light type="point" intensity="1.5" position="0 7 -5" color="#FFF5E0"></a-light>
+          <a-light type="point" intensity="1.2" position="0 7 -15" color="#FFF5E0"></a-light>
       </a-entity>
 
       <a-entity id="rig" position="0 1.6 0" auto-height rotation="0 0 0">
