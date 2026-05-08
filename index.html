@@ -754,19 +754,12 @@
         }   
       }
 
-      window.onload = function() { 
+      window.onload = function() {
         var datos = escenas['entrada'];
         var cieloFondo = document.querySelector('#cielo-fondo');
-        
-        cieloFondo.setAttribute('src', datos.imagen);
-        cieloFondo.setAttribute('rotation', datos.rotacionSky || '0 -90 0');
-        
-        generarFlechas(datos.flechas);
-        construirMenu3D();
-        aplicarMarcosPaneles();
+        var scene = document.querySelector('a-scene');
 
-        cieloFondo.addEventListener('materialtextureloaded', function onFirstTexture() {
-            cieloFondo.removeEventListener('materialtextureloaded', onFirstTexture);
+        function revelarInicio() {
             ocultarLoader();
             precargarAdyacentes('entrada');
             var hotspotEntrada = document.querySelector('#hotspots-entrada');
@@ -774,9 +767,30 @@
                 hotspotEntrada.setAttribute('visible', 'true');
                 hotspotEntrada.querySelectorAll('.icono-hotspot').forEach(i => i.classList.add('clickable'));
             }
-        });
+        }
 
-        setTimeout(ocultarLoader, 5000);
+        function iniciarTour() {
+            cieloFondo.setAttribute('src', datos.imagen);
+            cieloFondo.setAttribute('rotation', datos.rotacionSky || '0 -90 0');
+            generarFlechas(datos.flechas);
+            construirMenu3D();
+            aplicarMarcosPaneles();
+
+            cieloFondo.addEventListener('materialtextureloaded', function onFirstTexture() {
+                cieloFondo.removeEventListener('materialtextureloaded', onFirstTexture);
+                revelarInicio();
+            });
+        }
+
+        // Esperar a que la escena A-Frame esté lista antes de configurar el tour
+        if (scene.hasLoaded) {
+            iniciarTour();
+        } else {
+            scene.addEventListener('loaded', iniciarTour);
+        }
+
+        // Fallback: si materialtextureloaded no dispara, ocultar loader a los 3s
+        setTimeout(ocultarLoader, 3000);
 
         document.getElementById('btn-menu-2d').addEventListener('click', toggleMenu3D);
         document.querySelector('#btn-lanzar-minijuego').addEventListener('click', activarMinijuego);
@@ -868,7 +882,11 @@
         var loader = document.getElementById('pantalla-carga');
         if (loader) {
           loader.classList.add('oculto');
-          setTimeout(() => { loader.style.display = 'none'; }, 1000);
+          setTimeout(() => {
+            loader.style.display = 'none';
+            // Forzar que A-Frame recalcule el canvas al quedar visible
+            window.dispatchEvent(new Event('resize'));
+          }, 1000);
         }
       }
 
