@@ -751,7 +751,7 @@
             if (btn2D) btn2D.innerText = 'Abrir Menu de Navegacion';
             var botonesMenu = menu.querySelectorAll('.menu-btn');
             botonesMenu.forEach(b => b.classList.remove('clickable'));
-        }
+        }   
       }
 
       window.onload = function() { 
@@ -775,6 +775,8 @@
                 hotspotEntrada.querySelectorAll('.icono-hotspot').forEach(i => i.classList.add('clickable'));
             }
         });
+
+        setTimeout(ocultarLoader, 5000);
 
         document.getElementById('btn-menu-2d').addEventListener('click', toggleMenu3D);
         document.querySelector('#btn-lanzar-minijuego').addEventListener('click', activarMinijuego);
@@ -852,14 +854,17 @@
             pos[2] = '0.06';
             if (i === 0) {
               pos[1] = (h / 2 - 0.50).toFixed(2);
-              txt.setAttribute('font', 'exo2bold');
+              txt.setAttribute('font', 'exo2semibold');
             }
             txt.setAttribute('position', pos.join(' '));
           });
         });
       }
 
+      var _loaderOculto = false;
       function ocultarLoader() {
+        if (_loaderOculto) return;
+        _loaderOculto = true;
         var loader = document.getElementById('pantalla-carga');
         if (loader) {
           loader.classList.add('oculto');
@@ -1557,7 +1562,7 @@
           <a-entity geometry="primitive: rounded-rect; width: 3.4; height: 1.2; radius: 0.24"
                     material="color: #000000; opacity: 0.25; shader: flat"
                     position="0.06 -0.06 -0.02"></a-entity>
-          <a-text value="¡Juega Basquet!" align="center" color="#FFFFFF" width="3" position="0 0.04 0.01" font="exo2bold" scale="1.1 1.1 1.1"></a-text>
+          <a-text value="¡Juega Basquet!" align="center" color="#FFFFFF" width="3" position="0 0.04 0.01" font="exo2semibold" scale="1.1 1.1 1.1"></a-text>
           <a-text value="Haz clic en la pelota para lanzar" align="center" color="#FFE0E0" width="2.8" position="0 -0.28 0.01" font="exo2semibold" scale="0.75 0.75 0.75"></a-text>
       </a-entity>
 
@@ -1586,8 +1591,8 @@
               <a-entity geometry="primitive: rounded-rect; width: 4.0; height: 1.45; radius: 0.16"
                         material="color: #0D0D0D; opacity: 0.96; shader: flat"
                         position="0 0 -0.04"></a-entity>
-              <a-text value="CANCHA ESAN" align="center" color="#E3173E" width="3.8" position="0 0.35 0.02" font="exo2bold" scale="0.7 0.7 0.7"></a-text>
-              <a-text id="texto-marcador" value="PUNTOS: 0" align="center" color="#FFD700" width="3.8" position="0 -0.2 0.02" font="exo2bold" scale="1.2 1.2 1.2"></a-text>
+              <a-text value="CANCHA ESAN" align="center" color="#E3173E" width="3.8" position="0 0.35 0.02" font="exo2semibold" scale="0.7 0.7 0.7"></a-text>
+              <a-text id="texto-marcador" value="PUNTOS: 0" align="center" color="#FFD700" width="3.8" position="0 -0.2 0.02" font="exo2semibold" scale="1.2 1.2 1.2"></a-text>
           </a-entity>
 
           <a-sphere
