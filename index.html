@@ -41,6 +41,7 @@
     
     <script>
       const nombresDestinos = {
+        'fuera': 'Exterior\nESAN',
         'entrada': 'Entrada\nPrincipal', 'jardin': 'Jardin', 'fuente': 'Fuente',
         'capilla': 'Capilla', 'fablab': 'FabLab', 'fablab2': 'FabLab 2',
         'voley': 'Cancha de\nVoley', 'basquet': 'Cancha de\nBasquet',
@@ -48,8 +49,7 @@
         'butacas': 'Butacas', 'biblioteca': 'Biblioteca', 'danza': 'Danza',
         'edificioD': 'Edificio D', 'conducta': 'Lab Conducta', 'edificioA': 'Edificio A',
         'ecoesan': 'EcoESAN', 'aula': 'Aula', 'laboratorio': 'Lab de Cómputo',
-        'datalab': 'Data Lab', 'cafeteria': 'Cafetería',
-        'fuera': 'Exterior\nESAN',
+        'datalab': 'Data Lab', 'cafeteria': 'Cafetería', 'cafeteria_interior': 'Cafetería\nInterior',
         'fisica': 'Lab de\nFísica', 'quimica': 'Lab de\nQuímica',
         'estudio_pregrado': 'Sala Estudio\nPregrado', 'estudio_mba': 'Sala Estudio\nMBA',
         'estudio_magister': 'Sala Estudio\nMagíster', 'descanso_magister': 'Sala Descanso\nMagíster'
@@ -395,7 +395,14 @@
             imagen: 'imagenes/cafeteria.jpeg', rotacionSky: '0 -90 0',
             flechas: [
                 { target: 'edificioA', position: '1.63 3.52 11.35', rotation: '0 8 0' },
-                { target: 'ecoesan', position: '-11.77 2.20 -0.81', rotation: '0 -94 0' }
+                { target: 'ecoesan', position: '-11.77 2.20 -0.81', rotation: '0 -94 0' },
+                { target: 'cafeteria_interior', position: '0 2.5 -11', rotation: '0 0 0' }
+            ]
+        },
+        'cafeteria_interior': {
+            imagen: 'imagenes/cafeteria_interior.jpg', rotacionSky: '0 -90 0',
+            flechas: [
+                { target: 'cafeteria', position: '0 2.5 11', rotation: '0 180 0' }
             ]
         },
         'fuera': {
