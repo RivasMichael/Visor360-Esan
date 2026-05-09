@@ -809,7 +809,6 @@
       window.onload = function() {
         var datos = escenas['entrada'];
         var cieloFondo = document.querySelector('#cielo-fondo');
-        var scene = document.querySelector('a-scene');
 
         function revelarInicio() {
             ocultarLoader();
@@ -821,27 +820,18 @@
             }
         }
 
-        function iniciarTour() {
-            cieloFondo.setAttribute('src', datos.imagen);
-            cieloFondo.setAttribute('rotation', datos.rotacionSky || '0 -90 0');
-            generarFlechas(datos.flechas);
-            construirMenu3D();
-            aplicarMarcosPaneles();
+        cieloFondo.setAttribute('src', datos.imagen);
+        cieloFondo.setAttribute('rotation', datos.rotacionSky || '0 -90 0');
+        generarFlechas(datos.flechas);
+        construirMenu3D();
+        aplicarMarcosPaneles();
 
-            cieloFondo.addEventListener('materialtextureloaded', function onFirstTexture() {
-                cieloFondo.removeEventListener('materialtextureloaded', onFirstTexture);
-                revelarInicio();
-            });
-        }
+        cieloFondo.addEventListener('materialtextureloaded', function onFirstTexture() {
+            cieloFondo.removeEventListener('materialtextureloaded', onFirstTexture);
+            revelarInicio();
+        });
 
-        // Esperar a que la escena A-Frame esté lista antes de configurar el tour
-        if (scene.hasLoaded) {
-            iniciarTour();
-        } else {
-            scene.addEventListener('loaded', iniciarTour);
-        }
-
-        // Fallback: si materialtextureloaded no dispara, ocultar loader a los 3s
+        // Fallback: oculta el loader si materialtextureloaded no dispara a tiempo
         setTimeout(ocultarLoader, 3000);
 
         document.getElementById('btn-menu-2d').addEventListener('click', toggleMenu3D);
