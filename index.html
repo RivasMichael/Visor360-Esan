@@ -74,15 +74,14 @@
       });
 
       AFRAME.registerComponent('rotate-with-camera', {
+        init: function () {
+          this._camEl = null;
+        },
         tick: function () {
-          var camera = this.el.sceneEl.camera; 
-          if (!camera) return;
-          var camEl = document.querySelector('[camera]');
-          if (!camEl) return;
-          var camRot = camEl.getAttribute('rotation');
-          if(camRot){
-              this.el.setAttribute('rotation', {x: 0, y: camRot.y, z: 0});
-          }
+          if (!this.el.sceneEl.camera) return;
+          if (!this._camEl) this._camEl = document.querySelector('[camera]');
+          var camRot = this._camEl && this._camEl.getAttribute('rotation');
+          if (camRot) this.el.setAttribute('rotation', {x: 0, y: camRot.y, z: 0});
         }
       });
 
@@ -169,21 +168,23 @@
       // NUEVO: SEGUIMIENTO DE MIRADA Y CORRECCIÓN DE INCLINACIÓN
       // =============================================================
       AFRAME.registerComponent('smooth-follow', {
+        init: function () {
+          this._cam = null;
+        },
         tick: function () {
-          if (this.el.getAttribute('visible') === false) return;
-
-          var cam = document.querySelector('#camara-principal').object3D;
-
+          if (!this.el.object3D.visible) return;
+          if (!this._cam) {
+            var el = document.querySelector('#camara-principal');
+            if (!el) return;
+            this._cam = el.object3D;
+          }
+          var cam = this._cam;
           var targetPos = new THREE.Vector3(0, 0, -11);
           targetPos.applyMatrix4(cam.matrixWorld);
-
-          // Fijar Y al nivel de los ojos para que no suba ni baje con la mirada
           var camWorldPos = new THREE.Vector3();
           cam.getWorldPosition(camWorldPos);
           targetPos.y = camWorldPos.y - 0.3;
-
           this.el.object3D.position.lerp(targetPos, 0.08);
-
           var lookAtPos = new THREE.Vector3().copy(camWorldPos);
           lookAtPos.y = this.el.object3D.position.y;
           this.el.object3D.lookAt(lookAtPos);
@@ -524,12 +525,18 @@
 
       function iniciarTransicion(nombreEscena, direccionDeseada) {
         var datos = escenas[nombreEscena];
+        // Pre-calentar el cache del navegador antes de que arranque el fade
+        if (datos && datos.imagen && !datos.imagen.startsWith('#') && !_preCache[datos.imagen]) {
+          _preCache[datos.imagen] = true;
+          var _warmImg = new Image();
+          _warmImg.src = datos.imagen;
+        }
         var contenedorFlechas = document.querySelector('#flechas-container');
         var cieloFondo = document.querySelector('#cielo-fondo'); 
         var overlayFade = document.querySelector('#overlay-fade');
         var btnLanzarMinijuego = document.querySelector('#btn-lanzar-minijuego');
-        var fondoOscuro = document.querySelector('#hotspot-darkbg'); 
-        var duracionFade = 500; 
+        var fondoOscuro = document.querySelector('#hotspot-darkbg');
+        var duracionFade = 300;
 
         contenedorFlechas.setAttribute('visible', 'false');
         btnLanzarMinijuego.setAttribute('visible', 'false');
@@ -594,7 +601,7 @@
             }
 
             cieloFondo.addEventListener('materialtextureloaded', revelarEscena);
-            _revealTimeout = setTimeout(revelarEscena, 3000);
+            _revealTimeout = setTimeout(revelarEscena, 1000);
         }, duracionFade + 50);
       }
 
@@ -619,6 +626,11 @@
           document.querySelector('#flechas-container').setAttribute('visible', 'false');
           document.querySelector('#btn-lanzar-minijuego').setAttribute('visible', 'false');
           document.querySelector('#btn-lanzar-minijuego').classList.remove('clickable');
+
+          var scene = document.querySelector('a-scene');
+          if (!scene.hasAttribute('physics')) {
+            scene.setAttribute('physics', 'debug: false; gravity: -9.8');
+          }
 
           document.querySelector('#entorno-fisicas-basquet').setAttribute('visible', 'true');
 
@@ -663,7 +675,18 @@
           if (flecha.mirarAlLlegar) {
               entidad.setAttribute('data-mirar', flecha.mirarAlLlegar);
           }
-          entidad.setAttribute('tour-logic', ''); 
+          entidad.setAttribute('tour-logic', '');
+
+          // Pre-calentar imagen al hacer hover sobre la flecha
+          (function(target) {
+            entidad.addEventListener('mouseenter', function() {
+              var dest = escenas[target];
+              if (dest && dest.imagen && !dest.imagen.startsWith('#') && !_preCache[dest.imagen]) {
+                _preCache[dest.imagen] = true;
+                var img = new Image(); img.src = dest.imagen;
+              }
+            });
+          })(flecha.target);
 
           var nombreLugar = nombresDestinos[flecha.target] || flecha.target;
           var lineas = nombreLugar.split('\n');
@@ -704,9 +727,9 @@
         var keys = Object.keys(nombresDestinos);
 
         var panelFondo = document.createElement('a-entity');
-        panelFondo.setAttribute('geometry', 'primitive: rounded-rect; width: 3.8; height: 3.2; radius: 0.15');
+        panelFondo.setAttribute('geometry', 'primitive: rounded-rect; width: 4.0; height: 3.6; radius: 0.15');
         panelFondo.setAttribute('material', 'color: #000000; opacity: 0.72');
-        panelFondo.setAttribute('position', '0 0.15 -0.05');
+        panelFondo.setAttribute('position', '0 0.10 -0.05');
         menu.appendChild(panelFondo);
 
         var titulo = document.createElement('a-text');
@@ -714,19 +737,19 @@
         titulo.setAttribute('align', 'center');
         titulo.setAttribute('color', '#FFFFFF');
         titulo.setAttribute('font', 'exo2semibold');
-        titulo.setAttribute('position', '0 1.5 0');
+        titulo.setAttribute('position', '0 1.55 0');
         titulo.setAttribute('width', '4.5');
         menu.appendChild(titulo);
 
-        let cols = 4;
-        let startX = -1.35; let startY = 1.1; let gapX = 0.9; let gapY = 0.4;
+        let cols = 5;
+        let startX = -1.60; let startY = 1.1; let gapX = 0.80; let gapY = 0.40;
 
         keys.forEach((key, index) => {
           let col = index % cols; let row = Math.floor(index / cols);
           let posX = startX + (col * gapX); let posY = startY - (row * gapY);
 
           var btn = document.createElement('a-entity');
-          btn.setAttribute('geometry', 'primitive: rounded-rect; width: 0.8; height: 0.3; radius: 0.06');
+          btn.setAttribute('geometry', 'primitive: rounded-rect; width: 0.72; height: 0.3; radius: 0.06');
           btn.setAttribute('material', 'color: #E3173E; opacity: 0.95');
           btn.setAttribute('position', `${posX} ${posY} 0`);
           btn.setAttribute('class', 'menu-btn'); btn.setAttribute('data-target', key);
@@ -736,7 +759,7 @@
           txt.setAttribute('value', nombresDestinos[key]);
           txt.setAttribute('align', 'center'); txt.setAttribute('color', '#FFFFFF');
           txt.setAttribute('font', 'exo2semibold');
-          txt.setAttribute('width', '0.76'); txt.setAttribute('wrap-count', '14');
+          txt.setAttribute('width', '0.70'); txt.setAttribute('wrap-count', '12');
           txt.setAttribute('position', '0 0 0.02');
           btn.appendChild(txt);
           menu.appendChild(btn);
@@ -745,7 +768,7 @@
         var btnEnlace = document.createElement('a-entity');
         btnEnlace.setAttribute('geometry', 'primitive: rounded-rect; width: 2.6; height: 0.32; radius: 0.07');
         btnEnlace.setAttribute('material', 'color: #FFFFFF; opacity: 0.95');
-        btnEnlace.setAttribute('position', '0.45 -0.9 0'); btnEnlace.setAttribute('class', 'menu-btn');
+        btnEnlace.setAttribute('position', '0 -1.25 0'); btnEnlace.setAttribute('class', 'menu-btn');
 
         var btnFill = document.createElement('a-entity');
         btnFill.setAttribute('geometry', 'primitive: rounded-rect; width: 2.50; height: 0.22; radius: 0.06');
@@ -776,12 +799,17 @@
         menu.appendChild(btnEnlace);
       }
 
+      var _menuBuilt = false;
       function toggleMenu3D() {
+        if (!_menuBuilt) {
+          construirMenu3D();
+          _menuBuilt = true;
+        }
         var menu = document.querySelector('#menu-3d');
         var cam = document.querySelector('#camara-principal');
         var btn2D = document.getElementById('btn-menu-2d');
         var isVisible = menu.getAttribute('visible');
-        
+
         if (!isVisible) {
             var cam3D = cam.getObject3D('camera');
             if (cam3D) {
@@ -823,16 +851,20 @@
         cieloFondo.setAttribute('src', datos.imagen);
         cieloFondo.setAttribute('rotation', datos.rotacionSky || '0 -90 0');
         generarFlechas(datos.flechas);
-        construirMenu3D();
-        aplicarMarcosPaneles();
+        // construirMenu3D y aplicarMarcosPaneles se difieren al primer uso
+        // para no bloquear la carga inicial de la escena
 
         cieloFondo.addEventListener('materialtextureloaded', function onFirstTexture() {
             cieloFondo.removeEventListener('materialtextureloaded', onFirstTexture);
             revelarInicio();
+            setTimeout(aplicarMarcosPaneles, 200);
         });
 
-        // Fallback: oculta el loader si materialtextureloaded no dispara a tiempo
-        setTimeout(ocultarLoader, 3000);
+        // Fallback: si materialtextureloaded no dispara, revelar igual
+        setTimeout(function() {
+          revelarInicio();
+          setTimeout(aplicarMarcosPaneles, 200);
+        }, 1500);
 
         document.getElementById('btn-menu-2d').addEventListener('click', toggleMenu3D);
         document.querySelector('#btn-lanzar-minijuego').addEventListener('click', activarMinijuego);
@@ -867,7 +899,10 @@
         });
       };
 
+      var _marcosAplicados = false;
       function aplicarMarcosPaneles() {
+        if (_marcosAplicados) return;
+        _marcosAplicados = true;
         document.querySelectorAll('[id^="panel-info-"]').forEach(function(panel) {
           var plano = panel.querySelector('a-plane:not(.close-btn)');
           if (!plano) return;
@@ -958,8 +993,7 @@
     <button id="btn-menu-2d">Abrir Menu de Navegacion</button>
     <button id="btn-capturar">🎯 Capturar Coordenada</button>
 
-    <a-scene 
-      physics="debug: false; gravity: -9.8"
+    <a-scene
       renderer="antialias: true; colorManagement: true; sortObjects: true;"
       cursor="rayOrigin: mouse" 
       raycaster="objects: .clickable">
