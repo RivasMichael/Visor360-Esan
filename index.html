@@ -917,12 +917,12 @@
 
           var marco = document.createElement('a-entity');
           marco.setAttribute('geometry', `primitive: rounded-rect; width: ${(w + 0.16).toFixed(2)}; height: ${(h + 0.16).toFixed(2)}; radius: 0.18`);
-          marco.setAttribute('material', 'color: #E3173E; opacity: 1; shader: flat');
+          marco.setAttribute('material', 'color: #E3173E; opacity: 1; shader: flat; transparent: false');
           marco.setAttribute('position', '0 0 -0.02');
 
           var fondo = document.createElement('a-entity');
           fondo.setAttribute('geometry', `primitive: rounded-rect; width: ${w}; height: ${h}; radius: 0.14`);
-          fondo.setAttribute('material', 'color: #FFFFFF; opacity: 0.98; shader: flat');
+          fondo.setAttribute('material', 'color: #FFFFFF; opacity: 1; shader: flat; transparent: false');
           fondo.setAttribute('position', '0 0 -0.01');
 
           panel.insertBefore(fondo, plano);
