@@ -1657,6 +1657,158 @@
           </a-entity>
       </a-entity>
 
+      <a-entity id="hotspots-fuera" class="grupo-hotspots" visible="false">
+          <a-image
+              src="#img-info-icon"
+              position="5 2.5 -8" scale="0.8 0.8 0.8"
+              look-at="[camera]"
+              class="icono-hotspot"
+              hotspot-info="target: #panel-info-fuera; action: toggle">
+          </a-image>
+          <a-entity id="panel-info-fuera" visible="false" smooth-follow scale="1.5 1.5 1.5">
+              <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+              <a-text value="EXTERIOR ESAN" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
+              <a-text value="El exterior de la Universidad ESAN ofrece amplios espacios verdes y áreas de tránsito que conectan los distintos edificios del campus.\n\nDesde aquí puedes apreciar la arquitectura moderna de las instalaciones y disfrutar del ambiente universitario.\n\nUn espacio de encuentro para toda la comunidad ESAN."
+                      color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+              <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02" hotspot-info="target: #panel-info-fuera; action: close">
+                  <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+              </a-plane>
+          </a-entity>
+      </a-entity>
+
+      <a-entity id="hotspots-fisica" class="grupo-hotspots" visible="false">
+          <a-image
+              src="#img-info-icon"
+              position="5 2.5 -8" scale="0.8 0.8 0.8"
+              look-at="[camera]"
+              class="icono-hotspot"
+              hotspot-info="target: #panel-info-fisica; action: toggle">
+          </a-image>
+          <a-entity id="panel-info-fisica" visible="false" smooth-follow scale="1.5 1.5 1.5">
+              <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+              <a-text value="LABORATORIO DE FÍSICA" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
+              <a-text value="El Laboratorio de Física de ESAN cuenta con equipos de última generación para el estudio experimental de fenómenos físicos.\n\nAquí los estudiantes realizan prácticas de mecánica, electricidad, óptica y termodinámica, fortaleciendo su comprensión teórica con experiencia práctica.\n\nUn espacio diseñado para la exploración científica y el pensamiento analítico."
+                      color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+              <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02" hotspot-info="target: #panel-info-fisica; action: close">
+                  <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+              </a-plane>
+          </a-entity>
+      </a-entity>
+
+      <a-entity id="hotspots-quimica" class="grupo-hotspots" visible="false">
+          <a-image
+              src="#img-info-icon"
+              position="5 2.5 -8" scale="0.8 0.8 0.8"
+              look-at="[camera]"
+              class="icono-hotspot"
+              hotspot-info="target: #panel-info-quimica; action: toggle">
+          </a-image>
+          <a-entity id="panel-info-quimica" visible="false" smooth-follow scale="1.5 1.5 1.5">
+              <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+              <a-text value="LABORATORIO DE QUÍMICA" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
+              <a-text value="El Laboratorio de Química de ESAN ofrece un entorno seguro y equipado para el desarrollo de prácticas experimentales.\n\nCon material de laboratorio moderno, los estudiantes aprenden técnicas de análisis químico, síntesis y caracterización de sustancias aplicadas a la gestión empresarial y la innovación.\n\nCiencia al servicio del conocimiento y la industria."
+                      color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+              <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02" hotspot-info="target: #panel-info-quimica; action: close">
+                  <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+              </a-plane>
+          </a-entity>
+      </a-entity>
+
+      <a-entity id="hotspots-estudio_pregrado" class="grupo-hotspots" visible="false">
+          <a-image
+              src="#img-info-icon"
+              position="5 2.5 -8" scale="0.8 0.8 0.8"
+              look-at="[camera]"
+              class="icono-hotspot"
+              hotspot-info="target: #panel-info-estudio_pregrado; action: toggle">
+          </a-image>
+          <a-entity id="panel-info-estudio_pregrado" visible="false" smooth-follow scale="1.5 1.5 1.5">
+              <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+              <a-text value="SALA DE ESTUDIO PREGRADO" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
+              <a-text value="Las salas de estudio para pregrado de ESAN son espacios cómodos y equipados pensados para el aprendizaje individual y en grupo.\n\nCon mesas amplias, buena iluminación y conexión a internet, los estudiantes encuentran aquí el ambiente ideal para preparar sus exámenes, desarrollar proyectos y estudiar en equipo.\n\nEl éxito académico comienza con el entorno adecuado."
+                      color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+              <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02" hotspot-info="target: #panel-info-estudio_pregrado; action: close">
+                  <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+              </a-plane>
+          </a-entity>
+      </a-entity>
+
+      <a-entity id="hotspots-estudio_mba" class="grupo-hotspots" visible="false">
+          <a-image
+              src="#img-info-icon"
+              position="5 2.5 -8" scale="0.8 0.8 0.8"
+              look-at="[camera]"
+              class="icono-hotspot"
+              hotspot-info="target: #panel-info-estudio_mba; action: toggle">
+          </a-image>
+          <a-entity id="panel-info-estudio_mba" visible="false" smooth-follow scale="1.5 1.5 1.5">
+              <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+              <a-text value="SALA DE ESTUDIO MBA" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
+              <a-text value="Las salas de estudio para MBA de ESAN están diseñadas para profesionales que buscan potenciar sus habilidades de gestión y liderazgo.\n\nEspacios funcionales que facilitan el trabajo colaborativo, la discusión de casos empresariales y la preparación de presentaciones ejecutivas.\n\nDonde los líderes del mañana construyen sus estrategias hoy."
+                      color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+              <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02" hotspot-info="target: #panel-info-estudio_mba; action: close">
+                  <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+              </a-plane>
+          </a-entity>
+      </a-entity>
+
+      <a-entity id="hotspots-estudio_magister" class="grupo-hotspots" visible="false">
+          <a-image
+              src="#img-info-icon"
+              position="5 2.5 -8" scale="0.8 0.8 0.8"
+              look-at="[camera]"
+              class="icono-hotspot"
+              hotspot-info="target: #panel-info-estudio_magister; action: toggle">
+          </a-image>
+          <a-entity id="panel-info-estudio_magister" visible="false" smooth-follow scale="1.5 1.5 1.5">
+              <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+              <a-text value="SALA DE ESTUDIO MAGÍSTER" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
+              <a-text value="Las salas de estudio para Magíster de ESAN son entornos de alto nivel académico para investigadores y estudiantes de posgrado.\n\nEquipadas con recursos especializados, estas salas favorecen el desarrollo de tesis, proyectos de investigación y el intercambio de conocimiento entre pares.\n\nFormando expertos que transforman sus campos de acción."
+                      color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+              <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02" hotspot-info="target: #panel-info-estudio_magister; action: close">
+                  <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+              </a-plane>
+          </a-entity>
+      </a-entity>
+
+      <a-entity id="hotspots-descanso_magister" class="grupo-hotspots" visible="false">
+          <a-image
+              src="#img-info-icon"
+              position="5 2.5 -8" scale="0.8 0.8 0.8"
+              look-at="[camera]"
+              class="icono-hotspot"
+              hotspot-info="target: #panel-info-descanso_magister; action: toggle">
+          </a-image>
+          <a-entity id="panel-info-descanso_magister" visible="false" smooth-follow scale="1.5 1.5 1.5">
+              <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+              <a-text value="SALA DE DESCANSO MAGÍSTER" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
+              <a-text value="La sala de descanso para estudiantes de Magíster es un espacio pensado para la recuperación y el bienestar durante las largas jornadas académicas.\n\nCon ambientes cómodos y tranquilos, permite a los estudiantes relajarse, socializar y recargar energías entre sesiones de estudio o clases.\n\nPorque el descanso también es parte del aprendizaje."
+                      color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+              <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02" hotspot-info="target: #panel-info-descanso_magister; action: close">
+                  <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+              </a-plane>
+          </a-entity>
+      </a-entity>
+
+      <a-entity id="hotspots-cafeteria_interior" class="grupo-hotspots" visible="false">
+          <a-image
+              src="#img-info-icon"
+              position="5 2.5 -8" scale="0.8 0.8 0.8"
+              look-at="[camera]"
+              class="icono-hotspot"
+              hotspot-info="target: #panel-info-cafeteria_interior; action: toggle">
+          </a-image>
+          <a-entity id="panel-info-cafeteria_interior" visible="false" smooth-follow scale="1.5 1.5 1.5">
+              <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+              <a-text value="CAFETERÍA INTERIOR ESAN" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
+              <a-text value="El interior de la Cafetería ESAN es un espacio acogedor y moderno donde la comunidad universitaria se reúne a compartir momentos especiales.\n\nCon una amplia variedad de opciones gastronómicas, desde desayunos hasta almuerzos completos, la cafetería satisface los gustos de toda la comunidad.\n\nSabores que hacen más amena la vida universitaria."
+                      color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+              <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02" hotspot-info="target: #panel-info-cafeteria_interior; action: close">
+                  <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+              </a-plane>
+          </a-entity>
+      </a-entity>
+
       <a-entity id="btn-lanzar-minijuego" position="3 1.5 -8" look-at="[camera]" visible="false"
                 geometry="primitive: rounded-rect; width: 3.2; height: 1.0; radius: 0.2"
                 material="color: #E3173E; opacity: 0.95; shader: flat">
