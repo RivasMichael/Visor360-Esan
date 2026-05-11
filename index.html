@@ -1709,7 +1709,8 @@
 
             <!-- HOTSPOT: MESA DE TRABAJO 2 FABLAB 2 -->
             <a-image src="#img-info-icon" position="-9.64 -2.71 -6.61" scale="0.8 0.8 0.8" look-at="[camera]"
-                class="clickable icono-hotspot" hotspot-info="target: #panel-info-mesa-trabajo2-fablab2; action: toggle">
+                class="clickable icono-hotspot"
+                hotspot-info="target: #panel-info-mesa-trabajo2-fablab2; action: toggle">
             </a-image>
 
             <a-entity id="panel-info-mesa-trabajo2-fablab2" visible="false" smooth-follow scale="1.5 1.5 1.5">
@@ -1730,7 +1731,8 @@
 
             <!-- HOTSPOT: MESA DE TRABAJO 3 FABLAB 2 -->
             <a-image src="#img-info-icon" position="-8.64 -1.75 8.14" scale="0.8 0.8 0.8" look-at="[camera]"
-                class="clickable icono-hotspot" hotspot-info="target: #panel-info-mesa-trabajo3-fablab2; action: toggle">
+                class="clickable icono-hotspot"
+                hotspot-info="target: #panel-info-mesa-trabajo3-fablab2; action: toggle">
             </a-image>
 
             <a-entity id="panel-info-mesa-trabajo3-fablab2" visible="false" smooth-follow scale="1.5 1.5 1.5">
@@ -1913,6 +1915,70 @@
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
                     hotspot-info="target: #panel-info-convention-explanada; action: close">
+                    <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+                </a-plane>
+            </a-entity>
+
+            <!-- HOTSPOT: LABORATORIOS DE FÍSICA Y QUÍMICA -->
+            <a-image src="#img-info-icon" position="1.91 4.23 11.07" scale="0.8 0.8 0.8" look-at="[camera]"
+                class="clickable icono-hotspot" hotspot-info="target: #panel-info-lab-fisica-quimica; action: toggle">
+            </a-image>
+
+            <a-entity id="panel-info-lab-fisica-quimica" visible="false" smooth-follow scale="1.5 1.5 1.5">
+                <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+                <a-text value="LABORATORIOS DE FÍSICA Y QUÍMICA" color="#E3173E" align="center" width="7"
+                    position="0 1.25 0.01"></a-text>
+
+                <a-text
+                    value="Los laboratorios de Física y Química de ESAN son espacios académicos diseñados para fortalecer el aprendizaje práctico mediante experimentación, análisis y aplicación de conceptos científicos.\n\nAquí los estudiantes desarrollan actividades experimentales, validan conocimientos teóricos y adquieren experiencia en entornos de aprendizaje aplicado.\n\nUn espacio donde la ciencia, la práctica y la innovación complementan la formación universitaria."
+                    color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+                <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
+                    hotspot-info="target: #panel-info-lab-fisica-quimica; action: close">
+                    <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+                </a-plane>
+            </a-entity>
+
+            <!-- HOTSPOT: EDIFICIO ACADÉMICO -->
+            <a-image src="#img-info-icon" position="6.55 4.11 -9.17" scale="0.8 0.8 0.8" look-at="[camera]"
+                class="clickable icono-hotspot"
+                hotspot-info="target: #panel-info-edificio-aulas-convention; action: toggle">
+            </a-image>
+
+            <a-entity id="panel-info-edificio-aulas-convention" visible="false" smooth-follow scale="1.5 1.5 1.5">
+                <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+                <a-text value="EDIFICIO ACADÉMICO" color="#E3173E" align="center" width="7"
+                    position="0 1.25 0.01"></a-text>
+
+                <a-text
+                    value="Este edificio académico de ESAN alberga aulas y espacios diseñados para el desarrollo de clases, actividades académicas y experiencias de aprendizaje universitario.\n\nAquí los estudiantes participan en sesiones dinámicas, análisis de casos, exposiciones y actividades que fortalecen su formación profesional.\n\nUn espacio que forma parte del entorno académico donde se construye conocimiento y aprendizaje aplicado."
+                    color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+                <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
+                    hotspot-info="target: #panel-info-edificio-aulas-convention; action: close">
+                    <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+                </a-plane>
+            </a-entity>
+
+            <!-- HOTSPOT: EDIFICIO D -->
+            <a-image src="#img-info-icon" position="9.43 5.65 -4.82" scale="0.8 0.8 0.8" look-at="[camera]"
+                class="clickable icono-hotspot" hotspot-info="target: #panel-info-edificio-d; action: toggle">
+            </a-image>
+
+            <a-entity id="panel-info-edificio-d" visible="false" smooth-follow scale="1.5 1.5 1.5">
+                <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+                <a-text value="EDIFICIO D" color="#E3173E" align="center" width="7"
+                    position="0 1.25 0.01"></a-text>
+
+                <a-text
+                    value="El Edificio D de ESAN integra espacios académicos y administrativos dentro del campus universitario.\n\nEn sus primeros niveles se desarrollan clases y actividades académicas para estudiantes, mientras que en niveles superiores se ubican oficinas docentes y áreas administrativas que apoyan la gestión universitaria.\n\nUn edificio que conecta aprendizaje, docencia y gestión institucional dentro de la experiencia ESAN."
+                    color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+                <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
+                    hotspot-info="target: #panel-info-edificio-d; action: close">
                     <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
                 </a-plane>
             </a-entity>
