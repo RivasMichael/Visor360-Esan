@@ -1308,7 +1308,8 @@
 
             <!-- HOTSPOT: SALONES EDIFICIO D VISTOS DESDE FUENTE -->
             <a-image src="#img-info-icon" position="8.13 7.49 -4.67" scale="0.8 0.8 0.8" look-at="[camera]"
-                class="clickable icono-hotspot" hotspot-info="target: #panel-info-salones-edificioD-fuente; action: toggle">
+                class="clickable icono-hotspot"
+                hotspot-info="target: #panel-info-salones-edificioD-fuente; action: toggle">
             </a-image>
 
             <a-entity id="panel-info-salones-edificioD-fuente" visible="false" smooth-follow scale="1.5 1.5 1.5">
@@ -1329,7 +1330,8 @@
 
             <!-- HOTSPOT: AULAS TIPO AUDITORIO VISTAS DESDE FUENTE -->
             <a-image src="#img-info-icon" position="11.12 3.59 -2.71" scale="0.8 0.8 0.8" look-at="[camera]"
-                class="clickable icono-hotspot" hotspot-info="target: #panel-info-aulas-auditorio-fuente-2; action: toggle">
+                class="clickable icono-hotspot"
+                hotspot-info="target: #panel-info-aulas-auditorio-fuente-2; action: toggle">
             </a-image>
 
             <a-entity id="panel-info-aulas-auditorio-fuente-2" visible="false" smooth-follow scale="1.5 1.5 1.5">
@@ -1407,6 +1409,195 @@
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
                     hotspot-info="target: #panel-info-fablab; action: close">
+                    <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+                </a-plane>
+            </a-entity>
+
+            <!-- HOTSPOT: PIZARRA COLABORATIVA FABLAB -->
+            <a-image src="#img-info-icon" position="-0.91 5.31 -10.72" scale="0.8 0.8 0.8" look-at="[camera]"
+                class="clickable icono-hotspot" hotspot-info="target: #panel-info-pizarra-fablab; action: toggle">
+            </a-image>
+
+            <a-entity id="panel-info-pizarra-fablab" visible="false" smooth-follow scale="1.5 1.5 1.5">
+                <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+                <a-text value="PIZARRA COLABORATIVA" color="#E3173E" align="center" width="7"
+                    position="0 1.25 0.01"></a-text>
+
+                <a-text
+                    value="La pizarra colaborativa del FabLab ESAN es un recurso clave para el desarrollo de ideas, planificación de proyectos y trabajo en equipo.\n\nEn este espacio se organizan propuestas, se explican conceptos y se construyen soluciones mediante sesiones creativas y dinámicas colaborativas.\n\nUna herramienta fundamental donde las ideas toman estructura antes de convertirse en innovación."
+                    color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+                <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
+                    hotspot-info="target: #panel-info-pizarra-fablab; action: close">
+                    <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+                </a-plane>
+            </a-entity>
+
+            <!-- HOTSPOT: PROYECTOS EXHIBIDOS FABLAB -->
+            <a-image src="#img-info-icon" position="-11.40 1.63 3.39" scale="0.8 0.8 0.8" look-at="[camera]"
+                class="clickable icono-hotspot" hotspot-info="target: #panel-info-proyectos-fablab; action: toggle">
+            </a-image>
+
+            <a-entity id="panel-info-proyectos-fablab" visible="false" smooth-follow scale="1.5 1.5 1.5">
+                <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+                <a-text value="PROYECTOS FABLAB" color="#E3173E" align="center" width="7"
+                    position="0 1.25 0.01"></a-text>
+
+                <a-text
+                    value="Este espacio exhibe algunos proyectos y prototipos desarrollados dentro del FabLab ESAN como resultado del aprendizaje práctico, la creatividad y la innovación estudiantil.\n\nAquí se reflejan ideas convertidas en soluciones tangibles mediante diseño, experimentación y fabricación digital.\n\nUna muestra del talento y la capacidad de transformar conocimiento en proyectos reales."
+                    color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+                <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
+                    hotspot-info="target: #panel-info-proyectos-fablab; action: close">
+                    <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+                </a-plane>
+            </a-entity>
+
+            <!-- HOTSPOT: CASILLEROS DE APOYO FABLAB -->
+            <a-image src="#img-info-icon" position="-6.78 3.68 9.19" scale="0.8 0.8 0.8" look-at="[camera]"
+                class="clickable icono-hotspot" hotspot-info="target: #panel-info-casilleros-fablab; action: toggle">
+            </a-image>
+
+            <a-entity id="panel-info-casilleros-fablab" visible="false" smooth-follow scale="1.5 1.5 1.5">
+                <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+                <a-text value="CASILLEROS DE APOYO" color="#E3173E" align="center" width="7"
+                    position="0 1.25 0.01"></a-text>
+
+                <a-text
+                    value="Los casilleros de apoyo del FabLab ESAN permiten almacenar materiales, herramientas y proyectos en desarrollo de manera organizada y segura.\n\nEste espacio facilita que estudiantes y personal del laboratorio mantengan sus recursos disponibles durante el proceso de diseño, prototipado y experimentación.\n\nUn recurso práctico que contribuye al orden y continuidad del trabajo creativo."
+                    color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+                <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
+                    hotspot-info="target: #panel-info-casilleros-fablab; action: close">
+                    <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+                </a-plane>
+            </a-entity>
+
+            <!-- HOTSPOT: MESA DE TRABAJO FABLAB -->
+            <a-image src="#img-info-icon" position="-11.78 -0.89 2.11" scale="0.8 0.8 0.8" look-at="[camera]"
+                class="clickable icono-hotspot" hotspot-info="target: #panel-info-mesa-fablab; action: toggle">
+            </a-image>
+
+            <a-entity id="panel-info-mesa-fablab" visible="false" smooth-follow scale="1.5 1.5 1.5">
+                <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+                <a-text value="MESA DE TRABAJO" color="#E3173E" align="center" width="7"
+                    position="0 1.25 0.01"></a-text>
+
+                <a-text
+                    value="La mesa de trabajo del FabLab ESAN es un espacio colaborativo donde los estudiantes desarrollan ideas, ensamblan prototipos y avanzan en proyectos académicos o de innovación.\n\nAquí se fomenta el trabajo en equipo, la experimentación práctica y la construcción de soluciones mediante el aprendizaje aplicado.\n\nUn punto central donde la creatividad se transforma en proyectos reales."
+                    color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+                <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
+                    hotspot-info="target: #panel-info-mesa-fablab; action: close">
+                    <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+                </a-plane>
+            </a-entity>
+
+            <!-- HOTSPOT: MESA DE TRABAJO 2 FABLAB -->
+            <a-image src="#img-info-icon" position="11.79 -1.03 2.00" scale="0.8 0.8 0.8" look-at="[camera]"
+                class="clickable icono-hotspot" hotspot-info="target: #panel-info-mesa2-fablab; action: toggle">
+            </a-image>
+
+            <a-entity id="panel-info-mesa2-fablab" visible="false" smooth-follow scale="1.5 1.5 1.5">
+                <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+                <a-text value="MESA DE TRABAJO" color="#E3173E" align="center" width="7"
+                    position="0 1.25 0.01"></a-text>
+
+                <a-text
+                    value="La mesa de trabajo del FabLab ESAN es un espacio colaborativo donde los estudiantes desarrollan ideas, ensamblan prototipos y avanzan en proyectos académicos o de innovación.\n\nAquí se fomenta el trabajo en equipo, la experimentación práctica y la construcción de soluciones mediante el aprendizaje aplicado.\n\nUn punto central donde la creatividad se transforma en proyectos reales."
+                    color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+                <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
+                    hotspot-info="target: #panel-info-mesa2-fablab; action: close">
+                    <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+                </a-plane>
+            </a-entity>
+
+            <!-- HOTSPOT: ESPACIO DEL FACILITADOR FABLAB -->
+            <a-image src="#img-info-icon" position="-6.36 0.89 -10.14" scale="0.8 0.8 0.8" look-at="[camera]"
+                class="clickable icono-hotspot" hotspot-info="target: #panel-info-docente-fablab; action: toggle">
+            </a-image>
+
+            <a-entity id="panel-info-docente-fablab" visible="false" smooth-follow scale="1.5 1.5 1.5">
+                <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+                <a-text value="ESPACIO DEL DOCENTE" color="#E3173E" align="center" width="7"
+                    position="0 1.25 0.01"></a-text>
+
+                <a-text
+                    value="El espacio del facilitador del FabLab ESAN es el punto desde donde se orientan actividades, se acompaña el desarrollo de proyectos y se brinda apoyo académico durante las sesiones de trabajo.\n\nDesde aquí se supervisan dinámicas colaborativas, procesos creativos y el uso adecuado de los recursos del laboratorio.\n\nUn punto clave para guiar la innovación, el aprendizaje práctico y la experimentación tecnológica."
+                    color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+                <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
+                    hotspot-info="target: #panel-info-docente-fablab; action: close">
+                    <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+                </a-plane>
+            </a-entity>
+
+            <!-- HOTSPOT: ESPACIO DEL PERSONAL FABLAB -->
+            <a-image src="#img-info-icon" position="-0.92 2.99 11.58" scale="0.8 0.8 0.8" look-at="[camera]"
+                class="clickable icono-hotspot" hotspot-info="target: #panel-info-personal-fablab; action: toggle">
+            </a-image>
+
+            <a-entity id="panel-info-personal-fablab" visible="false" smooth-follow scale="1.5 1.5 1.5">
+                <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+                <a-text value="ESPACIO DEL PERSONAL" color="#E3173E" align="center" width="7"
+                    position="0 1.25 0.01"></a-text>
+
+                <a-text
+                    value="Este espacio corresponde al área de trabajo del personal encargado y facilitadores del FabLab ESAN, desde donde se coordinan actividades, se brinda acompañamiento académico y se supervisa el desarrollo de proyectos.\n\nAquí se gestionan recursos, orientación técnica y soporte para las iniciativas desarrolladas dentro del laboratorio.\n\nUn punto clave para el funcionamiento, organización y acompañamiento de la innovación estudiantil."
+                    color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+                <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
+                    hotspot-info="target: #panel-info-personal-fablab; action: close">
+                    <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+                </a-plane>
+            </a-entity>
+
+            <!-- HOTSPOT: ESPACIO DEL PERSONAL FABLAB VISTA 2 -->
+            <a-image src="#img-info-icon" position="5.84 2.78 10.10" scale="0.8 0.8 0.8" look-at="[camera]"
+                class="clickable icono-hotspot" hotspot-info="target: #panel-info-personal2-fablab; action: toggle">
+            </a-image>
+
+            <a-entity id="panel-info-personal2-fablab" visible="false" smooth-follow scale="1.5 1.5 1.5">
+                <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+                <a-text value="ESPACIO DEL PERSONAL" color="#E3173E" align="center" width="7"
+                    position="0 1.25 0.01"></a-text>
+
+                <a-text
+                    value="Este espacio corresponde al área de trabajo del personal encargado y facilitadores del FabLab ESAN, desde donde se coordinan actividades, se brinda acompañamiento académico y se supervisa el desarrollo de proyectos.\n\nAquí se gestionan recursos, orientación técnica y soporte para las iniciativas desarrolladas dentro del laboratorio.\n\nUn punto clave para el funcionamiento, organización y acompañamiento de la innovación estudiantil."
+                    color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+                <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
+                    hotspot-info="target: #panel-info-personal2-fablab; action: close">
+                    <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+                </a-plane>
+            </a-entity>
+
+            <!-- HOTSPOT: ALMACÉN DE MATERIALES FABLAB -->
+            <a-image src="#img-info-icon" position="-9.65 1.96 6.85" scale="0.8 0.8 0.8" look-at="[camera]"
+                class="clickable icono-hotspot" hotspot-info="target: #panel-info-almacen-fablab; action: toggle">
+            </a-image>
+
+            <a-entity id="panel-info-almacen-fablab" visible="false" smooth-follow scale="1.5 1.5 1.5">
+                <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+                <a-text value="ALMACÉN DE MATERIALES" color="#E3173E" align="center" width="7"
+                    position="0 1.25 0.01"></a-text>
+
+                <a-text
+                    value="Este espacio de almacenamiento del FabLab ESAN permite organizar materiales, insumos y recursos utilizados durante el desarrollo de proyectos y actividades del laboratorio.\n\nSu función es mantener el equipamiento accesible y ordenado para apoyar los procesos de diseño, experimentación y prototipado.\n\nUn recurso esencial para el funcionamiento eficiente del entorno creativo y tecnológico."
+                    color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+                <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
+                    hotspot-info="target: #panel-info-almacen-fablab; action: close">
                     <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
                 </a-plane>
             </a-entity>
