@@ -1135,6 +1135,92 @@
                     <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
                 </a-plane>
             </a-entity>
+
+            <!-- HOTSPOT: DECANATO Y DIRECCIÓN ACADÉMICA -->
+            <a-image src="#img-info-icon" position="9.61 5.52 -4.59" scale="0.8 0.8 0.8" look-at="[camera]"
+                class="clickable icono-hotspot" hotspot-info="target: #panel-info-decanato-jardin; action: toggle">
+            </a-image>
+
+            <a-entity id="panel-info-decanato-jardin" visible="false" smooth-follow scale="1.5 1.5 1.5">
+                <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+                <a-text value="DIRECCIÓN ACADÉMICA" color="#E3173E" align="center" width="7"
+                    position="0 1.25 0.01"></a-text>
+
+                <a-text
+                    value="Este edificio reúne oficinas vinculadas al decanato y al equipo directivo académico de ESAN.\n\nDesde este espacio se coordinan decisiones, actividades y procesos que fortalecen la gestión académica, el acompañamiento a los estudiantes y el desarrollo institucional de la universidad.\n\nUn punto clave para la organización, liderazgo y mejora continua de la experiencia esanista."
+                    color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+                <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
+                    hotspot-info="target: #panel-info-decanato-jardin; action: close">
+                    <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+                </a-plane>
+            </a-entity>
+
+            <!-- HOTSPOT: AULAS TIPO AUDITORIO -->
+            <a-image src="#img-info-icon" position="-2.96 4.45 10.74" scale="0.8 0.8 0.8" look-at="[camera]"
+                class="clickable icono-hotspot"
+                hotspot-info="target: #panel-info-aulas-auditorio-jardin; action: toggle">
+            </a-image>
+
+            <a-entity id="panel-info-aulas-auditorio-jardin" visible="false" smooth-follow scale="1.5 1.5 1.5">
+                <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+                <a-text value="AULAS TIPO AUDITORIO" color="#E3173E" align="center" width="7"
+                    position="0 1.25 0.01"></a-text>
+
+                <a-text
+                    value="Las aulas tipo auditorio de ESAN están diseñadas para desarrollar clases dinámicas, exposiciones, debates y análisis de casos.\n\nSu distribución permite que los estudiantes tengan una mejor visibilidad del docente, los materiales de clase y las presentaciones, favoreciendo la participación y el aprendizaje colaborativo.\n\nUn espacio académico pensado para conectar teoría, práctica y discusión en cada sesión."
+                    color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+                <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
+                    hotspot-info="target: #panel-info-aulas-auditorio-jardin; action: close">
+                    <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+                </a-plane>
+            </a-entity>
+
+            <!-- HOTSPOT: AULAS EJECUTIVAS -->
+            <a-image src="#img-info-icon" position="2.77 4.11 -10.93" scale="0.8 0.8 0.8" look-at="[camera]"
+                class="clickable icono-hotspot"
+                hotspot-info="target: #panel-info-aulas-ejecutivas-jardin; action: toggle">
+            </a-image>
+
+            <a-entity id="panel-info-aulas-ejecutivas-jardin" visible="false" smooth-follow scale="1.5 1.5 1.5">
+                <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+                <a-text value="AULAS EJECUTIVAS" color="#E3173E" align="center" width="7"
+                    position="0 1.25 0.01"></a-text>
+
+                <a-text
+                    value="Las aulas ejecutivas de ESAN están diseñadas para desarrollar clases participativas, análisis de casos, exposiciones y dinámicas grupales.\n\nSu infraestructura tipo anfiteatro permite una mejor interacción entre docentes y estudiantes, favoreciendo el debate, la toma de decisiones y el aprendizaje aplicado.\n\nUn espacio académico orientado a formar líderes con visión crítica, colaborativa y profesional."
+                    color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+                <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
+                    hotspot-info="target: #panel-info-aulas-ejecutivas-jardin; action: close">
+                    <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+                </a-plane>
+            </a-entity>
+
+            <!-- HOTSPOT: COMEDOR CENTRAL -->
+            <a-image src="#img-info-icon" position="-7.66 3.41 -8.59" scale="0.8 0.8 0.8" look-at="[camera]"
+                class="clickable icono-hotspot" hotspot-info="target: #panel-info-comedor-jardin; action: toggle">
+            </a-image>
+
+            <a-entity id="panel-info-comedor-jardin" visible="false" smooth-follow scale="1.5 1.5 1.5">
+                <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+                <a-text value="COMEDOR CENTRAL" color="#E3173E" align="center" width="7"
+                    position="0 1.25 0.01"></a-text>
+
+                <a-text
+                    value="El Comedor Central de ESAN es un espacio de encuentro donde estudiantes, docentes y colaboradores pueden compartir, descansar y recargar energías durante la jornada universitaria.\n\nAquí se ofrecen alternativas de alimentación para acompañar el ritmo académico y promover momentos de integración entre la comunidad esanista.\n\nUn lugar donde la vida universitaria también se disfruta entre pausas, conversaciones y compañerismo."
+                    color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+                <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
+                    hotspot-info="target: #panel-info-comedor-jardin; action: close">
+                    <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+                </a-plane>
+            </a-entity>
         </a-entity>
 
 
@@ -1173,6 +1259,112 @@
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
                     hotspot-info="target: #panel-info-comedor-fuente; action: close">
+                    <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+                </a-plane>
+            </a-entity>
+
+            <!-- HOTSPOT: AULAS TIPO AUDITORIO VISTAS DESDE FUENTE -->
+            <a-image src="#img-info-icon" position="0.81 4.18 11.22" scale="0.8 0.8 0.8" look-at="[camera]"
+                class="clickable icono-hotspot"
+                hotspot-info="target: #panel-info-aulas-auditorio-fuente; action: toggle">
+            </a-image>
+
+            <a-entity id="panel-info-aulas-auditorio-fuente" visible="false" smooth-follow scale="1.5 1.5 1.5">
+                <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+                <a-text value="AULAS TIPO AUDITORIO" color="#E3173E" align="center" width="7"
+                    position="0 1.25 0.01"></a-text>
+
+                <a-text
+                    value="Las aulas tipo auditorio de ESAN están diseñadas para desarrollar clases dinámicas, exposiciones, debates y análisis de casos.\n\nSu distribución permite que los estudiantes tengan una mejor visibilidad del docente, los materiales de clase y las presentaciones, favoreciendo la participación y el aprendizaje colaborativo.\n\nUn espacio académico pensado para conectar teoría, práctica y discusión en cada sesión."
+                    color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+                <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
+                    hotspot-info="target: #panel-info-aulas-auditorio-fuente; action: close">
+                    <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+                </a-plane>
+            </a-entity>
+
+            <!-- HOTSPOT: OFICINAS ADMINISTRATIVAS VISTAS DESDE FUENTE -->
+            <a-image src="#img-info-icon" position="-8.95 4.85 -6.36" scale="0.8 0.8 0.8" look-at="[camera]"
+                class="clickable icono-hotspot" hotspot-info="target: #panel-info-admin-fuente; action: toggle">
+            </a-image>
+
+            <a-entity id="panel-info-admin-fuente" visible="false" smooth-follow scale="1.5 1.5 1.5">
+                <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+                <a-text value="OFICINAS ADMINISTRATIVAS" color="#E3173E" align="center" width="7"
+                    position="0 1.25 0.01"></a-text>
+
+                <a-text
+                    value="Este espacio reúne oficinas administrativas que respaldan el funcionamiento operativo y organizacional de ESAN.\n\nDesde aquí se coordinan procesos internos, servicios institucionales y actividades que contribuyen al correcto desarrollo de la vida universitaria.\n\nUn área clave para la gestión y el soporte de la comunidad esanista."
+                    color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+                <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
+                    hotspot-info="target: #panel-info-admin-fuente; action: close">
+                    <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+                </a-plane>
+            </a-entity>
+
+            <!-- HOTSPOT: SALONES EDIFICIO D VISTOS DESDE FUENTE -->
+            <a-image src="#img-info-icon" position="8.13 7.49 -4.67" scale="0.8 0.8 0.8" look-at="[camera]"
+                class="clickable icono-hotspot" hotspot-info="target: #panel-info-salones-edificioD-fuente; action: toggle">
+            </a-image>
+
+            <a-entity id="panel-info-salones-edificioD-fuente" visible="false" smooth-follow scale="1.5 1.5 1.5">
+                <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+                <a-text value="SALONES EDIFICIO D" color="#E3173E" align="center" width="7"
+                    position="0 1.25 0.01"></a-text>
+
+                <a-text
+                    value="El Edificio D de ESAN cuenta con salones destinados al desarrollo de clases, exposiciones y actividades académicas.\n\nSus espacios están diseñados para apoyar el aprendizaje universitario mediante sesiones dinámicas, trabajo colaborativo y el uso de recursos tecnológicos.\n\nUn ambiente académico donde los estudiantes fortalecen sus conocimientos y habilidades profesionales."
+                    color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+                <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
+                    hotspot-info="target: #panel-info-salones-edificioD-fuente; action: close">
+                    <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+                </a-plane>
+            </a-entity>
+
+            <!-- HOTSPOT: AULAS TIPO AUDITORIO VISTAS DESDE FUENTE -->
+            <a-image src="#img-info-icon" position="11.12 3.59 -2.71" scale="0.8 0.8 0.8" look-at="[camera]"
+                class="clickable icono-hotspot" hotspot-info="target: #panel-info-aulas-auditorio-fuente-2; action: toggle">
+            </a-image>
+
+            <a-entity id="panel-info-aulas-auditorio-fuente-2" visible="false" smooth-follow scale="1.5 1.5 1.5">
+                <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+                <a-text value="AULAS TIPO AUDITORIO" color="#E3173E" align="center" width="7"
+                    position="0 1.25 0.01"></a-text>
+
+                <a-text
+                    value="Las aulas tipo auditorio de ESAN están diseñadas para desarrollar clases dinámicas, exposiciones, debates y análisis de casos.\n\nSu distribución permite que los estudiantes tengan una mejor visibilidad del docente, los materiales de clase y las presentaciones, favoreciendo la participación y el aprendizaje colaborativo.\n\nUn espacio académico pensado para conectar teoría, práctica y discusión en cada sesión."
+                    color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+                <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
+                    hotspot-info="target: #panel-info-aulas-auditorio-fuente-2; action: close">
+                    <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+                </a-plane>
+            </a-entity>
+
+            <!-- HOTSPOT: ÁREA DE DESCANSO JUNTO A LA FUENTE -->
+            <a-image src="#img-info-icon" position="-8.44 0.34 8.52" scale="0.8 0.8 0.8" look-at="[camera]"
+                class="clickable icono-hotspot" hotspot-info="target: #panel-info-descanso-fuente; action: toggle">
+            </a-image>
+
+            <a-entity id="panel-info-descanso-fuente" visible="false" smooth-follow scale="1.5 1.5 1.5">
+                <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
+
+                <a-text value="ÁREA DE DESCANSO" color="#E3173E" align="center" width="7"
+                    position="0 1.25 0.01"></a-text>
+
+                <a-text
+                    value="Este espacio de descanso ofrece a estudiantes y visitantes un lugar para hacer una pausa, conversar o disfrutar del entorno natural del campus ESAN.\n\nUbicada junto a la fuente y áreas verdes, esta zona refleja el equilibrio entre la vida académica y los momentos de bienestar dentro de la universidad.\n\nUn rincón pensado para relajarse, compartir y disfrutar del ambiente esanista."
+                    color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
+
+                <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
+                    hotspot-info="target: #panel-info-descanso-fuente; action: close">
                     <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
                 </a-plane>
             </a-entity>
@@ -1662,7 +1854,6 @@
         </a-entity>
 
 
-
         <!--AULAS DE COMPUTO -->
 
 
@@ -1724,27 +1915,6 @@
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
                     hotspot-info="target: #panel-info-estaciones-lab; action: close">
-                    <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
-                </a-plane>
-            </a-entity>
-
-            <!-- HOTSPOT: SISTEMA AUDIOVISUAL -->
-            <a-image src="#img-info-icon" position="-8.60 8.35 0.51" scale="0.8 0.8 0.8" look-at="[camera]"
-                class="clickable icono-hotspot" hotspot-info="target: #panel-info-audiovisual-lab; action: toggle">
-            </a-image>
-
-            <a-entity id="panel-info-audiovisual-lab" visible="false" smooth-follow scale="1.5 1.5 1.5">
-                <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3.2" position="0 0 0"></a-plane>
-
-                <a-text value="SISTEMA AUDIOVISUAL" color="#E3173E" align="center" width="7"
-                    position="0 1.25 0.01"></a-text>
-
-                <a-text
-                    value="El sistema audiovisual del laboratorio complementa la experiencia de aprendizaje mediante presentaciones, demostraciones tecnológicas y contenido multimedia en tiempo real.\n\nEste recurso permite desarrollar sesiones más dinámicas e interactivas, facilitando la comprensión de conceptos y el trabajo práctico dentro del entorno académico.\n\nUna herramienta clave para la enseñanza moderna apoyada en tecnología."
-                    color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
-
-                <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
-                    hotspot-info="target: #panel-info-audiovisual-lab; action: close">
                     <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
                 </a-plane>
             </a-entity>
