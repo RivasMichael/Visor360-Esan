@@ -251,13 +251,13 @@
 
                     if (texts[0]) {
                         texts[0].setAttribute('color', '#E3173E');
-                        texts[0].setAttribute('font', 'exo2semibold');
                         texts[0].setAttribute('width', '3.6');
                         texts[0].setAttribute('wrap-count', '22');
+                        texts[0].setAttribute('align', 'center');
                         texts[0].setAttribute('position', '0 ' + (h / 2 - 0.36).toFixed(2) + ' 0.06');
                     }
                     for (var i = 1; i < texts.length; i++) {
-                        texts[i].setAttribute('position', '0 -0.15 0.06');
+                        texts[i].setAttribute('position', '0 -0.45 0.06');
                         texts[i].setAttribute('align', 'center');
                         texts[i].setAttribute('width', (w - 0.4).toFixed(2));
                     }
