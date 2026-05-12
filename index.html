@@ -254,17 +254,10 @@
                         texts[0].setAttribute('font', 'exo2semibold');
                         texts[0].setAttribute('width', '3.6');
                         texts[0].setAttribute('wrap-count', '22');
-                        var p0 = (texts[0].getAttribute('position') || '0 0 0').split(' ');
-                        p0[1] = (h / 2 - 0.36).toFixed(2);
-                        p0[2] = '0.06';
-                        texts[0].setAttribute('position', p0.join(' '));
+                        texts[0].setAttribute('position', '0 ' + (h / 2 - 0.36).toFixed(2) + ' 0.06');
                     }
                     for (var i = 1; i < texts.length; i++) {
-                        var pi = (texts[i].getAttribute('position') || '0 0 0').split(' ');
-                        pi[0] = '0';
-                        pi[1] = '-0.15';
-                        pi[2] = '0.06';
-                        texts[i].setAttribute('position', pi.join(' '));
+                        texts[i].setAttribute('position', '0 -0.15 0.06');
                         texts[i].setAttribute('align', 'center');
                         texts[i].setAttribute('width', (w - 0.4).toFixed(2));
                     }
