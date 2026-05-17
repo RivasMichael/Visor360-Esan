@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -86,6 +86,97 @@
     </style>
 
     <script>
+        // ========================================================
+        // COMPONENTE THREE.JS: CUBOS VIVOS (ROJO, CELESTE, BLANCO)
+        // ========================================================
+        AFRAME.registerComponent('cubos-digitales', {
+          init: function () {
+            const scene3D = this.el.sceneEl.object3D;
+            this.count = 1000;
+            
+            this.geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(this.count * 3);
+            const colors = new Float32Array(this.count * 3);
+            
+            const colorRojo = new THREE.Color(0xff0026);    
+            const colorCeleste = new THREE.Color(0x00bfff); 
+            const colorBlanco = new THREE.Color(0xffffff);  
+            
+            this.velocities = [];
+
+          loopParticulas:
+            for (let i = 0; i < this.count; i++) {
+              positions[i * 3] = (Math.random() - 0.5) * 50;
+              positions[i * 3 + 1] = (Math.random() - 0.5) * 40 + 1.6; 
+              positions[i * 3 + 2] = (Math.random() - 0.5) * 50;
+              
+              const rand = Math.random();
+              let selectedColor;
+              if (rand < 0.33) {
+                selectedColor = colorRojo;
+              } else if (rand < 0.66) {
+                selectedColor = colorCeleste;
+              } else {
+                selectedColor = colorBlanco;
+              }
+              
+              colors[i * 3] = selectedColor.r;
+              colors[i * 3 + 1] = selectedColor.g;
+              colors[i * 3 + 2] = selectedColor.b;
+
+              this.velocities.push((Math.random() - 0.5) * 0.02); 
+              this.velocities.push((Math.random() - 0.5) * 0.02); 
+              this.velocities.push((Math.random() - 0.5) * 0.02); 
+            }
+            
+            this.geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            this.geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = 16;
+            canvas.height = 16;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, 16, 16);
+            const texture = new THREE.CanvasTexture(canvas);
+
+            this.material = new THREE.PointsMaterial({
+              size: 0.22,
+              vertexColors: true,
+              transparent: true,
+              opacity: 0.9,
+              map: texture,
+              blending: THREE.NormalBlending
+            });
+            
+            this.particleSystem = new THREE.Points(this.geometry, this.material);
+            scene3D.add(this.particleSystem);
+          },
+          
+          tick: function (time, timeDelta) {
+            if (!this.particleSystem) return;
+            
+            const pos = this.geometry.attributes.position.array;
+            this.material.size = (Math.sin(time * 0.002) * 0.08) + 0.20;
+
+            for (let i = 0; i < this.count; i++) {
+              const i3 = i * 3;
+              
+              pos[i3] += this.velocities[i3];
+              pos[i3 + 1] += this.velocities[i3 + 1];
+              pos[i3 + 2] += this.velocities[i3 + 2];
+              
+              if (Math.abs(pos[i3]) > 25) this.velocities[i3] *= -1;
+              if (Math.abs(pos[i3 + 1] - 1.6) > 20) this.velocities[i3 + 1] *= -1;
+              if (Math.abs(pos[i3 + 2]) > 25) this.velocities[i3 + 2] *= -1;
+            }
+            
+            this.geometry.attributes.position.needsUpdate = true;
+            this.particleSystem.rotation.y += 0.0005;
+            this.particleSystem.rotation.x += 0.0002;
+          }
+        });
+
         const nombresDestinos = {
             'fuera': 'Exterior\nESAN',
             'entrada': 'Entrada\nPrincipal', 'jardin': 'Jardin', 'fuente': 'Fuente',
@@ -210,9 +301,6 @@
             }
         });
 
-        // =============================================================
-        // CARD-STYLE: estilo unificado para paneles info
-        // =============================================================
         AFRAME.registerComponent('card-style', {
             init: function () {
                 var panel = this.el;
@@ -235,7 +323,6 @@
                         return p;
                     }
 
-                    // Sombra + marco rojo + fondo blanco (sin cabecera roja)
                     panel.appendChild(mkPlane('#000000', (w + 0.30).toFixed(2), (h + 0.30).toFixed(2), '0.10', '-0.10', '-0.05', '0.30', true));
                     panel.appendChild(mkPlane('#E3173E', (w + 0.16).toFixed(2), (h + 0.16).toFixed(2), '0', '0', '-0.02', '1', false));
                     panel.appendChild(mkPlane('#FFFFFF', w, h, '0', '0', '-0.01', '1', false));
@@ -270,9 +357,7 @@
                 }, 0);
             }
         });
-        // =============================================================
-        // NUEVO: SEGUIMIENTO DE MIRADA Y CORRECCI�"N DE INCLINACI�"N
-        // =============================================================
+
         AFRAME.registerComponent('smooth-follow', {
             init: function () {
                 this._cam = null;
@@ -297,9 +382,6 @@
             }
         });
 
-        // =============================================================
-        // APERTURA DE HOTSPOT Y MODO OSCURO
-        // =============================================================
         AFRAME.registerComponent('hotspot-info', {
             schema: {
                 target: { type: 'string' },
@@ -311,7 +393,7 @@
 
                 el.addEventListener('click', function (evt) {
                     var panel = document.querySelector(data.target);
-                    var fondoOscuro = document.querySelector('#hotspot-darkbg'); // Fondo negro
+                    var fondoOscuro = document.querySelector('#hotspot-darkbg'); 
 
                     if (!panel) return;
                     evt.stopPropagation();
@@ -354,18 +436,11 @@
         });
 
         const escenas = {
-
             'entrada': {
                 imagen: '#img-entrada',
                 rotacionSky: '0 90 0',
                 flechas: [{ target: 'jardin', position: '-0.70 2 -18', rotation: '0 -155 0' }]
             },
-            // 'entrada': {
-            //     imagen: 'https://esanlabs.blob.core.windows.net/media/imagenes/entrada.jpg?sp=r&st=2026-04-28T15:38:39Z&se=2027-04-28T23:53:39Z&spr=https&sv=2025-11-05&sr=b&sig=zcn6m%2FSCuLHqCuRc1hugYAYVFRN2ygvyENCmauK0cjk%3D', 
-            //     rotacionSky: '0 90 0', 
-            //     flechas: [ { target: 'jardin', position: '-0.70 2 -18', rotation: '0 -155 0' } ] 
-            // },
-
             'jardin': {
                 imagen: 'imagenes/jardin.jpg', rotacionSky: '0 -90 0',
                 flechas: [
@@ -374,7 +449,6 @@
                     { target: 'entrada', position: '9.12 3.1 -7.79', rotation: '0 150 0' }
                 ]
             },
-
             'capilla': {
                 imagen: 'imagenes/capilla.jpg', rotacionSky: '0 -90 0',
                 flechas: [
@@ -643,7 +717,6 @@
 
         function iniciarTransicion(nombreEscena, direccionDeseada) {
             var datos = escenas[nombreEscena];
-            // Pre-calentar el cache del navegador antes de que arranque el fade
             if (datos && datos.imagen && !datos.imagen.startsWith('#') && !_preCache[datos.imagen]) {
                 _preCache[datos.imagen] = true;
                 var _warmImg = new Image();
@@ -662,7 +735,6 @@
 
             if (fondoOscuro) fondoOscuro.setAttribute('visible', 'false');
 
-            // Ocultar Hotspots al cambiar de escena
             var todosHotspots = document.querySelectorAll('.grupo-hotspots');
             todosHotspots.forEach(function (grupo) {
                 grupo.setAttribute('visible', 'false');
@@ -760,6 +832,8 @@
             resetearPelota();
         }
 
+        function flowchart_step() { return; }
+
         function desactivarMinijuego() {
             document.querySelector('#entorno-fisicas-basquet').setAttribute('visible', 'false');
             document.querySelector('#btn-volver-tour').classList.remove('clickable');
@@ -782,9 +856,12 @@
                 wrapper.setAttribute('animation__float', `property: position; dir: alternate; dur: 2200; easing: easeInOutSine; loop: true; to: ${flecha.position.split(' ')[0]} ${(parseFloat(flecha.position.split(' ')[1]) + 0.22).toFixed(2)} ${flecha.position.split(' ')[2]}`);
                 wrapper.setAttribute('animation__pulse', 'property: scale; from: 0.88 0.88 0.88; to: 1.22 1.22 1.22; dir: alternate; dur: 1600; easing: easeInOutSine; loop: true');
 
-                var entidad = document.createElement('a-entity');
+                var entidad = document.createElement('a-image');
+                entidad.setAttribute('src', flecha.imgSrc || '#img-flecha-plana');
+                entidad.setAttribute('scale', '1.8 1.8 1.8');
                 entidad.setAttribute('look-at', '[camera]');
-                entidad.setAttribute('scale', '0.9 0.9 0.9');
+                entidad.setAttribute('transparent', 'true');
+
                 entidad.setAttribute('data-target', flecha.target);
                 entidad.setAttribute('class', 'clickable');
                 if (flecha.mirarAlLlegar) {
@@ -792,28 +869,6 @@
                 }
                 entidad.setAttribute('tour-logic', '');
 
-                // Sombra
-                var aSombra = document.createElement('a-cone');
-                aSombra.setAttribute('radius-bottom', '0.47'); aSombra.setAttribute('radius-top', '0');
-                aSombra.setAttribute('height', '0.72');
-                aSombra.setAttribute('position', '0.04 -0.04 -0.02');
-                aSombra.setAttribute('material', 'color: #000000; opacity: 0.35; shader: flat; transparent: true');
-                entidad.appendChild(aSombra);
-                // Cono rojo principal
-                var aOuter = document.createElement('a-cone');
-                aOuter.setAttribute('radius-bottom', '0.44'); aOuter.setAttribute('radius-top', '0');
-                aOuter.setAttribute('height', '0.70');
-                aOuter.setAttribute('material', 'color: #E3173E; shader: flat');
-                entidad.appendChild(aOuter);
-                // Cono blanco interior
-                var aInner = document.createElement('a-cone');
-                aInner.setAttribute('radius-bottom', '0.28'); aInner.setAttribute('radius-top', '0');
-                aInner.setAttribute('height', '0.56');
-                aInner.setAttribute('position', '0 0.05 0.03');
-                aInner.setAttribute('material', 'color: #FFFFFF; shader: flat');
-                entidad.appendChild(aInner);
-
-                // Pre-calentar imagen al hacer hover sobre la flecha
                 (function (target) {
                     entidad.addEventListener('mouseenter', function () {
                         var dest = escenas[target];
@@ -970,82 +1025,34 @@
             }
         }
 
-        // Reemplaza a-image.icono-hotspot con primitivas A-Frame (evita texturas SVG en WebGL)
-        function reemplazarIconosHotspot() {
-            document.querySelectorAll('a-image.icono-hotspot').forEach(function (aimg) {
-                var parent = aimg.parentNode;
-                if (!parent) return;
-                var ent = document.createElement('a-entity');
-                ent.setAttribute('position', aimg.getAttribute('position') || '0 0 0');
-                ent.setAttribute('scale', aimg.getAttribute('scale') || '0.8 0.8 0.8');
-                ent.setAttribute('look-at', '[camera]');
-                ent.setAttribute('class', aimg.getAttribute('class') || '');
-                var info = aimg.getAttribute('hotspot-info');
-                if (info) ent.setAttribute('hotspot-info', info);
-                var circle = document.createElement('a-circle');
-                circle.setAttribute('radius', '0.5');
-                circle.setAttribute('material', 'color: #E3173E; shader: flat; side: double');
-                ent.appendChild(circle);
-                var txt = document.createElement('a-text');
-                txt.setAttribute('value', 'i');
-                txt.setAttribute('align', 'center');
-                txt.setAttribute('baseline', 'center');
-                txt.setAttribute('color', '#FFFFFF');
-                txt.setAttribute('width', '2.8');
-                txt.setAttribute('position', '0 0 0.01');
-                ent.appendChild(txt);
-                parent.insertBefore(ent, aimg);
-                parent.removeChild(aimg);
-            });
-        }
-
         window.onload = function () {
             var datos = escenas['entrada'];
             var cieloFondo = document.querySelector('#cielo-fondo');
-            var _tourStarted = false;
-            var _tourRevealed = false;
 
             function revelarInicio() {
-                if (_tourRevealed) return;
-                _tourRevealed = true;
                 ocultarLoader();
                 precargarAdyacentes('entrada');
-                document.querySelector('#flechas-container').setAttribute('visible', 'true');
                 var hotspotEntrada = document.querySelector('#hotspots-entrada');
                 if (hotspotEntrada) {
                     hotspotEntrada.setAttribute('visible', 'true');
-                    hotspotEntrada.querySelectorAll('.icono-hotspot, a-entity[hotspot-info]').forEach(i => i.classList.add('clickable'));
+                    hotspotEntrada.querySelectorAll('.icono-hotspot').forEach(i => i.classList.add('clickable'));
                 }
             }
 
-            function iniciarTour() {
-                if (_tourStarted) return;
-                _tourStarted = true;
-                reemplazarIconosHotspot();
-                cieloFondo.setAttribute('src', datos.imagen);
-                cieloFondo.setAttribute('rotation', datos.rotacionSky || '0 -90 0');
-                generarFlechas(datos.flechas);
+            cieloFondo.setAttribute('src', datos.imagen);
+            cieloFondo.setAttribute('rotation', datos.rotacionSky || '0 -90 0');
+            generarFlechas(datos.flechas);
 
-                cieloFondo.addEventListener('materialtextureloaded', function onFirstTexture() {
-                    cieloFondo.removeEventListener('materialtextureloaded', onFirstTexture);
-                    revelarInicio();
-                });
-                setTimeout(revelarInicio, 1500);
-                setTimeout(revelarInicio, 4000);
-            }
+            cieloFondo.addEventListener('materialtextureloaded', function onFirstTexture() {
+                cieloFondo.removeEventListener('materialtextureloaded', onFirstTexture);
+                revelarInicio();
+                setTimeout(aplicarMarcosPaneles, 200);
+            });
 
-            var escena = document.querySelector('a-scene');
-            if (escena.hasLoaded) {
-                iniciarTour();
-            } else {
-                escena.addEventListener('loaded', iniciarTour);
-                var _poll = setInterval(function () {
-                    if (document.querySelector('a-scene').hasLoaded) {
-                        clearInterval(_poll); iniciarTour();
-                    }
-                }, 300);
-                setTimeout(iniciarTour, 6000);
-            }
+            setTimeout(function () {
+                revelarInicio();
+                setTimeout(aplicarMarcosPaneles, 200);
+            }, 1500);
 
             document.getElementById('btn-menu-2d').addEventListener('click', toggleMenu3D);
             document.querySelector('#btn-lanzar-minijuego').addEventListener('click', activarMinijuego);
@@ -1071,77 +1078,18 @@
                 var codigoGenerado = `{ target: 'DESTINO', position: '${posX} ${posY} ${posZ}', rotation: '0 ${rotY} 0' },`;
 
                 navigator.clipboard.writeText(codigoGenerado).then(function () {
-                    alert("�o. ¡Cartel capturado en tu portapapeles!\n\n" + codigoGenerado + "\n\nPegalo en tu código.");
+                    alert("¡Cartel capturado en tu portapapeles!\n\n" + codigoGenerado + "\n\nPegalo en tu código.");
                 }).catch(function () {
                     prompt("Copia este código:", codigoGenerado);
                 });
-                console.log("%c�YZ� NUEVA COORDENADA CAPTURADA", "color: #E3173E; font-size: 16px; font-weight: bold;");
+                console.log("%c NUEVA COORDENADA CAPTURADA", "color: #E3173E; font-size: 16px; font-weight: bold;");
                 console.log(codigoGenerado);
             });
         };
 
         var _marcosAplicados = false;
         function aplicarMarcosPaneles() {
-            return; // replaced by card-style component
-            if (_marcosAplicados) return;
-            _marcosAplicados = true;
-            document.querySelectorAll('[id^="panel-info-"]').forEach(function (panel) {
-                var plano = panel.querySelector('a-plane:not(.close-btn)');
-                if (!plano) return;
-
-                var w = parseFloat(plano.getAttribute('width') || 4);
-                var h = parseFloat(plano.getAttribute('height') || 3);
-
-                var sombra = document.createElement('a-entity');
-                sombra.setAttribute('geometry', `primitive: rounded-rect; width: ${(w + 0.3).toFixed(2)}; height: ${(h + 0.3).toFixed(2)}; radius: 0.22`);
-                sombra.setAttribute('material', 'color: #000000; opacity: 0.30; shader: flat');
-                sombra.setAttribute('position', '0.10 -0.10 -0.05');
-
-                var marco = document.createElement('a-entity');
-                marco.setAttribute('geometry', `primitive: rounded-rect; width: ${(w + 0.16).toFixed(2)}; height: ${(h + 0.16).toFixed(2)}; radius: 0.18`);
-                marco.setAttribute('material', 'color: #E3173E; opacity: 1; shader: flat; transparent: false');
-                marco.setAttribute('position', '0 0 -0.02');
-
-                var fondo = document.createElement('a-entity');
-                fondo.setAttribute('geometry', `primitive: rounded-rect; width: ${w}; height: ${h}; radius: 0.14`);
-                fondo.setAttribute('material', 'color: #FFFFFF; opacity: 1; shader: flat; transparent: false');
-                fondo.setAttribute('position', '0 0 -0.01');
-
-                panel.insertBefore(fondo, plano);
-                panel.insertBefore(marco, fondo);
-                panel.insertBefore(sombra, marco);
-                plano.remove();
-
-                // Cabecera roja con texto blanco (igual que entrada principal)
-                var cabecera = document.createElement('a-entity');
-                cabecera.setAttribute('geometry', `primitive: rounded-rect; width: ${w}; height: 0.72; radius: 0.12`);
-                cabecera.setAttribute('material', 'color: #E3173E; opacity: 1; shader: flat; transparent: false');
-                cabecera.setAttribute('position', `0 ${(h / 2 - 0.36).toFixed(2)} 0.01`);
-                panel.appendChild(cabecera);
-
-                // X: esquina superior derecha sobre el marco rojo
-                var closeBtn = panel.querySelector('.close-btn');
-                if (closeBtn) {
-                    closeBtn.setAttribute('position', `${(w / 2 - 0.15).toFixed(2)} ${(h / 2 + 0.05).toFixed(2)} 0.04`);
-                }
-
-                // Textos: título en blanco sobre cabecera roja, cuerpo en oscuro sobre blanco
-                var textos = Array.from(panel.querySelectorAll('a-text')).filter(function (t) {
-                    return !t.parentElement.classList.contains('close-btn');
-                });
-                textos.forEach(function (txt, i) {
-                    var pos = (txt.getAttribute('position') || '0 0 0').split(' ');
-                    pos[2] = '0.06';
-                    if (i === 0) {
-                        pos[1] = (h / 2 - 0.36).toFixed(2);
-                        txt.setAttribute('color', '#FFFFFF');
-                        txt.setAttribute('font', 'exo2semibold');
-                        txt.setAttribute('width', '3.6');
-                        txt.setAttribute('wrap-count', '22');
-                    }
-                    txt.setAttribute('position', pos.join(' '));
-                });
-            });
+            return; 
         }
 
         var _loaderOculto = false;
@@ -1153,7 +1101,6 @@
                 loader.classList.add('oculto');
                 setTimeout(() => {
                     loader.style.display = 'none';
-                    // Forzar que A-Frame recalcule el canvas al quedar visible
                     window.dispatchEvent(new Event('resize'));
                 }, 1000);
             }
@@ -1183,7 +1130,6 @@
     </div>
 
     <button id="btn-menu-2d">Abrir Menu de Navegacion</button>
-    <!-- <button id="btn-capturar">�YZ� Capturar Coordenada</button> -->
 
     <a-scene renderer="antialias: true; colorManagement: true; sortObjects: true;" cursor="rayOrigin: mouse"
         raycaster="objects: .clickable">
@@ -1191,19 +1137,61 @@
         <a-assets timeout="10000">
             <img id="img-entrada" src="imagenes/entrada.jpg">
             <img id="img-logo" src="imagenes/esan.png">
-            <img id="img-flecha-plana"
-                src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M19 76 L54 30 L89 76' fill='none' stroke='rgba(0,0,0,0.45)' stroke-width='34' stroke-linecap='round' stroke-linejoin='round'/><path d='M17 74 L50 28 L83 74' fill='none' stroke='%23E3173E' stroke-width='26' stroke-linecap='round' stroke-linejoin='round'/><path d='M17 74 L50 28 L83 74' fill='none' stroke='white' stroke-width='14' stroke-linecap='round' stroke-linejoin='round'/></svg>">
-            <img id="img-info-icon"
-                src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23FF0000'/><text x='50' y='75' font-family='Arial' font-size='65' font-weight='bold' fill='white' text-anchor='middle'>i</text></svg>">
-            <img id="img-flecha-derecha"
-                src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><g transform='rotate(90 50 50)'><path d='M19 76 L54 30 L89 76' fill='none' stroke='rgba(0,0,0,0.45)' stroke-width='34' stroke-linecap='round' stroke-linejoin='round'/><path d='M17 74 L50 28 L83 74' fill='none' stroke='%23E3173E' stroke-width='26' stroke-linecap='round' stroke-linejoin='round'/><path d='M17 74 L50 28 L83 74' fill='none' stroke='white' stroke-width='14' stroke-linecap='round' stroke-linejoin='round'/></g></svg>">
-            <img id="img-flecha-abajo"
-                src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><g transform='rotate(180 50 50)'><path d='M19 76 L54 30 L89 76' fill='none' stroke='rgba(0,0,0,0.45)' stroke-width='34' stroke-linecap='round' stroke-linejoin='round'/><path d='M17 74 L50 28 L83 74' fill='none' stroke='%23E3173E' stroke-width='26' stroke-linecap='round' stroke-linejoin='round'/><path d='M17 74 L50 28 L83 74' fill='none' stroke='white' stroke-width='14' stroke-linecap='round' stroke-linejoin='round'/></g></svg>">
-            <img id="img-flecha-izquierda"
-                src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><g transform='rotate(-90 50 50)'><path d='M19 76 L54 30 L89 76' fill='none' stroke='rgba(0,0,0,0.45)' stroke-width='34' stroke-linecap='round' stroke-linejoin='round'/><path d='M17 74 L50 28 L83 74' fill='none' stroke='%23E3173E' stroke-width='26' stroke-linecap='round' stroke-linejoin='round'/><path d='M17 74 L50 28 L83 74' fill='none' stroke='white' stroke-width='14' stroke-linecap='round' stroke-linejoin='round'/></g></svg>">
+            <canvas id="img-flecha-plana" width="128" height="128"></canvas>
+            <canvas id="img-info-icon" width="128" height="128"></canvas>
+            <canvas id="img-flecha-derecha" width="128" height="128"></canvas>
+            <canvas id="img-flecha-abajo" width="128" height="128"></canvas>
+            <canvas id="img-flecha-izquierda" width="128" height="128"></canvas>
         </a-assets>
 
+        <script>
+        (function () {
+            var S = 128;
+
+            function dibujarInfo(ctx) {
+                ctx.fillStyle = '#FF0000';
+                ctx.beginPath(); ctx.arc(64, 64, 58, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = 'bold 72px Arial';
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillText('i', 64, 68);
+            }
+
+            function dibujarFlecha(ctx, rot) {
+                ctx.save();
+                ctx.translate(S / 2, S / 2);
+                ctx.rotate(rot * Math.PI / 180);
+                ctx.translate(-S / 2, -S / 2);
+                ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+                ctx.strokeStyle = 'rgba(0,0,0,0.45)'; ctx.lineWidth = 34;
+                ctx.beginPath(); ctx.moveTo(19, 76); ctx.lineTo(50, 28); ctx.lineTo(81, 76); ctx.stroke();
+                ctx.strokeStyle = '#E3173E'; ctx.lineWidth = 26;
+                ctx.beginPath(); ctx.moveTo(17, 74); ctx.lineTo(50, 28); ctx.lineTo(83, 74); ctx.stroke();
+                ctx.strokeStyle = '#FFFFFF'; ctx.lineWidth = 14;
+                ctx.beginPath(); ctx.moveTo(17, 74); ctx.lineTo(50, 28); ctx.lineTo(83, 74); ctx.stroke();
+                ctx.restore();
+            }
+
+            [
+                ['img-info-icon',      function (c) { dibujarInfo(c); }],
+                ['img-flecha-plana',   function (c) { dibujarFlecha(c, 0); }],
+                ['img-flecha-derecha', function (c) { dibujarFlecha(c, 90); }],
+                ['img-flecha-abajo',   function (c) { dibujarFlecha(c, 180); }],
+                ['img-flecha-izquierda', function (c) { dibujarFlecha(c, -90); }]
+            ].forEach(function (d) {
+                var el = document.getElementById(d[0]);
+                if (!el) return;
+                var ctx = el.getContext('2d');
+                ctx.clearRect(0, 0, S, S);
+                d[1](ctx);
+            });
+        })();
+        </script>
+
         <a-sky id="cielo-fondo" radius="500" rotation="0 -90 0"></a-sky>
+        
+        <a-entity id="cubos" cubos-digitales></a-entity>
+
         <a-light type="ambient" color="#FFF" intensity="1.5"></a-light>
 
         <a-entity id="hotspot-darkbg" geometry="primitive: sphere; radius: 100"
@@ -1224,7 +1212,7 @@
                     position="0 1.15 0.01"></a-text>
 
                 <a-text
-                    value="Bienvenido a la Universidad ESAN, una de las instituciones de negocios más prestigiosas de América Latina. Fundada en 1963, forma líderes con visión global y excelencia académica."
+                    value="Bienvenido a la Universidad ESAN, una de las instituciones de educación superior en negocios más prestigiosas de América Latina.\n\nFundada en 1963, ESAN forma líderes con visión global, valores éticos y excelencia académica.\n\nExplora nuestro campus y descubre todo lo que tenemos para ti."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.2 0.02"
@@ -1233,7 +1221,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: RECEPCION ENTRADA -->
             <a-image src="#img-info-icon" position="-10.24 4.32 -4.53" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-RECEPCION-entrada; action: toggle">
             </a-image>
@@ -1244,7 +1231,7 @@
                 <a-text value="RECEPCION" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Punto de atención y orientación para visitantes y estudiantes. Facilita el acceso y la bienvenida al campus ESAN."
+                    value="La recepción de ESAN funciona como punto de atención y orientación para visitantes, estudiantes y asistentes que ingresan al campus o participan en actividades institucionales.\n\nDesde este espacio se facilita el acceso, la atención inicial y la experiencia de bienvenida dentro del entorno universitario.\n\nUn punto clave de ingreso y atención dentro de la experiencia ESAN."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1253,7 +1240,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: FUENTE ESAN ENTRADA -->
             <a-image src="#img-info-icon" position="11.38 2.50 2.86" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-fuente-esan; action: toggle">
             </a-image>
@@ -1264,7 +1250,7 @@
                 <a-text value="FUENTE ESAN" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Elemento visual más distintivo del ingreso principal del campus. Aporta identidad institucional y da la bienvenida a la experiencia ESAN."
+                    value="La fuente ornamental con el nombre ESAN forma parte del ingreso principal del campus y representa uno de los elementos visuales más distintivos de bienvenida.\n\nEste espacio aporta identidad institucional y offers una primera impresión moderna y representativa para estudiantes, visitantes y miembros de la comunidad universitaria.\n\nUn punto emblemático que da la bienvenida a la experiencia ESAN."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1273,7 +1259,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: ZONA DE ESPERA Y TRANSPORTE ENTRADA -->
             <a-image src="#img-info-icon" position="8.80 1.27 -8.06" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot"
                 hotspot-info="target: #panel-info-espera-transporte-entrada; action: toggle">
@@ -1285,7 +1270,7 @@
                 <a-text value="ZONA DE ESPERA" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Zona para que estudiantes y visitantes aguarden transporte de manera ordenada. Punto de conexión entre el campus y el exterior."
+                    value="Esta zona de espera en la entrada principal permite que estudiantes, visitantes y colaboradores aguarden movilidad o transporte de manera ordenada y segura.\n\nSu ubicación facilita el acceso al campus y la conexión con el exterior, funcionando como punto de encuentro y salida para la comunidad universitaria.\n\nUn espacio práctico para iniciar o finalizar la experiencia dentro de ESAN."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1305,7 +1290,9 @@
 
                 <a-text value="PINO ESAN" color="#E3173E" align="center" width="7" position="0 1.05 0.01"></a-text>
 
-                <a-text value="El gran pino que permanece de pie es un emblema de ESAN, testigo de más de 60 años de historia institucional."
+                <a-text value="Hace 60 años, nuestra institución dio sus primeros pasos en la formación de los líderes que necesita el Perú para su desarrollo. De las primeras clases dictadas en la sede inicial, en San Isidro, hemos pasado a un campus más extenso y moderno en Monterrico. Si bien hemos sumado cada vez más espacios de aprendizaje para potenciar la educación de nuestros alumnos, las áreas verdes mantienen un espacio preponderante.
+
+                " Una prueba de ello es el gran pino que permanece de pie y que constituye un emblema de ESAN"
                     color="#333333" align="center" width="3.5" position="0 -0.1 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.7 1.1 0.02"
@@ -1325,7 +1312,7 @@
                     position="0 1.15 0.01"></a-text>
 
                 <a-text
-                    value="Área de pagos para pensiones, matrículas y otros conceptos de manera presencial. El personal de caja te orientará rápidamente."
+                    value="Aquí se encuentra el área administrativa de pagos de la universidad ESAN.\n\nPuedes acercarte a realizar el pago de pensiones, deudas académicas, matrícula y otros conceptos de manera presencial.\n\nEl personal de caja te orientará en cada proceso de manera rápida y ordenada."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.2 0.02"
@@ -1334,7 +1321,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: DECANATO Y DIRECCION ACADEMICA -->
             <a-image src="#img-info-icon" position="9.61 5.52 -4.59" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-decanato-jardin; action: toggle">
             </a-image>
@@ -1346,7 +1332,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Reúne las oficinas del decanato y equipo directivo académico de ESAN. Coordina decisiones y procesos que fortalecen la gestión universitaria."
+                    value="Este edificio reúne oficinas vinculadas al decanato y al equipo directivo académico de ESAN.\n\nDesde este espacio se coordinan decisiones, actividades y procesos que fortalecen la gestión académica, el acompañamiento a los estudiantes y el desarrollo institucional de la universidad.\n\nUn punto clave para la organización, liderazgo y mejora continua de la experiencia esanista."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1355,7 +1341,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: AULAS TIPO AUDITORIO -->
             <a-image src="#img-info-icon" position="-2.96 4.45 10.74" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot"
                 hotspot-info="target: #panel-info-aulas-auditorio-jardin; action: toggle">
@@ -1368,7 +1353,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Diseñadas para clases dinámicas, exposiciones y análisis de casos. Su distribución favorece la participación y el aprendizaje colaborativo."
+                    value="Las aulas tipo auditorio de ESAN están diseñadas para desarrollar clases dinámicas, exposiciones, debates y análisis de casos.\n\nSu distribución permite que los estudiantes tengan una mejor visibilidad del docente, los materiales de clase y las presentaciones, favoreciendo la participación y el aprendizaje colaborativo.\n\nUn espacio académico pensado para conectar teoría, práctica y discusión en cada sesión."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1377,7 +1362,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: AULAS EJECUTIVAS -->
             <a-image src="#img-info-icon" position="2.77 4.11 -10.93" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot"
                 hotspot-info="target: #panel-info-aulas-ejecutivas-jardin; action: toggle">
@@ -1390,7 +1374,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Aulas tipo anfiteatro para clases participativas y análisis de casos. Favorecen el debate y la formación de líderes con visión profesional."
+                    value="Las aulas ejecutivas de ESAN están diseñadas para desarrollar clases participativas, análisis de casos, exposiciones y dinámicas grupales.\n\nSu infraestructura tipo anfiteatro permite una mejor interacción entre docentes y estudiantes, favoreciendo el debate, la toma de decisiones y el aprendizaje aplicado.\n\nUn espacio académico orientado a formar líderes con visión crítica, colaborativa y profesional."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1399,7 +1383,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: COMEDOR CENTRAL -->
             <a-image src="#img-info-icon" position="-7.66 3.41 -8.59" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-comedor-jardin; action: toggle">
             </a-image>
@@ -1411,7 +1394,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Espacio donde estudiantes, docentes y colaboradores se alimentan y comparten durante la jornada universitaria. Ofrece alternativas para acompañar el ritmo académico."
+                    value="El Comedor Central de ESAN es un espacio de encuentro donde estudiantes, docentes y colaboradores pueden compartir, descansar y recargar energías durante la jornada universitaria.\n\nAquí se ofrecen alternativas de alimentación para acompañar el ritmo académico y promover momentos de integración entre la comunidad esanista.\n\nUn lugar donde la vida universitaria también se disfruta entre pausas, conversaciones y compañerismo."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1433,7 +1416,7 @@
                 <a-text value="FUENTE CENTRAL" color="#E3173E" align="center" width="7" position="0 1.15 0.01"></a-text>
 
                 <a-text
-                    value="Uno de los símbolos más representativos del campus ESAN. Invita a la reflexión y al encuentro entre la comunidad universitaria."
+                    value="La fuente central es uno de los símbolos más representativos del campus ESAN.\n\nEste espacio invita a la reflexión y al encuentro entre estudiantes, docentes y visitantes.\n\nUn punto de referencia que da vida y dinamismo al corazón del campus."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.2 0.02"
@@ -1452,7 +1435,7 @@
                 <a-text value="COMEDOR ESAN" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Ofrece menús diarios balanceados a precios accesibles. Un lugar de encuentro y descanso entre clases para toda la comunidad."
+                    value="El Comedor de ESAN es el espacio donde la comunidad universitaria puede disfrutar de una alimentación variada y de calidad.\n\nOfrece menús diarios balanceados a precios accesibles, pensados para que estudiantes y docentes recarguen energías durante la jornada académica.\n\nUn lugar de encuentro, descanso y convivencia entre clases."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1461,7 +1444,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: AULAS TIPO AUDITORIO VISTAS DESDE FUENTE -->
             <a-image src="#img-info-icon" position="0.81 4.18 11.22" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot"
                 hotspot-info="target: #panel-info-aulas-auditorio-fuente; action: toggle">
@@ -1474,7 +1456,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Diseñadas para clases dinámicas, exposiciones y análisis de casos. Su distribución favorece la participación y el aprendizaje colaborativo."
+                    value="Las aulas tipo auditorio de ESAN están diseñadas para desarrollar clases dinámicas, exposiciones, debates y análisis de casos.\n\nSu distribución permite que los estudiantes tengan una mejor visibilidad del docente, los materiales de clase y las presentaciones, favoreciendo la participación y el aprendizaje colaborativo.\n\nUn espacio académico pensado para conectar teoría, práctica y discusión en cada sesión."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1483,7 +1465,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: OFICINAS ADMINISTRATIVAS VISTAS DESDE FUENTE -->
             <a-image src="#img-info-icon" position="-8.95 4.85 -6.36" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-admin-fuente; action: toggle">
             </a-image>
@@ -1495,7 +1476,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Espacio con oficinas que coordinan procesos internos y servicios institucionales que apoyan la vida universitaria de ESAN."
+                    value="Este espacio reúne oficinas administrativas que respaldan el funcionamiento operativo y organizacional de ESAN.\n\nDesde aquí se coordinan procesos internos, servicios institucionales y actividades que contribuyen al correcto desarrollo de la vida universitaria.\n\nUn área clave para la gestión y el soporte de la comunidad esanista."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1504,7 +1485,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: SALONES EDIFICIO D VISTOS DESDE FUENTE -->
             <a-image src="#img-info-icon" position="8.13 7.49 -4.67" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot"
                 hotspot-info="target: #panel-info-salones-edificioD-fuente; action: toggle">
@@ -1517,7 +1497,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Salones para clases y actividades académicas equipados con recursos tecnológicos. Apoyan el aprendizaje dinámico y el trabajo colaborativo."
+                    value="El Edificio D de ESAN cuenta con salones destinados al desarrollo de clases, exposiciones y actividades académicas.\n\nSus espacios están diseñados para apoyar el aprendizaje universitario mediante sesiones dinámicas, trabajo colaborativo y el uso de recursos tecnológicos.\n\nUn ambiente académico donde los estudiantes fortalecen sus conocimientos y habilidades profesionales."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1526,7 +1506,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: AULAS TIPO AUDITORIO VISTAS DESDE FUENTE -->
             <a-image src="#img-info-icon" position="11.12 3.59 -2.71" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot"
                 hotspot-info="target: #panel-info-aulas-auditorio-fuente-2; action: toggle">
@@ -1539,7 +1518,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Diseñadas para clases dinámicas, exposiciones y análisis de casos. Su distribución favorece la participación y el aprendizaje colaborativo."
+                    value="Las aulas tipo auditorio de ESAN están diseñadas para desarrollar clases dinámicas, exposiciones, debates y análisis de casos.\n\nSu distribución permite que los estudiantes tengan una mejor visibilidad del docente, los materiales de clase y las presentaciones, favoreciendo la participación y el aprendizaje colaborativo.\n\nUn espacio académico pensado para conectar teoría, práctica y discusión en cada sesión."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1548,7 +1527,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: AREA DE DESCANSO JUNTO A LA FUENTE -->
             <a-image src="#img-info-icon" position="-8.44 0.34 8.52" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-descanso-fuente; action: toggle">
             </a-image>
@@ -1560,7 +1538,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Espacio para hacer una pausa junto a la fuente y las áreas verdes del campus ESAN. Un rincón para relajarse y compartir."
+                    value="Este espacio de descanso ofrece a estudiantes y visitantes un lugar para hacer una pausa, conversar o disfrutar del entorno natural del campus ESAN.\n\nUbicada junto a la fuente y áreas verdes, esta zona refleja el equilibrio entre la vida académica y los momentos de bienestar dentro de la universidad.\n\nUn rincón pensado para relajarse, compartir y disfrutar del ambiente esanista."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1581,7 +1559,7 @@
                 <a-text value="CAPILLA ESAN" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Espacio sagrado consagrado a la memoria de quienes dejaron huella en ESAN. Lugar de fe, gratitud y recogimiento para la comunidad."
+                    value="La Capilla de ESAN es un espacio sagrado de recogimiento y oración.\n\nEste lugar está consagrado a la memoria de los alumnos, profesores y miembros de la comunidad ESAN que han partido.\n\nAquí la comunidad universitaria se une en fe, gratitud y esperanza, recordando con cariño a quienes dejaron una huella imborrable en nuestra institución."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1602,7 +1580,7 @@
                 <a-text value="FABLAB ESAN" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Laboratorio de fabricación digital con impresoras 3D, cortadoras láser y herramientas de prototipado. Las ideas se convierten en proyectos reales."
+                    value="El FabLab de ESAN es un laboratorio de fabricación digital donde la creatividad y la tecnología se fusionan.\n\nEquipado con impresoras 3D, cortadoras láser y herramientas de prototipado, este espacio permite a los estudiantes convertir sus ideas en productos reales.\n\nUn lugar para innovar, experimentar y emprender sin límites."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1611,7 +1589,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: PIZARRA COLABORATIVA FABLAB -->
             <a-image src="#img-info-icon" position="-0.91 5.31 -10.72" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-pizarra-fablab; action: toggle">
             </a-image>
@@ -1623,7 +1600,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Recurso para planificar proyectos y desarrollar ideas en equipo. Aquí las propuestas toman estructura antes de convertirse en innovación."
+                    value="La pizarra colaborativa del FabLab ESAN es un recurso clave para el desarrollo de ideas, planificación de proyectos y trabajo en equipo.\n\nEn este espacio se organizan propuestas, se explican conceptos y se construyen soluciones mediante sesiones creativas y dinámicas colaborativas.\n\nUna herramienta fundamental donde las ideas toman estructura antes de convertirse en innovación."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1632,7 +1609,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: PROYECTOS EXHIBIDOS FABLAB -->
             <a-image src="#img-info-icon" position="-11.40 1.63 3.39" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-proyectos-fablab; action: toggle">
             </a-image>
@@ -1644,7 +1620,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Exhibición de prototipos y proyectos desarrollados por estudiantes mediante diseño, experimentación y fabricación digital en el FabLab."
+                    value="Este espacio exhibe algunos proyectos y prototipos desarrollados dentro del FabLab ESAN como resultado del aprendizaje práctico, la creatividad y la innovación estudiantil.\n\nAquí se reflejan ideas convertidas en soluciones tangibles mediante diseño, experimentación y fabricación digital.\n\nUna muestra del talento y la capacidad de transformar conocimiento en proyectos reales."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1653,7 +1629,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: CASILLEROS DE APOYO FABLAB -->
             <a-image src="#img-info-icon" position="-6.78 3.68 9.19" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-casilleros-fablab; action: toggle">
             </a-image>
@@ -1665,7 +1640,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Permiten almacenar materiales, herramientas y proyectos de forma organizada. Mantienen los recursos disponibles durante el proceso de diseño y prototipado."
+                    value="Los casilleros de apoyo del FabLab ESAN permiten almacenar materiales, herramientas y proyectos en desarrollo de manera organizada y segura.\n\nEste espacio facilita que estudiantes y personal del laboratorio mantengan sus recursos disponibles durante el proceso de diseño, prototipado y experimentación.\n\nUn recurso práctico que contribuye al orden y continuidad del trabajo creativo."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1674,7 +1649,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: MESA DE TRABAJO FABLAB -->
             <a-image src="#img-info-icon" position="-11.78 -0.89 2.11" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-mesa-fablab; action: toggle">
             </a-image>
@@ -1686,7 +1660,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Espacio colaborativo para desarrollar ideas, ensamblar prototipos y avanzar en proyectos académicos de innovación."
+                    value="La mesa de trabajo del FabLab ESAN es un espacio colaborativo donde los estudiantes desarrollan ideas, ensamblan prototipos y avanzan en proyectos académicos o de innovación.\n\nAquí se fomenta el trabajo en equipo, la experimentación práctica y la construcción de soluciones mediante el aprendizaje aplicado.\n\nUn punto central donde la creatividad se transforma en proyectos reales."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1695,7 +1669,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: MESA DE TRABAJO 2 FABLAB -->
             <a-image src="#img-info-icon" position="11.79 -1.03 2.00" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-mesa2-fablab; action: toggle">
             </a-image>
@@ -1707,16 +1680,15 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Espacio colaborativo para desarrollar ideas, ensamblar prototipos y avanzar en proyectos académicos de innovación."
+                    value="La mesa de trabajo del FabLab ESAN es un espacio colaborativo donde los estudiantes desarrollan ideas, ensamblan prototipos y avanzan en proyectos académicos o de innovación.\n\nAquí se fomenta el trabajo en equipo, la experimentación práctica y la construcción de soluciones mediante el aprendizaje aplicado.\n\nUn punto central donde la creatividad se transforma en proyectos reales."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
                     hotspot-info="target: #panel-info-mesa2-fablab; action: close">
-                    <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
+                    <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0.01"></a-text>
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: ESPACIO DEL FACILITADOR FABLAB -->
             <a-image src="#img-info-icon" position="-6.36 0.89 -10.14" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-docente-fablab; action: toggle">
             </a-image>
@@ -1728,7 +1700,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Punto desde donde se orienta el desarrollo de proyectos y se brinda apoyo académico durante las sesiones del FabLab."
+                    value="El espacio del facilitador del FabLab ESAN es el punto desde donde se orientan actividades, se acompaña el desarrollo de proyectos y se brinda apoyo académico durante las sesiones de trabajo.\n\nDesde aquí se supervisan dinámicas colaborativas, procesos creativos y el uso adecuado de los recursos del laboratorio.\n\nUn punto clave para guiar la innovación, el aprendizaje práctico y la experimentación tecnológica."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1737,7 +1709,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: ESPACIO DEL PERSONAL FABLAB -->
             <a-image src="#img-info-icon" position="-0.92 2.99 11.58" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-personal-fablab; action: toggle">
             </a-image>
@@ -1749,7 +1720,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Área del personal del FabLab donde se coordinan actividades, recursos y acompañamiento académico a los estudiantes."
+                    value="Este espacio corresponde al área de trabajo del personal encargado y facilitadores del FabLab ESAN, desde donde se coordinan actividades, se brinda acompañamiento académico y se supervisa el desarrollo de proyectos.\n\nAquí se gestionan recursos, orientación técnica y soporte para las iniciativas desarrolladas dentro del laboratorio.\n\nUn punto clave para el funcionamiento, organización y acompañamiento de la innovación estudiantil."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1758,7 +1729,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: ESPACIO DEL PERSONAL FABLAB VISTA 2 -->
             <a-image src="#img-info-icon" position="5.84 2.78 10.10" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-personal2-fablab; action: toggle">
             </a-image>
@@ -1770,7 +1740,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Área del personal del FabLab donde se coordinan actividades, recursos y acompañamiento académico a los estudiantes."
+                    value="Este espacio corresponde al área de trabajo del personal encargado y facilitadores del FabLab ESAN, desde donde se coordinan actividades, se brinda acompañamiento académico y se supervisa el desarrollo de proyectos.\n\nAquí se gestionan recursos, orientación técnica y soporte para las iniciativas desarrolladas dentro del laboratorio.\n\nUn punto clave para el funcionamiento, organización y acompañamiento de la innovación estudiantil."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1779,7 +1749,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: ALMACEN DE MATERIALES FABLAB -->
             <a-image src="#img-info-icon" position="-9.65 1.96 6.85" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-almacen-fablab; action: toggle">
             </a-image>
@@ -1791,7 +1760,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Organiza materiales e insumos del FabLab para apoyar los procesos de diseño, experimentación y prototipado de manera eficiente."
+                    value="Este espacio de almacenamiento del FabLab ESAN permite organizar materiales, insumos y recursos utilizados durante el desarrollo de proyectos y actividades del laboratorio.\n\nSu función es mantener el equipamiento accesible y ordenado para apoyar los procesos de diseño, experimentación y prototipado.\n\nUn recurso esencial para el funcionamiento eficiente del entorno creativo y tecnológico."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1812,7 +1781,7 @@
                 <a-text value="IMPRESORAS 3D" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Permiten materializar prototipos con precisión mediante tecnología FDM. Los estudiantes crean piezas y modelos para sus proyectos de innovación."
+                    value="Las impresoras 3D del FabLab ESAN permiten materializar ideas y prototipos con precisión milimétrica.\n\nMediante tecnología de deposición de material fundido (FDM), los estudiantes pueden crear piezas, modelos y prototipos funcionales para sus proyectos de innovación y emprendimiento.\n\nEl futuro se construye capa por capa."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1821,7 +1790,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: CORTADORA LASER FABLAB 2 -->
             <a-image src="#img-info-icon" position="11.57 1.27 2.92" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-laser-fablab2; action: toggle">
             </a-image>
@@ -1833,7 +1801,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Realiza cortes precisos en MDF y otros materiales. Herramienta clave para fabricación digital y desarrollo de proyectos de innovación."
+                    value="La cortadora láser del FabLab ESAN permite trabajar con materiales como MDF y otros insumos utilizados en la fabricación digital y desarrollo de prototipos.\n\nEsta herramienta facilita cortes precisos, creación de piezas personalizadas y construcción de componentes para proyectos académicos, tecnológicos y de innovación.\n\nUn recurso clave donde el diseño digital se transforma en piezas físicas reales."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1842,7 +1810,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: ESTACION DE SOLDADURA FABLAB 2 -->
             <a-image src="#img-info-icon" position="11.78 1.03 -2.04" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-soldadura-fablab2; action: toggle">
             </a-image>
@@ -1854,7 +1821,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Permite ensamblar circuitos y componentes electrónicos. Fortalece el aprendizaje práctico en fabricación tecnológica y proyectos de innovación."
+                    value="La estación de soldadura del FabLab ESAN permite a los estudiantes ensamblar circuitos, unir componentes electrónicos y desarrollar prototipos tecnológicos funcionales.\n\nAquí se realizan procesos prácticos de fabricación electrónica que fortalecen el aprendizaje aplicado, la experimentación y la construcción de soluciones innovadoras.\n\nUn espacio donde la electrónica y la creatividad se convierten en proyectos reales."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1863,7 +1830,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: ESTACION DE CONTROL FABLAB 2 -->
             <a-image src="#img-info-icon" position="10.62 0.65 5.56" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-control-fablab2; action: toggle">
             </a-image>
@@ -1875,7 +1841,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Permite supervisar y operar los equipos de fabricación digital del FabLab, como la cortadora láser y otras herramientas tecnológicas."
+                    value="La estación de control del FabLab ESAN permite supervisar y operar equipos de fabricación digital como la cortadora láser y otras herramientas tecnológicas del laboratorio.\n\nDesde este punto se gestionan procesos de fabricación, configuración de trabajos y monitoreo de proyectos en desarrollo.\n\nUn espacio clave donde el diseño digital se convierte en producción real."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1884,7 +1850,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: MESA DE TRABAJO FABLAB 2 -->
             <a-image src="#img-info-icon" position="11.77 -2.31 0.32" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-mesa-trabajo-fablab2; action: toggle">
             </a-image>
@@ -1896,7 +1861,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Espacio para desarrollar proyectos, ensamblar prototipos y experimentar con herramientas tecnológicas del FabLab."
+                    value="La mesa de trabajo del FabLab ESAN es un espacio práctico donde los estudiantes desarrollan proyectos, ensamblan prototipos y experimentan con herramientas tecnológicas.\n\nAquí se fomenta el aprendizaje aplicado, el trabajo colaborativo y la construcción de soluciones innovadoras mediante actividades prácticas.\n\nUn entorno donde la creatividad y la tecnología se convierten en proyectos reales."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1905,7 +1870,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: MESA DE TRABAJO 2 FABLAB 2 -->
             <a-image src="#img-info-icon" position="-9.64 -2.71 -6.61" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot"
                 hotspot-info="target: #panel-info-mesa-trabajo2-fablab2; action: toggle">
@@ -1918,7 +1882,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Espacio para ensamblar prototipos, desarrollar experimentos y avanzar en proyectos tecnológicos con trabajo colaborativo."
+                    value="Esta mesa de trabajo del FabLab ESAN brinda un espacio práctico para que los estudiantes ensamblen prototipos, desarrollen experimentos y avancen en proyectos tecnológicos o de innovación.\n\nAquí se impulsa el aprendizaje aplicado, la creatividad y la construcción de soluciones mediante actividades prácticas colaborativas.\n\nUn entorno diseñado para convertir ideas en proyectos funcionales."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1927,7 +1891,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: MESA DE TRABAJO 3 FABLAB 2 -->
             <a-image src="#img-info-icon" position="-8.64 -1.75 8.14" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot"
                 hotspot-info="target: #panel-info-mesa-trabajo3-fablab2; action: toggle">
@@ -1940,7 +1903,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Espacio para pruebas funcionales y construcción de proyectos tecnológicos. Creatividad, experimentación y aprendizaje práctico en un mismo entorno."
+                    value="Esta mesa de trabajo del FabLab ESAN está destinada al desarrollo de prototipos, pruebas funcionales y construcción de proyectos tecnológicos elaborados por los estudiantes.\n\nEs un espacio donde se integran creatividad, experimentación y aprendizaje práctico para transformar ideas en soluciones reales.\n\nUn entorno dinámico orientado a la innovación y al desarrollo aplicado."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1962,7 +1925,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Espacio multideportivo para vóley, fútbol, básquet y más. Fomenta el trabajo en equipo, la disciplina y el espíritu universitario."
+                    value="La cancha deportiva de ESAN es el escenario de emocionantes competencias entre estudiantes y equipos de toda la universidad.\n\nAquí se practican deportes como vóley, fútbol, básquet y mucho más, fomentando el trabajo en equipo, la disciplina y el espíritu competitivo.\n\n¡El deporte también forma líderes!"
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1982,7 +1945,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Laboratorio donde se simulan operaciones bancarias reales. Desarrolla competencias en gestión de riesgos, créditos e inversiones financieras."
+                    value="El espacio de Banca Práctica de ESAN es un laboratorio vivencial donde los estudiantes simulan operaciones bancarias y financieras reales.\n\nAquí se desarrollan competencias en gestión de riesgos, créditos, inversiones y servicios financieros, con herramientas y dinámicas que replican el entorno de una entidad bancaria.\n\nAprender haciendo: la clave de la formación financiera en ESAN."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -1991,7 +1954,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: FABLAB VISTO DESDE CANCHA DE VOLEY -->
             <a-image src="#img-info-icon" position="3.82 4.89 10.27" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-fablab-voley; action: toggle">
             </a-image>
@@ -2002,7 +1964,7 @@
                 <a-text value="FABLAB ESAN" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Laboratorio de innovación con tecnologías de fabricación digital para diseñar y construir prototipos académicos y emprendimientos."
+                    value="El FabLab de ESAN es el laboratorio de innovación y prototipado donde las ideas se transforman en soluciones reales.\n\nEquipado con tecnologías de fabricación digital, este espacio permite a los estudiantes diseñar, experimentar y construir prototipos para proyectos académicos, emprendimientos y desafíos tecnológicos.\n\nAquí la creatividad se convierte en innovación tangible."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2011,7 +1973,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: CONVENTION & SPORT CENTER VISTO DESDE CANCHA DE VOLEY -->
             <a-image src="#img-info-icon" position="9.60 7.20 0.12" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-convention-voley; action: toggle">
             </a-image>
@@ -2023,7 +1984,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Espacio para eventos universitarios, conferencias, deportes y actividades que reúnen a estudiantes, docentes y egresados de ESAN."
+                    value="El Convention & Sport Center de ESAN es uno de los espacios más importantes del campus para la vida deportiva, académica y cultural.\n\nEste moderno recinto alberga eventos universitarios, conferencias, actividades deportivas, presentaciones y encuentros que reúnen a estudiantes, docentes, egresados y visitantes.\n\nUn lugar donde el deporte, la comunidad y los grandes eventos se viven con energía esanista."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2032,7 +1993,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: GRADERIAS DEPORTIVAS -->
             <a-image src="#img-info-icon" position="-9.60 3.96 -6.02" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-graderias-voley; action: toggle">
             </a-image>
@@ -2044,7 +2004,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Espacio donde la comunidad universitaria acompaña eventos deportivos y competencias del campus con espíritu ESAN."
+                    value="Las graderías deportivas de ESAN son el espacio donde estudiantes y visitantes acompañan las actividades deportivas y eventos realizados en el campus.\n\nDesde aquí se vive la emoción de los encuentros, competencias y presentaciones, creando un ambiente de integración, energía y espíritu universitario.\n\nUn lugar donde la comunidad esanista se reúne para alentar, compartir y vivir cada evento."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2066,7 +2026,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Cancha multideportiva para básquet, entrenamientos y actividades de integración entre la comunidad universitaria."
+                    value="La cancha de básquet de ESAN es un espacio multideportivo donde los estudiantes pueden practicar, entrenar y participar en actividades recreativas.\n\nAdemás de básquet, este espacio se usa para dinámicas grupales, eventos deportivos y actividades de integración entre la comunidad universitaria.\n\n¡Un lugar para moverse, competir y conectar!"
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2088,7 +2048,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Diseñadas para MBA, maestrías y especializaciones. Espacios modernos que potencian el pensamiento crítico y la excelencia académica."
+                    value="Las aulas de postgrado de ESAN están diseñadas para una experiencia de aprendizaje de alto nivel.\n\nAquí se desarrollan programas de MBA, maestrías y especializaciones que forman a los líderes empresariales del mañana.\n\nEspacios modernos, dinámicos y equipados para potenciar el pensamiento crítico y la excelencia académica."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2108,7 +2068,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Alberga congresos, conferencias y ferias que reúnen a la comunidad esanista y líderes del mundo empresarial."
+                    value="El Convention Center de ESAN es uno de los espacios de eventos más importantes de la universidad.\n\nDotado de modernas instalaciones, alberga congresos, conferencias internacionales, ferias empresariales, graduaciones y grandes eventos académicos que reúnen a la comunidad esanista y a líderes del mundo de los negocios.\n\nUn escenario donde el conocimiento y la innovación se encuentran."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2117,7 +2077,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: LABORATORIOS DE FISICA Y QUIMICA -->
             <a-image src="#img-info-icon" position="1.91 4.23 11.07" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-lab-fisica-quimica; action: toggle">
             </a-image>
@@ -2129,7 +2088,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Espacios para experimentación científica y análisis. Los estudiantes validan conocimientos teóricos con prácticas aplicadas en física y química."
+                    value="Los laboratorios de Física y Química de ESAN son espacios académicos diseñados para fortalecer el aprendizaje práctico mediante experimentación, análisis y aplicación de conceptos científicos.\n\nAquí los estudiantes desarrollan actividades experimentales, validan conocimientos teóricos y adquieren experiencia en entornos de aprendizaje aplicado.\n\nUn espacio donde la ciencia, la práctica y la innovación complementan la formación universitaria."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2138,7 +2097,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: EDIFICIO ACADEMICO -->
             <a-image src="#img-info-icon" position="6.55 4.11 -9.17" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot"
                 hotspot-info="target: #panel-info-edificio-aulas-convention; action: toggle">
@@ -2151,7 +2109,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Alberga aulas para clases, análisis de casos y actividades que fortalecen la formación profesional de los estudiantes."
+                    value="Este edificio académico de ESAN alberga aulas y espacios diseñados para el desarrollo de clases, actividades académicas y experiencias de aprendizaje universitario.\n\nAquí los estudiantes participan en sesiones dinámicas, análisis de casos, exposiciones y actividades que fortalecen su formación profesional.\n\nUn espacio que forma parte del entorno académico donde se construye conocimiento y aprendizaje aplicado."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2160,7 +2118,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: EDIFICIO D -->
             <a-image src="#img-info-icon" position="9.43 5.65 -4.82" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-edificio-d; action: toggle">
             </a-image>
@@ -2171,7 +2128,7 @@
                 <a-text value="EDIFICIO D" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Integra aulas académicas y oficinas administrativas. Conecta aprendizaje, docencia y gestión dentro del campus ESAN."
+                    value="El Edificio D de ESAN integra espacios académicos y administrativos dentro del campus universitario.\n\nEn sus primeros niveles se desarrollan clases y actividades académicas para estudiantes, mientras que en niveles superiores se ubican oficinas docentes y áreas administrativas que apoyan la gestión universitaria.\n\nUn edificio que conecta aprendizaje, docencia y gestión institucional dentro de la experiencia ESAN."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2193,7 +2150,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Espacio para graduaciones, ferias de emprendimiento y actividades que enriquecen la vida de la comunidad esanista."
+                    value="El area de eventos de ESAN es el corazón de la vida universitaria fuera del aula.\n\nAquí se celebran graduaciones, ferias de emprendimiento, lanzamientos de proyectos y muchas más actividades que enriquecen la experiencia de toda la comunidad.\n\nUn espacio donde los sueños y logros de los esanistas cobran vida."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2202,7 +2159,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: CONVENTION CENTER EVENTOS -->
             <a-image src="#img-info-icon" position="4.27 10.12 4.83" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot"
                 hotspot-info="target: #panel-info-convention-center-eventos; action: toggle">
@@ -2214,7 +2170,11 @@
                 <a-text value="CONVENTION CENTER" color="#E3173E" align="center" width="7"
                     position="0 1.25 0.01"></a-text>
 
-                <a-text value="Destinado a conferencias, eventos académicos y actividades institucionales de gran convocatoria en ESAN." color="#333333" align="center" width="3.5"
+                <a-text value="El Convention Center de ESAN es un espacio destinado a conferencias, eventos académicos y actividades institucionales de gran convocatoria.
+
+Aquí se desarrollan encuentros que fortalecen el aprendizaje, networking y la vida universitaria.
+
+Un punto clave para la experiencia académica y profesional en ESAN." color="#333333" align="center" width="3.5"
                     position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2236,7 +2196,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Espacio para disfrutar eventos en vivo y transmisiones especiales. Reúne a la comunidad esanista con espíritu de pertenencia."
+                    value="La zona de butacas de ESAN es el espacio ideal para disfrutar de eventos en vivo y transmisiones especiales.\n\nAquí la comunidad universitaria se reúne para ver partidos de fútbol, ceremonias de premiación, presentaciones artísticas y mucho más.\n\nUn lugar donde cada evento se vive con emoción y sentido de pertenencia esanista."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2258,7 +2218,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Espacio para estudiar e investigar con amplio acervo físico y digital. Ambiente de concentración y conocimiento al servicio de los estudiantes."
+                    value="La Biblioteca de ESAN es el espacio ideal para estudiar, leer e investigar.\n\nCon un amplio acervo bibliográfico físico y digital, ofrece recursos académicos de primer nivel para apoyar la formación de cada estudiante.\n\nEl silencio es la norma: un ambiente de concentración y respeto donde el conocimiento es el protagonista."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2279,7 +2239,7 @@
                 <a-text value="SALON DE DANZA" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Espacio para ensayar, crear coreografías y prepararse para festivales culturales. El arte y el movimiento se expresan libremente."
+                    value="El salón de danza de ESAN es el espacio donde el arte y el movimiento se expresan libremente.\n\nAquí los estudiantes ensayan, crean coreografías y se preparan para presentaciones y festivales culturales que enriquecen la vida universitaria.\n\nUn lugar para soltar la creatividad, conectar con el ritmo y celebrar la cultura a través del baile."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2298,7 +2258,7 @@
                 <a-text value="INPRO ESAN" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Grupo de improvisación teatral donde se desarrollan comunicación, liderazgo y creatividad a través del juego escénico."
+                    value="InPro es el grupo de improvisación teatral de ESAN donde la timidez no existe.\n\nAquí los estudiantes aprenden a improvisar, actuar y conectar con los demás a través del juego escénico, desarrollando habilidades de comunicación, liderazgo y creatividad.\n\n¡Sube al escenario y descubre todo lo que eres capaz de expresar!"
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2320,7 +2280,7 @@
                     position="0 1.15 0.01"></a-text>
 
                 <a-text
-                    value="Punto de recarga para los momentos de receso. Encuentra snacks y bebidas para reponer energías entre clases."
+                    value="El dispensador de golosinas de ESAN es el punto de recarga perfecto para los momentos de receso entre clases.\n\nEncuentra snacks, bebidas y bocadillos para reponer energías y continuar el día con todo.\n\n¡Ideal para esos momentos de pausa que necesitas!"
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.2 0.02"
@@ -2328,7 +2288,6 @@
                     <a-text value="X" color="#FFFFFF" align="center" width="6" position="0 0 0.01"></a-text>
                 </a-plane>
             </a-entity>
-
         </a-entity>
 
         <a-entity id="hotspots-edificioD" class="grupo-hotspots" visible="false">
@@ -2342,7 +2301,7 @@
                 <a-text value="CAJERO BCP" color="#E3173E" align="center" width="7" position="0 1.15 0.01"></a-text>
 
                 <a-text
-                    value="Cajero automático del BCP disponible dentro del campus para retiros, consultas de saldo y operaciones bancarias sin salir de ESAN."
+                    value="El campus ESAN cuenta con un cajero automático del Banco de Crédito del Perú (BCP) disponible para toda la comunidad universitaria.\n\nPuedes realizar retiros, consultas de saldo y otras operaciones bancarias de manera rápida y segura sin salir del campus.\n\n¡Tu banco siempre cerca cuando lo necesitas!"
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.2 0.02"
@@ -2361,7 +2320,7 @@
                 <a-text value="LIBRERIA ESAN" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Venta de libros, textos académicos y materiales de estudio. Publicaciones especializadas en negocios, gestión y finanzas."
+                    value="La Librería de ESAN es el espacio dedicado a la venta de libros, textos académicos, materiales de estudio y artículos de escritorio.\n\nAquí encontrarás publicaciones especializadas en negocios, gestión, finanzas y más, ideales para complementar tu formación universitaria.\n\nUn recurso esencial para todo esanista comprometido con el aprendizaje."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2370,7 +2329,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: EDIFICIO D COMPLETO -->
             <a-image src="#img-info-icon" position="3.45 7.56 -8.65" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-edificio-d-completo; action: toggle">
             </a-image>
@@ -2381,7 +2339,7 @@
                 <a-text value="EDIFICIO D" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Integra aulas equipadas, espacios de convivencia y ambientes para el desarrollo académico y tecnológico de la comunidad esanista."
+                    value="El Edificio D de ESAN integra diversos espacios académicos y de apoyo para la comunidad universitaria.\n\nAquí se encuentran áreas de uso docente, espacios de convivencia estudiantil, aulas equipadas para actividades académicas y ambientes destinados al desarrollo de clases y aprendizaje tecnológico.\n\nUn edificio que reúne docencia, formación académica y vida universitaria dentro de un mismo entorno."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2390,7 +2348,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: COMEDOR ESTUDIANTIL SEGUNDO PISO EDIFICIO D -->
             <a-image src="#img-info-icon" position="9.45 5.50 -4.94" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot"
                 hotspot-info="target: #panel-info-comedor-segundo-piso-edificio-d; action: toggle">
@@ -2402,7 +2359,11 @@
                 <a-text value="COMEDOR ESTUDIANTIL" color="#E3173E" align="center" width="7"
                     position="0 1.25 0.01"></a-text>
 
-                <a-text value="Espacio en el segundo piso del Edificio D para alimentarse, descansar y reunirse entre clases." color="#333333" align="center" width="3.5"
+                <a-text value="Ubicado en el segundo piso del Edificio D, este comedor es un espacio donde los estudiantes pueden alimentarse, descansar y compartir durante la jornada universitaria.
+
+También es utilizado como punto de encuentro para estudiar o reunirse entre clases.
+
+Un ambiente que complementa la vida universitaria en ESAN." color="#333333" align="center" width="3.5"
                     position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2411,7 +2372,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: SERVICIOS HIGIENICOS EDIFICIO D -->
             <a-image src="#img-info-icon" position="-1.88 3.73 11.25" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-servicios-edificio-d; action: toggle">
             </a-image>
@@ -2423,7 +2383,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Servicios higiénicos accesibles para estudiantes, docentes y visitantes durante su permanencia en ESAN."
+                    value="Los servicios higiénicos ubicados en esta zona del campus brindan comodidad y accesibilidad para estudiantes, docentes y visitantes durante su permanencia en ESAN.\n\nForman parte de la infraestructura de apoyo que complementa la experiencia universitaria y el uso de los espacios académicos cercanos.\n\nUn servicio esencial dentro del entorno universitario."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2432,7 +2392,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: EDIFICIO A -->
             <a-image src="#img-info-icon" position="-8.86 7.36 -3.37" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-edificio-a; action: toggle">
             </a-image>
@@ -2444,7 +2403,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Alberga aulas convencionales y ambientes equipados con computadoras para el aprendizaje práctico y tecnológico."
+                    value="El Edificio A de ESAN alberga espacios académicos diseñados para el desarrollo de clases y actividades formativas.\n\nAquí se encuentran aulas convencionales y ambientes equipados con computadoras que apoyan el aprendizaje práctico y tecnológico de los estudiantes.\n\nUn espacio clave dentro de la infraestructura académica del campus."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2466,7 +2425,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Espacio de asesoría y orientación conductual. Profesionales acompañan el desarrollo de habilidades sociales y bienestar integral."
+                    value="El Laboratorio de Conducta de ESAN es un espacio especializado donde se brinda asesoría y orientación conductual a los miembros de la comunidad universitaria.\n\nAquí profesionales capacitados acompañan a estudiantes y docentes en el desarrollo de habilidades sociales, gestión emocional y bienestar integral.\n\nUn lugar de apoyo, escucha y crecimiento personal."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2487,7 +2446,7 @@
                 <a-text value="ECO ESAN" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Iniciativa de reciclaje y cuidado ambiental dentro del campus. Estudiantes y docentes participan en campañas con reconocimientos especiales."
+                    value="EcoESAN es la iniciativa ambiental de la universidad que promueve una cultura de reciclaje y cuidado del medio ambiente dentro del campus.\n\nLos estudiantes y docentes participan en campañas de reciclaje y clasificación de residuos, y los mejores participantes reciben premios y reconocimientos especiales.\n\n¡Reciclar es una forma de liderar con responsabilidad!"
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2506,7 +2465,7 @@
                 <a-text value="CAFETERIA ESAN" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Punto de encuentro favorito de la comunidad universitaria con variada oferta de alimentos y bebidas. Ideal para estudiar, trabajar en grupo o compartir entre clases."
+                    value="La Cafetería de ESAN es el punto de encuentro favorito de la comunidad universitaria.\n\nUn espacio perfecto para estudiar, avanzar trabajos grupales o simplemente tomarse un café con los amigos entre clase y clase.\n\nCon un ambiente acogedor y una variada oferta de alimentos y bebidas, la cafetería es el lugar donde las ideas fluyen y las amistades se fortalecen."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2527,7 +2486,7 @@
                 <a-text value="AULA DE CLASES" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Aulas con tecnología moderna para clases dinámicas, debates y análisis de casos. Cada sesión impulsa el crecimiento profesional."
+                    value="Las aulas de ESAN son espacios diseñados para potenciar el aprendizaje activo y el intercambio de ideas.\n\nEquipadas con tecnología moderna, permiten desarrollar clases dinámicas, debates, casos de negocio y presentaciones que preparan a los estudiantes para los retos del mundo empresarial.\n\nAquí cada sesión es una oportunidad para crecer y transformarse."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2536,9 +2495,6 @@
                 </a-plane>
             </a-entity>
         </a-entity>
-
-
-        <!--AULAS DE COMPUTO -->
 
 
         <a-entity id="hotspots-laboratorio" class="grupo-hotspots" visible="false">
@@ -2552,7 +2508,7 @@
                 <a-text value="LAB DE COMPUTO" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Equipado con computadoras de alto rendimiento para software especializado en análisis de datos, simulaciones y programación."
+                    value="El Laboratorio de Cómputo de ESAN está equipado con computadoras de alto rendimiento para el desarrollo de clases que requieren herramientas digitales.\n\nAquí los estudiantes trabajan con software especializado en análisis de datos, simulaciones, programación y mucho más.\n\nTecnología al servicio del aprendizaje y la innovación."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2561,7 +2517,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: ESTACION DEL DOCENTE -->
             <a-image src="#img-info-icon" position="-9.92 1.89 6.49" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-docente-lab; action: toggle">
             </a-image>
@@ -2573,7 +2528,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Punto central para desarrollar sesiones prácticas y demostraciones tecnológicas dentro del laboratorio de cómputo."
+                    value="La estación del docente es el punto central desde donde se desarrollan las sesiones prácticas y demostraciones tecnológicas dentro del laboratorio.\n\nDesde este espacio se gestionan recursos digitales, explicaciones interactivas y actividades académicas que fortalecen el aprendizaje aplicado.\n\nUn punto clave para la enseñanza dinámica en entornos tecnológicos."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2582,7 +2537,6 @@
                 </a-plane>
             </a-entity>
 
-            <!-- HOTSPOT: ESTACIONES DE TRABAJO -->
             <a-image src="#img-info-icon" position="-12.00 0.07 0.16" scale="0.8 0.8 0.8" look-at="[camera]"
                 class="clickable icono-hotspot" hotspot-info="target: #panel-info-ESTACIONes-lab; action: toggle">
             </a-image>
@@ -2594,7 +2548,7 @@
                     position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Puestos tecnológicos para programación, análisis de datos y simulaciones. Entorno para aprender e innovar con tecnología aplicada."
+                    value="Los puestos de trabajo tecnológicos del laboratorio están diseñados para que los estudiantes desarrollen actividades prácticas utilizando equipos y herramientas digitales especializadas.\n\nEn este espacio se realizan ejercicios académicos, programación, análisis de datos, simulaciones y proyectos que fortalecen la formación tecnológica aplicada.\n\nUn entorno preparado para aprender, experimentar e innovar con tecnología."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2615,7 +2569,7 @@
                 <a-text value="DATA LAB" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Espacio para análisis de datos y toma de decisiones empresariales. Los estudiantes trabajan con Big Data, IA y herramientas de visualización."
+                    value="El Data Lab de ESAN es el espacio dedicado al estudio y análisis de datos para la toma de decisiones empresariales.\n\nAquí los estudiantes aprenden a trabajar con Big Data, inteligencia artificial, machine learning y herramientas de visualización para extraer valor de la información.\n\nEl futuro de los negocios se construye con datos."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2636,7 +2590,7 @@
                 <a-text value="CAFETERIA ESAN" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
 
                 <a-text
-                    value="Punto de encuentro favorito de la comunidad universitaria con variada oferta de alimentos y bebidas. Ideal para estudiar, trabajar en grupo o compartir entre clases."
+                    value="La Cafetería de ESAN es el punto de encuentro favorito de la comunidad universitaria.\n\nUn espacio perfecto para estudiar, avanzar trabajos grupales o simplemente tomarse un café con los amigos entre clase y clase.\n\nCon un ambiente acogedor y una variada oferta de alimentos y bebidas, la cafetería es el lugar donde las ideas fluyen y las amistades se fortalecen."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
 
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
@@ -2654,7 +2608,7 @@
                 <a-plane color="#FFFFFF" opacity="0.95" width="4" height="3" position="0 0 0"></a-plane>
                 <a-text value="EXTERIOR ESAN" color="#E3173E" align="center" width="7" position="0 1.25 0.01"></a-text>
                 <a-text
-                    value="Amplios espacios verdes y áreas de tránsito que conectan los edificios del campus. Un espacio de encuentro para toda la comunidad ESAN."
+                    value="El exterior de la Universidad ESAN ofrece amplios espacios verdes y áreas de tránsito que conectan los distintos edificios del campus.\n\nDesde aquí puedes apreciar la arquitectura moderna de las instalaciones y disfrutar del ambiente universitario.\n\nUn espacio de encuentro para toda la comunidad ESAN."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
                     hotspot-info="target: #panel-info-fuera; action: close">
@@ -2672,7 +2626,7 @@
                 <a-text value="LABORATORIO DE FISICA" color="#E3173E" align="center" width="7"
                     position="0 1.25 0.01"></a-text>
                 <a-text
-                    value="Equipado para prácticas de mecánica, electricidad, óptica y termodinámica. Fortalece la comprensión científica con experiencia práctica."
+                    value="El Laboratorio de Física de ESAN cuenta con equipos de última generación para el estudio experimental de fenómenos físicos.\n\nAquí los estudiantes realizan prácticas de mecánica, electricidad, óptica y termodinámica, fortaleciendo su comprensión teórica con experiencia práctica.\n\nUn espacio diseñado para la exploración científica y el pensamiento analítico."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
                     hotspot-info="target: #panel-info-fisica; action: close">
@@ -2690,7 +2644,7 @@
                 <a-text value="LABORATORIO DE QUIMICA" color="#E3173E" align="center" width="7"
                     position="0 1.25 0.01"></a-text>
                 <a-text
-                    value="Entorno seguro para prácticas experimentales. Los estudiantes aplican técnicas de análisis químico a la gestión empresarial e innovación."
+                    value="El Laboratorio de Química de ESAN ofrece un entorno seguro y equipado para el desarrollo de prácticas experimentales.\n\nCon material de laboratorio moderno, los estudiantes aprenden técnicas de análisis químico, síntesis y caracterización de sustancias aplicadas a la gestión empresarial y la innovación.\n\nCiencia al servicio del conocimiento y la industria."
                     color="#333333" align="center" width="3.5" position="0 -0.15 0.01" wrap-count="35"></a-text>
                 <a-plane class="clickable close-btn" color="#FF0000" width="0.4" height="0.4" position="1.75 1.3 0.02"
                     hotspot-info="target: #panel-info-quimica; action: close">
@@ -2801,30 +2755,24 @@
         </a-entity>
 
         <a-entity id="entorno-fisicas-basquet" position="0 0 0" visible="false" sistema-puntos>
-            <!-- Piso de cancha con color madera -->
             <a-plane static-body position="0 0 0" rotation="-90 0 0" width="20" height="20"
                 material="color: #C87A2A; shader: flat; opacity: 1"></a-plane>
-            <!-- Línea central -->
             <a-plane position="0 0.01 0" rotation="-90 0 0" width="0.08" height="20"
                 material="color: #FFFFFF; shader: flat; opacity: 0.6"></a-plane>
-            <!-- Tablero -->
             <a-box static-body position="0 4 -12" width="2.5" height="1.5" depth="0.08"
                 material="color: #FFFFFF; opacity: 0.92; shader: flat"></a-box>
-            <!-- Rectángulo rojo en el tablero -->
             <a-plane position="0 3.9 -11.94" width="1.2" height="0.8"
                 material="color: #E3173E; opacity: 0.9; shader: flat"></a-plane>
-            <!-- Aro visual (sin física) -->
             <a-torus position="0 3.5 -11.6" rotation="90 0 0" radius="0.45" radiusTubular="0.04"
                 material="color: #FF6600; shader: flat"></a-torus>
 
-            <!-- Marcador con panel estilizado -->
             <a-entity position="0 7.2 -12">
                 <a-entity geometry="primitive: rounded-rect; width: 4.4; height: 1.8; radius: 0.22"
                     material="color: #E3173E; opacity: 1; shader: flat" position="0 0 -0.08"></a-entity>
                 <a-entity geometry="primitive: rounded-rect; width: 4.0; height: 1.45; radius: 0.16"
                     material="color: #0D0D0D; opacity: 0.96; shader: flat" position="0 0 -0.04"></a-entity>
-                <a-text value="CANCHA ESAN" align="center" color="#E3173E" width="3.8" position="0 0.35 0.02"
-                    font="exo2semibold" scale="0.7 0.7 0.7"></a-text>
+                <a-entity value="CANCHA ESAN" align="center" color="#E3173E" width="3.8" position="0 0.35 0.02"
+                    font="exo2semibold" scale="0.7 0.7 0.7"></a-entity>
                 <a-text id="texto-marcador" value="PUNTOS: 0" align="center" color="#FFD700" width="3.8"
                     position="0 -0.2 0.02" font="exo2semibold" scale="1.2 1.2 1.2"></a-text>
             </a-entity>
@@ -2833,7 +2781,6 @@
                 position="0 1.5 -2" radius="0.3" color="#D95C14">
             </a-sphere>
 
-            <!-- Botones de control -->
             <a-entity id="btn-volver-tour" position="-3.5 1.4 -5" look-at="[camera]"
                 geometry="primitive: rounded-rect; width: 2.7; height: 0.85; radius: 0.16"
                 material="color: #222222; opacity: 0.95; shader: flat">
@@ -2863,13 +2810,18 @@
             </a-entity>
 
             <a-camera id="camara-principal" camera wasd-controls-enabled="false" look-controls="reverseMouseDrag: true">
+                <!-- Cursor para navegador web (desktop). En VR no aplica porque no hay mouse. -->
+                <a-entity cursor="fuse: false; rayOrigin: mouse"
+                    raycaster="objects: .clickable; far: 100">
+                </a-entity>
+
                 <a-entity id="overlay-fade" geometry="primitive: sphere; radius: 0.1"
                     material="color: #000; transparent: true; opacity: 0; side: back" position="0 0 0"></a-entity>
 
                 <a-entity geometry="primitive: ring; radiusInner: 0.015; radiusOuter: 0.025"
                     material="color: #00BFFF; shader: flat; opacity: 0.8" position="0 0 -1" raycaster="enabled: false">
                 </a-entity>
-            </a-camera>g
+            </a-camera>
 
             <a-entity laser-controls="hand: right" raycaster="objects: .clickable" vr-controller-listener></a-entity>
             <a-entity laser-controls="hand: left" raycaster="objects: .clickable" vr-controller-listener></a-entity>
