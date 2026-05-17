@@ -405,6 +405,11 @@
                         if (fondoOscuro) fondoOscuro.setAttribute('visible', 'false');
                         if (!document.querySelector('.panel-activo') && flechas) flechas.setAttribute('visible', 'true');
                     } else {
+                        var panelPrevio = document.querySelector('.panel-activo');
+                        if (panelPrevio && panelPrevio !== panel) {
+                            panelPrevio.setAttribute('visible', 'false');
+                            panelPrevio.classList.remove('panel-activo');
+                        }
                         panel.setAttribute('visible', 'true');
                         panel.classList.add('panel-activo');
                         if (fondoOscuro) fondoOscuro.setAttribute('visible', 'true');
@@ -1059,6 +1064,20 @@
             document.querySelector('#btn-volver-tour').addEventListener('click', desactivarMinijuego);
             document.querySelector('#btn-reset-balon').addEventListener('click', resetearPelota);
 
+            var darkbg = document.querySelector('#hotspot-darkbg');
+            if (darkbg) {
+                darkbg.addEventListener('click', function () {
+                    var panelActivo = document.querySelector('.panel-activo');
+                    if (panelActivo) {
+                        panelActivo.setAttribute('visible', 'false');
+                        panelActivo.classList.remove('panel-activo');
+                    }
+                    darkbg.setAttribute('visible', 'false');
+                    var flechas = document.querySelector('#flechas-container');
+                    if (flechas) flechas.setAttribute('visible', 'true');
+                });
+            }
+
             document.getElementById('btn-capturar').addEventListener('click', function () {
                 var cam = document.querySelector('#camara-principal').getObject3D('camera');
                 if (!cam) return;
@@ -1195,7 +1214,8 @@
         <a-light type="ambient" color="#FFF" intensity="1.5"></a-light>
 
         <a-entity id="hotspot-darkbg" geometry="primitive: sphere; radius: 100"
-            material="color: #000000; transparent: true; opacity: 0.6; side: back" visible="false"></a-entity>
+            material="color: #000000; transparent: true; opacity: 0.6; side: back" visible="false"
+            class="clickable"></a-entity>
 
         <a-entity id="flechas-container"></a-entity>
         <a-entity id="menu-3d" visible="false" scale="0.85 0.85 0.85"></a-entity>
